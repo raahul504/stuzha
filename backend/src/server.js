@@ -5,6 +5,7 @@ const helmet = require('helmet');
 require('dotenv').config();
 
 const authRoutes = require('./routes/authRoutes');
+const courseRoutes = require('./routes/courseRoutes');
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.get('/health', (req, res) => {
 
 // Auth routes
 app.use('/api/auth', authRoutes);
+app.use('/api/courses', courseRoutes);
 
 // ========== ERROR HANDLING ==========
 app.use((err, req, res, next) => {
