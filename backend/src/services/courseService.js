@@ -1,0 +1,340 @@
+const prisma = require('../config/database');
+
+/**
+ * Create a new course
+ */
+const createCourse = async (courseData, creatorId) => {
+  const course = await prisma.course.create({
+    data: {
+      ...courseData,
+      createdBy: creatorId,
+    },
+    include: {
+      modules: true,
+    },
+  });
+
+  return course;
+};
+
+/**
+ * Get all published courses
+ */
+const getAllCourses = async (userId = null) => {
+  const courses = await prisma.course.findMany({
+    where: {
+      isPublished: true,
+    },
+    include: {
+      modules: {
+        include: {
+          contentItems: {
+            select: {
+              id: true,
+              title: true,
+              contentType: true,
+              orderIndex: true,
+            },
+            orderBy: {
+              orderIndex: 'asc',
+            },
+          },
+        },
+        orderBy: {
+          orderIndex: 'asc',
+        },
+      },
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
+
+  // If user is logged in, check which courses they've purchased
+  if (userId) {
+    const enrollments = await prisma.enrollment.findMany({
+      where: { userId },
+      select: { courseId: true },
+    });
+
+    const enrolledCourseIds = new Set(enrollments.map((e) => e.courseId));
+
+    return courses.map((course) => ({
+      ...course,
+      isPurchased: enrolledCourseIds.has(course.id),
+    }));
+  }
+
+  return courses.map((course) => ({ ...course, isPurchased: false }));
+};
+
+/**
+ * Get course by ID (with access control)
+ */
+const getCourseById = async (courseId, userId = null) => {
+  const course = await prisma.course.findUnique({
+    where: { id: courseId },
+    include: {
+      modules: {
+        include: {
+          contentItems: {
+            include: {
+              questions: {
+                select: {
+                  id: true,
+                  questionType: true,
+                  questionText: true,
+                  orderIndex: true,
+                  // Don't include answers in preview
+                },
+                orderBy: {
+                  orderIndex: 'asc',
+                },
+              },
+            },
+            orderBy: {
+              orderIndex: 'asc',
+            },
+          },
+        },
+        orderBy: {
+          orderIndex: 'asc',
+        },
+      },
+    },
+  });
+
+  if (!course) {
+    throw new Error('Course not found');
+  }
+
+  // Check if user has purchased
+  let enrollment = null;
+  if (userId) {
+    enrollment = await prisma.enrollment.findUnique({
+      where: {
+        userId_courseId: {
+          userId,
+          courseId,
+        },
+      },
+    });
+  }
+
+  const isPurchased = !!enrollment;
+
+  // If not purchased, return preview version
+  if (!isPurchased) {
+    return {
+      ...course,
+      isPurchased: false,
+      modules: course.modules.map((module) => ({
+        ...module,
+        contentItems: module.contentItems.map((item) => ({
+          id: item.id,
+          title: item.title,
+          contentType: item.contentType,
+          description: item.description,
+          orderIndex: item.orderIndex,
+          isPreview: item.isPreview,
+          // Remove actual content for non-purchased
+          videoUrl: item.isPreview ? item.videoUrl : null,
+          videoDurationSeconds: item.videoDurationSeconds,
+          articleContent: null,
+          articleFileUrl: null,
+          questions: item.contentType === 'ASSESSMENT' 
+            ? item.questions.map(q => ({ 
+                id: q.id, 
+                questionType: q.questionType,
+                // Don't show actual questions
+              }))
+            : [],
+        })),
+      })),
+    };
+  }
+
+  // Return full course with progress
+  return {
+    ...course,
+    isPurchased: true,
+    enrollment: {
+      progressPercentage: enrollment.progressPercentage.toNumber(),
+      completed: enrollment.completed,
+    },
+  };
+};
+
+/**
+ * Get user's enrolled courses
+ */
+const getUserCourses = async (userId) => {
+  const enrollments = await prisma.enrollment.findMany({
+    where: { userId },
+    include: {
+      course: {
+        include: {
+          modules: {
+            include: {
+              contentItems: {
+                select: {
+                  id: true,
+                  title: true,
+                  contentType: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    orderBy: {
+      enrolledAt: 'desc',
+    },
+  });
+
+  return enrollments.map((enrollment) => ({
+    ...enrollment.course,
+    progressPercentage: enrollment.progressPercentage.toNumber(),
+    completed: enrollment.completed,
+    enrolledAt: enrollment.enrolledAt,
+  }));
+};
+
+/**
+ * Enroll user in course (purchase)
+ */
+const enrollInCourse = async (userId, courseId) => {
+  // Check if course exists
+  const course = await prisma.course.findUnique({
+    where: { id: courseId },
+  });
+
+  if (!course) {
+    throw new Error('Course not found');
+  }
+
+  if (!course.isPublished) {
+    throw new Error('Course is not available for enrollment');
+  }
+
+  // Check if already enrolled
+  const existingEnrollment = await prisma.enrollment.findUnique({
+    where: {
+      userId_courseId: {
+        userId,
+        courseId,
+      },
+    },
+  });
+
+  if (existingEnrollment) {
+    throw new Error('Already enrolled in this course');
+  }
+
+  // Get all videos and assessments in the course
+  const modules = await prisma.module.findMany({
+    where: { courseId },
+    include: {
+      contentItems: {
+        where: {
+          contentType: {
+            in: ['VIDEO', 'ASSESSMENT'],
+          },
+        },
+      },
+    },
+  });
+
+  // Create enrollment and initialize progress in a transaction
+  const enrollment = await prisma.$transaction(async (tx) => {
+    // Create enrollment
+    const newEnrollment = await tx.enrollment.create({
+      data: {
+        userId,
+        courseId,
+        paymentAmount: course.price,
+        paymentCurrency: course.currency,
+        paymentStatus: 'completed', // For now, auto-complete (will add payment gateway later)
+      },
+    });
+
+    // Initialize video progress for all videos
+    const videoItems = modules.flatMap((m) =>
+      m.contentItems.filter((item) => item.contentType === 'VIDEO')
+    );
+
+    if (videoItems.length > 0) {
+      await tx.videoProgress.createMany({
+        data: videoItems.map((item) => ({
+          userId,
+          contentItemId: item.id,
+          enrollmentId: newEnrollment.id,
+          durationSeconds: item.videoDurationSeconds,
+        })),
+      });
+    }
+
+    return newEnrollment;
+  });
+
+  return enrollment;
+};
+
+/**
+ * Update course
+ */
+const updateCourse = async (courseId, updateData, userId) => {
+  // Verify user created the course
+  const course = await prisma.course.findUnique({
+    where: { id: courseId },
+  });
+
+  if (!course) {
+    throw new Error('Course not found');
+  }
+
+  if (course.createdBy !== userId) {
+    throw new Error('Unauthorized to update this course');
+  }
+
+  const updatedCourse = await prisma.course.update({
+    where: { id: courseId },
+    data: updateData,
+  });
+
+  return updatedCourse;
+};
+
+/**
+ * Delete course
+ */
+const deleteCourse = async (courseId, userId) => {
+  const course = await prisma.course.findUnique({
+    where: { id: courseId },
+  });
+
+  if (!course) {
+    throw new Error('Course not found');
+  }
+
+  if (course.createdBy !== userId) {
+    throw new Error('Unauthorized to delete this course');
+  }
+
+  await prisma.course.delete({
+    where: { id: courseId },
+  });
+
+  return { message: 'Course deleted successfully' };
+};
+
+module.exports = {
+  createCourse,
+  getAllCourses,
+  getCourseById,
+  getUserCourses,
+  enrollInCourse,
+  updateCourse,
+  deleteCourse,
+};
