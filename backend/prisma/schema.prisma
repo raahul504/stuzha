@@ -1,0 +1,311 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+// ========== USERS & AUTH ==========
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  passwordHash  String   @map("password_hash")
+  firstName     String   @map("first_name")
+  lastName      String   @map("last_name")
+  role          UserRole @default(STUDENT)
+  isActive      Boolean  @default(true) @map("is_active")
+  emailVerified Boolean  @default(false) @map("email_verified")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  refreshTokens       RefreshToken[]
+  passwordResetTokens PasswordResetToken[]
+  enrollments         Enrollment[]
+  videoProgress       VideoProgress[]
+  assessmentAttempts  AssessmentAttempt[]
+  certificates        Certificate[]
+  createdCourses      Course[]
+
+  @@index([email])
+  @@index([role])
+  @@map("users")
+}
+
+enum UserRole {
+  STUDENT
+  INSTRUCTOR
+  ADMIN
+}
+
+model RefreshToken {
+  id        String    @id @default(uuid())
+  userId    String    @map("user_id")
+  tokenHash String    @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  revoked   Boolean   @default(false)
+  revokedAt DateTime? @map("revoked_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tokenHash])
+  @@index([expiresAt])
+  @@map("refresh_tokens")
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid())
+  userId    String    @map("user_id")
+  tokenHash String    @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  used      Boolean   @default(false)
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tokenHash])
+  @@map("password_reset_tokens")
+}
+
+// ========== COURSES & CONTENT ==========
+
+model Course {
+  id                     String          @id @default(uuid())
+  title                  String
+  slug                   String          @unique
+  description            String          @db.Text
+  shortDescription       String?         @map("short_description") @db.VarChar(500)
+  thumbnailUrl           String?         @map("thumbnail_url")
+  price                  Decimal         @db.Decimal(10, 2)
+  currency               String          @default("USD") @db.VarChar(3)
+  difficultyLevel        DifficultyLevel? @map("difficulty_level")
+  estimatedDurationHours Int?            @map("estimated_duration_hours")
+  isPublished            Boolean         @default(false) @map("is_published")
+  createdBy              String?         @map("created_by")
+  createdAt              DateTime        @default(now()) @map("created_at")
+  updatedAt              DateTime        @updatedAt @map("updated_at")
+
+  creator      User?         @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+  modules      Module[]
+  enrollments  Enrollment[]
+  certificates Certificate[]
+
+  @@index([slug])
+  @@index([isPublished])
+  @@index([price])
+  @@index([createdBy])
+  @@map("courses")
+}
+
+enum DifficultyLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+model Module {
+  id          String   @id @default(uuid())
+  courseId    String   @map("course_id")
+  title       String
+  description String?  @db.Text
+  orderIndex  Int      @map("order_index")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  course       Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  contentItems ContentItem[]
+
+  @@unique([courseId, orderIndex])
+  @@index([courseId])
+  @@map("modules")
+}
+
+model ContentItem {
+  id          String      @id @default(uuid())
+  moduleId    String      @map("module_id")
+  contentType ContentType @map("content_type")
+  title       String
+  description String?     @db.Text
+  orderIndex  Int         @map("order_index")
+  isPreview   Boolean     @default(false) @map("is_preview")
+
+  // Video fields
+  videoUrl             String? @map("video_url")
+  videoDurationSeconds Int?    @map("video_duration_seconds")
+  videoSizeBytes       BigInt? @map("video_size_bytes")
+
+  // Article fields
+  articleContent String? @map("article_content") @db.Text
+  articleFileUrl String? @map("article_file_url")
+
+  // Assessment fields
+  assessmentPassPercentage   Int? @map("assessment_pass_percentage")
+  assessmentTimeLimitMinutes Int? @map("assessment_time_limit_minutes")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  module             Module              @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  questions          AssessmentQuestion[]
+  videoProgress      VideoProgress[]
+  assessmentAttempts AssessmentAttempt[]
+
+  @@unique([moduleId, orderIndex])
+  @@index([moduleId])
+  @@index([contentType])
+  @@map("content_items")
+}
+
+enum ContentType {
+  VIDEO
+  ARTICLE
+  ASSESSMENT
+}
+
+model AssessmentQuestion {
+  id           String       @id @default(uuid())
+  contentItemId String       @map("content_item_id")
+  questionType QuestionType @map("question_type")
+  questionText String       @map("question_text") @db.Text
+  orderIndex   Int          @map("order_index")
+
+  // MCQ options
+  optionA String? @map("option_a")
+  optionB String? @map("option_b")
+  optionC String? @map("option_c")
+  optionD String? @map("option_d")
+
+  correctAnswer String  @map("correct_answer")
+  explanation   String? @db.Text
+  points        Int     @default(1)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  contentItem ContentItem @relation(fields: [contentItemId], references: [id], onDelete: Cascade)
+
+  @@unique([contentItemId, orderIndex])
+  @@index([contentItemId])
+  @@map("assessment_questions")
+}
+
+enum QuestionType {
+  MCQ
+  TRUE_FALSE
+}
+
+// ========== ENROLLMENTS & PROGRESS ==========
+
+model Enrollment {
+  id                 String    @id @default(uuid())
+  userId             String    @map("user_id")
+  courseId           String    @map("course_id")
+  enrolledAt         DateTime  @default(now()) @map("enrolled_at")
+  progressPercentage Decimal   @default(0) @map("progress_percentage") @db.Decimal(5, 2)
+  completed          Boolean   @default(false)
+  completedAt        DateTime? @map("completed_at")
+
+  // Payment fields
+  paymentAmount        Decimal? @map("payment_amount") @db.Decimal(10, 2)
+  paymentCurrency      String?  @map("payment_currency") @db.VarChar(3)
+  paymentTransactionId String?  @map("payment_transaction_id")
+  paymentStatus        String?  @map("payment_status")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course             Course              @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  videoProgress      VideoProgress[]
+  assessmentAttempts AssessmentAttempt[]
+  certificates       Certificate[]
+
+  @@unique([userId, courseId])
+  @@index([userId])
+  @@index([courseId])
+  @@index([progressPercentage])
+  @@map("enrollments")
+}
+
+model VideoProgress {
+  id                  String    @id @default(uuid())
+  userId              String    @map("user_id")
+  contentItemId       String    @map("content_item_id")
+  enrollmentId        String    @map("enrollment_id")
+  lastPositionSeconds Int       @default(0) @map("last_position_seconds")
+  durationSeconds     Int       @map("duration_seconds")
+  completed           Boolean   @default(false)
+  completedAt         DateTime? @map("completed_at")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contentItem ContentItem @relation(fields: [contentItemId], references: [id], onDelete: Cascade)
+  enrollment  Enrollment  @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, contentItemId])
+  @@index([userId])
+  @@index([contentItemId])
+  @@index([enrollmentId])
+  @@map("video_progress")
+}
+
+model AssessmentAttempt {
+  id               String   @id @default(uuid())
+  userId           String   @map("user_id")
+  contentItemId    String   @map("content_item_id")
+  enrollmentId     String   @map("enrollment_id")
+  score            Decimal  @db.Decimal(5, 2)
+  passed           Boolean
+  answersJson      Json     @map("answers_json")
+  startedAt        DateTime @map("started_at")
+  submittedAt      DateTime @default(now()) @map("submitted_at")
+  timeTakenSeconds Int?     @map("time_taken_seconds")
+  attemptNumber    Int      @map("attempt_number")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contentItem ContentItem @relation(fields: [contentItemId], references: [id], onDelete: Cascade)
+  enrollment  Enrollment  @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([contentItemId])
+  @@index([enrollmentId])
+  @@index([passed])
+  @@map("assessment_attempts")
+}
+
+model Certificate {
+  id                 String   @id @default(uuid())
+  userId             String   @map("user_id")
+  courseId           String   @map("course_id")
+  enrollmentId       String   @map("enrollment_id")
+  certificateNumber  String   @unique @map("certificate_number")
+  fileUrl            String   @map("file_url")
+  issuedAt           DateTime @default(now()) @map("issued_at")
+  verificationHash   String   @unique @map("verification_hash")
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course     Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  enrollment Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@index([userId])
+  @@index([courseId])
+  @@index([certificateNumber])
+  @@index([verificationHash])
+  @@map("certificates")
+}
