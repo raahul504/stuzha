@@ -6,6 +6,11 @@ require('dotenv').config();
 
 const authRoutes = require('./routes/authRoutes');
 const courseRoutes = require('./routes/courseRoutes');
+const moduleRoutes = require('./routes/moduleRoutes');
+const contentRoutes = require('./routes/contentRoutes');
+const progressRoutes = require('./routes/progressRoutes');
+const videoRoutes = require('./routes/videoRoutes');
+const certificateRoutes = require('./routes/certificateRoutes');
 
 const app = express();
 
@@ -32,6 +37,11 @@ app.get('/health', (req, res) => {
 // Auth routes
 app.use('/api/auth', authRoutes);
 app.use('/api/courses', courseRoutes);
+app.use('/api', moduleRoutes);
+app.use('/api', contentRoutes);
+app.use('/api', progressRoutes);
+app.use('/api', videoRoutes);
+app.use('/api', certificateRoutes);
 
 // ========== ERROR HANDLING ==========
 app.use((err, req, res, next) => {
