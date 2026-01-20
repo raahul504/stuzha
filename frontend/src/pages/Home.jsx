@@ -39,10 +39,24 @@ export default function Home() {
     <div className="min-h-screen bg-gray-100">
       <nav className="bg-white shadow-md">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-xl font-bold">LMS Platform</h1>
+          <h1 className="text-xl font-bold cursor-pointer" onClick={() => navigate('/')}>
+            LMS Platform
+          </h1>
           <div className="flex items-center space-x-4">
+            <button
+              onClick={() => navigate('/courses')}
+              className="text-gray-700 hover:text-blue-600"
+            >
+              Courses
+            </button>
+            <button
+              onClick={() => navigate('/my-courses')}
+              className="text-gray-700 hover:text-blue-600"
+            >
+              My Courses
+            </button>
             <span className="text-gray-700">
-              Welcome, {user.firstName} {user.lastName}
+              {user.firstName} {user.lastName}
             </span>
             <button
               onClick={handleLogout}
@@ -60,7 +74,21 @@ export default function Home() {
           <div className="space-y-2">
             <p><strong>Email:</strong> {user.email}</p>
             <p><strong>Role:</strong> {user.role}</p>
-            <p><strong>User ID:</strong> {user.id}</p>
+          </div>
+
+          <div className="mt-6 space-x-4">
+            <button
+              onClick={() => navigate('/courses')}
+              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
+            >
+              Browse All Courses
+            </button>
+            <button
+              onClick={() => navigate('/my-courses')}
+              className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700"
+            >
+              My Enrolled Courses
+            </button>
           </div>
         </div>
       </div>
