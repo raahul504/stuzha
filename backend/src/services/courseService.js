@@ -143,12 +143,7 @@ const getCourseById = async (courseId, userId = null) => {
           articleContent: null,
           articleFileUrl: null,
           questions: item.contentType === 'ASSESSMENT' 
-            ? item.questions.map(q => ({ 
-                id: q.id, 
-                questionType: q.questionType,
-                // Don't show actual questions
-              }))
-            : [],
+            ? item.questions : [],
         })),
       })),
     };

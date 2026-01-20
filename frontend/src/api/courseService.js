@@ -15,7 +15,7 @@ export const courseService = {
 
   // Get user's enrolled courses
   getMyCourses: async () => {
-    const response = await apiClient.get('/courses/user/my-courses');
+    const response = await apiClient.get('/courses/my-courses');
     return response.data;
   },
 
