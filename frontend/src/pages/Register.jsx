@@ -39,11 +39,7 @@ export default function Register() {
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
         
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            {error}
-          </div>
-        )}
+        {error && <ErrorMessage message={error} onClose={() => setError('')} />}
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">

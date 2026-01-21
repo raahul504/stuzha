@@ -27,13 +27,14 @@ model User {
   updatedAt     DateTime @updatedAt @map("updated_at")
 
   // Relations
-  refreshTokens       RefreshToken[]
-  passwordResetTokens PasswordResetToken[]
-  enrollments         Enrollment[]
-  videoProgress       VideoProgress[]
-  assessmentAttempts  AssessmentAttempt[]
-  certificates        Certificate[]
-  createdCourses      Course[]
+  refreshTokens           RefreshToken[]
+  passwordResetTokens     PasswordResetToken[]
+  enrollments             Enrollment[]
+  videoProgress           VideoProgress[]
+  assessmentAttempts      AssessmentAttempt[]
+  certificates            Certificate[]
+  createdCourses          Course[]
+  emailVerificationTokens EmailVerificationToken[]
 
   @@index([email])
   @@index([role])
@@ -308,4 +309,20 @@ model Certificate {
   @@index([certificateNumber])
   @@index([verificationHash])
   @@map("certificates")
+}
+
+model EmailVerificationToken {
+  id        String    @id @default(uuid())
+  userId    String    @map("user_id")
+  tokenHash String    @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  used      Boolean   @default(false)
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tokenHash])
+  @@map("email_verification_tokens")
 }

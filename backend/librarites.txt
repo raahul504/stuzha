@@ -1,0 +1,19 @@
+backend@1.0.0 C:\Users\raahul\lms\backend
+├── @prisma/adapter-pg@7.2.0
+├── @prisma/client@7.2.0
+├── bcrypt@6.0.0
+├── cookie-parser@1.4.7
+├── cors@2.8.5
+├── dotenv@17.2.3
+├── express-rate-limit@8.2.1
+├── express@5.2.1
+├── helmet@8.1.0
+├── joi@18.0.2
+├── jsonwebtoken@9.0.3
+├── multer@2.0.2
+├── nodemailer@7.0.12
+├── nodemon@3.1.11
+├── pdfkit@0.17.2
+├── pg@8.17.1
+└── prisma@7.2.0
+

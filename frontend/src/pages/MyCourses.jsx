@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { courseService } from '../api/courseService';
+import Navbar from '../components/Navbar';
 
 export default function MyCourses() {
   const [courses, setCourses] = useState([]);
@@ -24,14 +25,15 @@ export default function MyCourses() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl">Loading your courses...</div>
-      </div>
+        <div className="min-h-screen flex items-center justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gray-100">
+    <Navbar />
       <div className="bg-white shadow-md">
         <div className="container mx-auto px-4 py-6">
           <h1 className="text-3xl font-bold">My Courses</h1>

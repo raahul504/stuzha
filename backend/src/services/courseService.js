@@ -84,8 +84,13 @@ const getCourseById = async (courseId, userId = null) => {
                   id: true,
                   questionType: true,
                   questionText: true,
+                  optionA: true,
+                  optionB: true,
+                  optionC: true,
+                  optionD: true,
                   orderIndex: true,
-                  // Don't include answers in preview
+                  points: true,
+                  // Don't include correctAnswer and explanation in student view
                 },
                 orderBy: {
                   orderIndex: 'asc',
@@ -110,6 +115,9 @@ const getCourseById = async (courseId, userId = null) => {
 
   // Check if user has purchased
   let enrollment = null;
+  let videoProgressMap = {};
+  let assessmentAttemptsMap = {};
+  
   if (userId) {
     enrollment = await prisma.enrollment.findUnique({
       where: {
@@ -118,7 +126,34 @@ const getCourseById = async (courseId, userId = null) => {
           courseId,
         },
       },
+      include: {
+        videoProgress: true,
+        assessmentAttempts: {
+          orderBy: { createdAt: 'desc' },
+        },
+      },
     });
+    
+    // Create a map of contentItemId -> progress for easy lookup
+    if (enrollment) {
+      videoProgressMap = enrollment.videoProgress.reduce((acc, vp) => {
+        acc[vp.contentItemId] = {
+          lastPositionSeconds: vp.lastPositionSeconds,
+          completed: vp.completed,
+          completedAt: vp.completedAt,
+        };
+        return acc;
+      }, {});
+
+      // Create a map of contentItemId -> attempts for assessments
+      assessmentAttemptsMap = enrollment.assessmentAttempts.reduce((acc, attempt) => {
+        if (!acc[attempt.contentItemId]) {
+          acc[attempt.contentItemId] = [];
+        }
+        acc[attempt.contentItemId].push(attempt);
+        return acc;
+      }, {});
+    }
   }
 
   const isPurchased = !!enrollment;
@@ -157,6 +192,34 @@ const getCourseById = async (courseId, userId = null) => {
       progressPercentage: enrollment.progressPercentage.toNumber(),
       completed: enrollment.completed,
     },
+    modules: course.modules.map((module) => ({
+      ...module,
+      contentItems: module.contentItems.map((item) => {
+        const baseItem = { ...item };
+        
+        // Add video progress if it's a video
+        if (item.contentType === 'VIDEO' && videoProgressMap[item.id]) {
+          baseItem.lastPositionSeconds = videoProgressMap[item.id].lastPositionSeconds;
+          baseItem.videoCompleted = videoProgressMap[item.id].completed;
+        }
+        
+        // Add assessment attempts if it's an assessment
+        if (item.contentType === 'ASSESSMENT' && assessmentAttemptsMap[item.id]) {
+          const attempts = assessmentAttemptsMap[item.id];
+          const latestAttempt = attempts[0]; // Already sorted by createdAt desc
+          const bestAttempt = attempts.reduce((best, current) => 
+            current.score.toNumber() > best.score.toNumber() ? current : best
+          , attempts[0]);
+          
+          baseItem.latestScore = latestAttempt.score.toNumber();
+          baseItem.bestScore = bestAttempt.score.toNumber();
+          baseItem.attemptCount = attempts.length;
+          baseItem.hasPassed = attempts.some(a => a.passed);
+        }
+        
+        return baseItem;
+      }),
+    })),
   };
 };
 

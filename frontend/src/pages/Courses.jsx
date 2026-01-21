@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { courseService } from '../api/courseService';
 import { useAuth } from '../context/AuthContext';
+import Navbar from '../components/Navbar';
 
 export default function Courses() {
   const [courses, setCourses] = useState([]);
@@ -31,14 +32,15 @@ export default function Courses() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl">Loading courses...</div>
-      </div>
+        <div className="min-h-screen flex items-center justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gray-100">
+    <Navbar />
       {/* Header */}
       <div className="bg-white shadow-md">
         <div className="container mx-auto px-4 py-6">
@@ -49,12 +51,8 @@ export default function Courses() {
 
       {/* Courses Grid */}
       <div className="container mx-auto px-4 py-8">
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-            {error}
-          </div>
-        )}
-
+        {error && <ErrorMessage message={error} onClose={() => setError('')} />}
+            
         {courses.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-600 text-lg">No courses available yet.</p>

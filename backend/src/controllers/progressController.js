@@ -85,12 +85,6 @@ const submitAssessment = async (req, res, next) => {
       },
     });
   } catch (error) {
-    if (error.message === 'Assessment already passed') {
-      return res.status(400).json({
-          error: { message: error.message },
-      });
-    }
-
     if (
       error.message === 'Invalid assessment content item' ||
       error.message === 'Not enrolled in this course'

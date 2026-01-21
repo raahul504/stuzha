@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { courseService } from '../api/courseService';
 import { progressService } from '../api/progressService';
+import { certificateService } from '../api/certificateService';
 
 export default function Learn() {
   const { id } = useParams();
@@ -88,6 +89,25 @@ export default function Learn() {
           </div>
         </div>
 
+        {course.enrollment?.completed && (
+            <div className="mt-4 p-3 bg-green-100 rounded">
+                <p className="text-sm text-green-800 font-semibold mb-2">🎉 Course Completed!</p>
+                <button
+                onClick={async () => {
+                    try {
+                    await certificateService.generateCertificate(id);
+                    window.open(`http://localhost:5000/api/certificates/download/CERT-...pdf`, '_blank');
+                    } catch (err) {
+                    alert('Certificate generation failed');
+                    }
+                }}
+                className="w-full bg-green-600 text-white py-2 rounded text-sm hover:bg-green-700"
+                >
+                Download Certificate
+                </button>
+            </div>
+            )}
+
         {/* Modules & Content */}
         <div className="p-4">
           {course.modules.map((module, idx) => (
@@ -155,23 +175,61 @@ function ContentViewer({ content, onVideoProgress, onAssessmentSubmit }) {
 // Video Player Component
 function VideoPlayer({ content, onProgress }) {
   const [videoUrl, setVideoUrl] = useState('');
+  const [error, setError] = useState(false);
+  const [lastSavedTime, setLastSavedTime] = useState(0);
 
   useEffect(() => {
+    if (!content.videoUrl) {
+      setError(true);
+      return;
+    }
     fetch(`http://localhost:5000${content.videoUrl}`, { credentials: 'include' })
       .then(res => res.blob())
-      .then(blob => setVideoUrl(URL.createObjectURL(blob)));
+      .then(blob => setVideoUrl(URL.createObjectURL(blob)))
+      .catch(() => setError(true));
   }, [content.id]);
+
+  // Set initial video position from saved progress
+  const handleLoadedMetadata = (e) => {
+    const video = e.target;
+    
+    // If video is already marked as completed, start from beginning
+    if (content.videoCompleted) {
+      return; // Don't seek, let it play from start
+    }
+    
+    if (content.lastPositionSeconds && content.lastPositionSeconds > 0) {
+      // Don't seek if position is too close to the end (within last 5 seconds)
+      const maxSeekPosition = video.duration - 5;
+      
+      if (content.lastPositionSeconds < maxSeekPosition) {
+        video.currentTime = content.lastPositionSeconds;
+      }
+    }
+  };
+
+  if (error || !content.videoUrl) {
+    return (
+      <div className="bg-yellow-100 border border-yellow-400 p-6 rounded">
+        <p className="text-yellow-800">⚠️ No video available for this lesson yet.</p>
+      </div>
+    );
+  }
 
   const handleTimeUpdate = (e) => {
     const video = e.target;
-    if (Math.floor(video.currentTime) % 5 === 0) {
+    const currentTime = Math.floor(video.currentTime);
+    
+    // Save progress every 5 seconds
+    if (currentTime - lastSavedTime >= 5) {
       const completed = video.currentTime / video.duration > 0.9;
-      onProgress(content.id, Math.floor(video.currentTime), completed);
+      onProgress(content.id, currentTime, completed);
+      setLastSavedTime(currentTime);
     }
   };
 
   const handleEnded = () => {
-    onProgress(content.id, content.videoDurationSeconds, true);
+    onProgress(content.id, content.videoDurationSeconds || Math.floor(content.videoDurationSeconds), true);
   };
 
   return (
@@ -186,10 +244,9 @@ function VideoPlayer({ content, onProgress }) {
           className="w-full max-w-4xl rounded-lg shadow-lg"
           onTimeUpdate={handleTimeUpdate}
           onEnded={handleEnded}
+          onLoadedMetadata={handleLoadedMetadata}
           src={videoUrl}
-        >
-          Your browser does not support video playback.
-        </video>
+        />
       ) : (
         <div>Loading video...</div>
       )}
@@ -226,6 +283,7 @@ function AssessmentViewer({ content, onSubmit }) {
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [result, setResult] = useState(null);
+  const [showQuestions, setShowQuestions] = useState(!content.hasPassed);
 
   const handleAnswerChange = (questionId, answer) => {
     setAnswers({ ...answers, [questionId]: answer });
@@ -235,6 +293,14 @@ function AssessmentViewer({ content, onSubmit }) {
     const result = await onSubmit(content.id, answers);
     setResult(result);
     setSubmitted(true);
+    setShowQuestions(false);
+  };
+
+  const handleRetake = () => {
+    setAnswers({});
+    setSubmitted(false);
+    setResult(null);
+    setShowQuestions(true);
   };
 
   return (
@@ -242,7 +308,42 @@ function AssessmentViewer({ content, onSubmit }) {
       <h1 className="text-3xl font-bold mb-4">{content.title}</h1>
       {content.description && <p className="text-gray-600 mb-6">{content.description}</p>}
 
-      {submitted && result ? (
+      {/* Show score summary if assessment has been attempted */}
+      {content.attemptCount > 0 && !showQuestions && (
+        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <h2 className="text-2xl font-bold mb-4">Assessment Summary</h2>
+          
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="bg-blue-50 p-4 rounded">
+              <p className="text-sm text-gray-600">Latest Score</p>
+              <p className="text-3xl font-bold text-blue-600">{content.latestScore.toFixed(0)}%</p>
+            </div>
+            <div className="bg-green-50 p-4 rounded">
+              <p className="text-sm text-gray-600">Best Score</p>
+              <p className="text-3xl font-bold text-green-600">{content.bestScore.toFixed(0)}%</p>
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <p className="text-sm text-gray-600">Total Attempts: <span className="font-semibold">{content.attemptCount}</span></p>
+            <p className="text-sm text-gray-600">Status: 
+              <span className={`font-semibold ml-2 ${content.hasPassed ? 'text-green-600' : 'text-orange-600'}`}>
+                {content.hasPassed ? '✓ Passed' : 'Not Passed'}
+              </span>
+            </p>
+          </div>
+
+          <button
+            onClick={handleRetake}
+            className="w-full bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700"
+          >
+            Retake Assessment
+          </button>
+        </div>
+      )}
+
+      {/* Show result after submission */}
+      {submitted && result && (
         <div className={`p-6 rounded-lg mb-6 ${result.result.passed ? 'bg-green-100' : 'bg-red-100'}`}>
           <h2 className="text-xl font-bold mb-2">
             {result.result.passed ? '✅ Passed!' : '❌ Not Passed'}
@@ -250,13 +351,16 @@ function AssessmentViewer({ content, onSubmit }) {
           <p>Score: {result.result.score.toFixed(0)}%</p>
           <p>Correct: {result.result.correctCount}/{result.result.totalQuestions}</p>
           <button
-            onClick={() => { setSubmitted(false); setAnswers({}); setResult(null); }}
-            className="mt-4 bg-blue-600 text-white px-4 py-2 rounded"
+            onClick={handleRetake}
+            className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
           >
             Try Again
           </button>
         </div>
-      ) : (
+      )}
+
+      {/* Show questions */}
+      {showQuestions && (
         <div className="bg-white rounded-lg shadow-md p-8">
           {content.questions?.map((q, idx) => (
             <div key={q.id} className="mb-6">

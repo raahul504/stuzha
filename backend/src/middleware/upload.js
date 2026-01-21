@@ -61,13 +61,13 @@ const articleFilter = (req, file, cb) => {
 // Upload instances
 const uploadVideo = multer({
   storage: videoStorage,
-  limits: { fileSize: 2 * 1024 * 1024 * 1024 }, // 2GB limit
+  limits: { fileSize: 10 * 1024 * 1024 * 1024 }, // 10GB limit
   fileFilter: videoFilter,
 }).single('video');
 
 const uploadArticle = multer({
   storage: articleStorage,
-  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit
+  limits: { fileSize: 100 * 1024 * 1024 }, // 100MB limit
   fileFilter: articleFilter,
 }).single('article');
 

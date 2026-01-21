@@ -1,14 +1,27 @@
 const prisma = require('../config/database');
 
+const checkPermission = async (userId, contentItemId) => {
+  const contentItem = await prisma.contentItem.findUnique({
+    where: { id: contentItemId },
+    include: { module: { include: { course: true } } },
+  });
+
+  if (!contentItem) throw new Error('Content item not found');
+
+  const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
+  
+  if (user.role === 'ADMIN' || user.role === 'INSTRUCTOR') return contentItem;
+  if (contentItem.module.course.createdBy === userId) return contentItem;
+  
+  throw new Error('Unauthorized');
+};
+
 /**
  * Add question to assessment
  */
 const addQuestion = async (contentItemId, questionData, userId) => {
   // Verify content item is an assessment and user has permission
-  const contentItem = await prisma.contentItem.findUnique({
-    where: { id: contentItemId },
-    include: { module: { include: { course: true } } },
-  });
+  const contentItem = await checkPermission(userId, contentItemId);
 
   if (!contentItem) {
     throw new Error('Content item not found');
@@ -82,19 +95,11 @@ const getQuestionsByAssessment = async (contentItemId) => {
 const updateQuestion = async (questionId, updateData, userId) => {
   const question = await prisma.assessmentQuestion.findUnique({
     where: { id: questionId },
-    include: {
-      contentItem: {
-        include: { module: { include: { course: true } } },
-      },
-    },
+    include: { contentItem: true },
   });
 
   if (!question) {
     throw new Error('Question not found');
-  }
-
-  if (question.contentItem.module.course.createdBy !== userId) {
-    throw new Error('Unauthorized to modify this question');
   }
 
   const updated = await prisma.assessmentQuestion.update({
@@ -111,19 +116,11 @@ const updateQuestion = async (questionId, updateData, userId) => {
 const deleteQuestion = async (questionId, userId) => {
   const question = await prisma.assessmentQuestion.findUnique({
     where: { id: questionId },
-    include: {
-      contentItem: {
-        include: { module: { include: { course: true } } },
-      },
-    },
+    include: { contentItem: true } ,
   });
 
   if (!question) {
     throw new Error('Question not found');
-  }
-
-  if (question.contentItem.module.course.createdBy !== userId) {
-    throw new Error('Unauthorized to delete this question');
   }
 
   await prisma.assessmentQuestion.delete({

@@ -26,6 +26,11 @@ export const adminService = {
     return response.data;
   },
 
+  updateModule: async (moduleId, data) => {
+    const response = await apiClient.put(`/modules/${moduleId}`, data);
+    return response.data;
+  },
+
   deleteModule: async (moduleId) => {
     const response = await apiClient.delete(`/modules/${moduleId}`);
     return response.data;
@@ -54,6 +59,16 @@ export const adminService = {
 
   deleteContent: async (contentId) => {
     const response = await apiClient.delete(`/content/${contentId}`);
+    return response.data;
+  },
+
+  getQuestions: async (contentId) => {
+    const response = await apiClient.get(`/content/${contentId}/questions`);
+    return response.data;
+  },
+
+  addQuestion: async (contentId, data) => {
+    const response = await apiClient.post(`/content/${contentId}/questions`, data);
     return response.data;
   },
 };

@@ -29,6 +29,21 @@ const updateVideoProgress = async (userId, contentItemId, progressData) => {
 
   const { lastPositionSeconds, completed } = progressData;
 
+  // Check if video is already completed
+  const existingProgress = await prisma.videoProgress.findUnique({
+    where: {
+      userId_contentItemId: {
+        userId,
+        contentItemId,
+      },
+    },
+  });
+
+  // If video is already completed, don't update progress (allow rewatching without affecting completion)
+  if (existingProgress && existingProgress.completed) {
+    return existingProgress;
+  }
+
   // Update or create video progress
   const videoProgress = await prisma.videoProgress.upsert({
     where: {
@@ -53,8 +68,10 @@ const updateVideoProgress = async (userId, contentItemId, progressData) => {
     },
   });
 
-  // Recalculate course progress
-  await recalculateCourseProgress(enrollment.id);
+  // Recalculate course progress only if this is a new completion
+  if (completed && !existingProgress?.completed) {
+    await recalculateCourseProgress(enrollment.id);
+  }
 
   return videoProgress;
 };
@@ -88,15 +105,8 @@ const submitAssessment = async (userId, contentItemId, answers) => {
   if (!enrollment) {
     throw new Error('Not enrolled in this course');
   }
-  // Prevent retake if already passed
-  const latestAttempt = await prisma.assessmentAttempt.findFirst({
-    where: { userId, contentItemId },
-    orderBy: { createdAt: 'desc' },
-  });
 
-  if (latestAttempt?.passed) {
-    throw new Error('Assessment already passed');
-  }
+  // Allow retakes - removed the restriction on retaking passed assessments
 
   // Calculate score
   let correctCount = 0;
@@ -140,8 +150,19 @@ const submitAssessment = async (userId, contentItemId, answers) => {
     },
   });
 
-  // Recalculate course progress
-  await recalculateCourseProgress(enrollment.id);
+  // Only recalculate course progress if this is the first passing attempt
+  const hadPassedBefore = await prisma.assessmentAttempt.findFirst({
+    where: {
+      userId,
+      contentItemId,
+      passed: true,
+      attemptNumber: { lt: attemptNumber },
+    },
+  });
+
+  if (passed && !hadPassedBefore) {
+    await recalculateCourseProgress(enrollment.id);
+  }
 
   return {
     ...attempt,
@@ -219,6 +240,7 @@ const recalculateCourseProgress = async (enrollmentId) => {
 
   const progressPercentage = totalWeight > 0 ? (completedWeight / totalWeight) * 100 : 0;
   const completed = progressPercentage >= 100;
+  const wasCompleted = enrollment.completed;
 
   // Update enrollment
   await prisma.enrollment.update({
@@ -229,6 +251,17 @@ const recalculateCourseProgress = async (enrollmentId) => {
       completedAt: completed ? new Date() : null,
     },
   });
+
+  // Auto-generate certificate if just completed
+  if (completed && !wasCompleted) {
+    try {
+      const certificateService = require('./certificateService');
+      await certificateService.generateCertificate(enrollment.userId, enrollment.courseId);
+    } catch (error) {
+      console.error('Failed to auto-generate certificate:', error);
+      // Don't throw - certificate can be generated later manually
+    }
+  }
 
   return { progressPercentage, completed };
 };
