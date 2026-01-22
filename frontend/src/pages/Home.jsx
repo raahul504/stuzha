@@ -58,6 +58,9 @@ export default function Home() {
             <span className="text-gray-700">
               {user.firstName} {user.lastName}
             </span>
+            <button onClick={() => navigate('/profile')} className="text-gray-700 hover:text-blue-600">
+              Profile
+            </button>
             <button
               onClick={handleLogout}
               className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"

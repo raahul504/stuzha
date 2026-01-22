@@ -18,7 +18,7 @@ export default function Courses() {
   const fetchCourses = async () => {
     try {
       const data = await courseService.getAllCourses();
-      setCourses(data.courses);
+      setCourses(data.courses.filter(c => c.isPublished));
     } catch (err) {
       setError('Failed to load courses');
     } finally {

@@ -39,11 +39,31 @@ export default function ModuleList({ modules, courseId, onUpdate }) {
     }
   };
 
+  const handleMoveModule = async (index, direction) => {
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    if (newIndex < 0 || newIndex >= modules.length) return;
+
+    const reordered = [...modules];
+    [reordered[index], reordered[newIndex]] = [reordered[newIndex], reordered[index]];
+
+    const orders = reordered.map((mod, idx) => ({
+      moduleId: mod.id,
+      orderIndex: idx,
+    }));
+
+    try {
+      await adminService.reorderModules(courseId, orders);
+      onUpdate();
+    } catch (err) {
+      alert('Failed to reorder');
+    }
+  };
+
   return (
     <div className="space-y-4">
       <h2 className="text-2xl font-bold">Course Modules</h2>
       
-      {modules.map((module) => (
+      {modules.map((module, index) => (
         <div key={module.id} className="bg-gray-50 rounded-lg">
           {editingModule === module.id ? (
             <div className="p-4 space-y-2">
@@ -64,15 +84,29 @@ export default function ModuleList({ modules, courseId, onUpdate }) {
               </div>
             </div>
           ) : (
-            <div className="p-4 flex justify-between items-center cursor-pointer" onClick={() => toggleModule(module.id)}>
-              <div>
+            <div className="p-4 flex justify-between items-center">
+              <div className="flex-1 cursor-pointer" onClick={() => toggleModule(module.id)}>
                 <h3 className="font-bold">{module.title}</h3>
                 <p className="text-sm text-gray-600">{module.description}</p>
               </div>
               <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => handleMoveModule(index, 'up')}
+                  className="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                  title="Move up"
+                >
+                  ↑
+                </button>
+                <button
+                  onClick={() => handleMoveModule(index, 'down')}
+                  className="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                  title="Move down"
+                >
+                  ↓
+                </button>
                 <button onClick={(e) => { e.stopPropagation(); handleEdit(module); }} className="text-blue-600 hover:underline text-sm">Edit</button>
                 <button onClick={(e) => { e.stopPropagation(); handleDeleteModule(module.id); }} className="text-red-600 hover:underline text-sm">Delete</button>
-                <span>{expandedModule === module.id ? '▲' : '▼'}</span>
+                <span className="cursor-pointer" onClick={() => toggleModule(module.id)}>{expandedModule === module.id ? '▲' : '▼'}</span>
               </div>
             </div>
           )}
@@ -128,6 +162,26 @@ function ContentList({ moduleId, onUpdate }) {
     }
   };
 
+  const handleMoveContent = async (index, direction) => {
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    if (newIndex < 0 || newIndex >= content.length) return;
+
+    const reordered = [...content];
+    [reordered[index], reordered[newIndex]] = [reordered[newIndex], reordered[index]];
+
+    const orders = reordered.map((item, idx) => ({
+      contentId: item.id,
+      orderIndex: idx,
+    }));
+
+    try {
+      await adminService.reorderContent(moduleId, orders);
+      onUpdate();
+    } catch (err) {
+      alert('Failed to reorder');
+    }
+  };
+
   return (
     <div className="mb-4">
       <h4 className="font-semibold mb-2">Content Items</h4>
@@ -135,7 +189,7 @@ function ContentList({ moduleId, onUpdate }) {
         <p className="text-sm text-gray-500">No content yet.</p>
       ) : (
         <ul className="space-y-2">
-          {content.map((item) => (
+          {content.map((item, index) => (
             <li key={item.id}>
               <div className="flex justify-between items-center bg-white p-2 rounded">
                 <span className="text-sm">
@@ -143,7 +197,21 @@ function ContentList({ moduleId, onUpdate }) {
                   {item.contentType === 'ARTICLE' && '📄'} 
                   {item.contentType === 'ASSESSMENT' && '✏️'} {item.title}
                 </span>
-                <div className="space-x-2">
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => handleMoveContent(index, 'up')}
+                    className="px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    title="Move up"
+                  >
+                    ↑
+                  </button>
+                  <button
+                    onClick={() => handleMoveContent(index, 'down')}
+                    className="px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    title="Move down"
+                  >
+                    ↓
+                  </button>
                   {item.contentType === 'ASSESSMENT' && (
                     <button
                       onClick={() => fetchQuestions(item.id)}

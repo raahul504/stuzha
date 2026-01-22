@@ -9,6 +9,10 @@ import MyCourses from './pages/MyCourses';
 import Learn from './pages/Learn';
 import AdminDashboard from './pages/AdminDashboard';
 import CourseEditor from './pages/CourseEditor';
+import VerifyEmail from './pages/VerifyEmail';
+import Profile from './pages/Profile';
+import InstructorDashboard from './pages/IntructorDashboard';
+import InstructorCreateCourse from './pages/InstructorCreateCourse';
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
@@ -34,6 +38,11 @@ function App() {
           <Route path="/learn/:id" element={<ProtectedRoute><Learn /></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
           <Route path="/admin/course/:id" element={<ProtectedRoute><CourseEditor /></ProtectedRoute>} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/instructor" element={<ProtectedRoute><InstructorDashboard /></ProtectedRoute>} />
+          <Route path="/instructor/create-course" element={<ProtectedRoute><InstructorCreateCourse /></ProtectedRoute>} />
+          <Route path="/instructor/course/:id" element={<ProtectedRoute><CourseEditor /></ProtectedRoute>} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

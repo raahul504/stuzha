@@ -25,12 +25,20 @@ export default function Navbar() {
               <button onClick={() => navigate('/my-courses')} className="text-gray-700 hover:text-blue-600">
                 My Courses
               </button>
-              {(user?.role === 'ADMIN' || user?.role === 'INSTRUCTOR') && (
+              {(user?.role === 'ADMIN') && (
                 <button onClick={() => navigate('/admin')} className="text-gray-700 hover:text-blue-600">
                   Admin
                 </button>
               )}
+              {(user?.role === 'INSTRUCTOR') && (
+                <button onClick={() => navigate('/instructor')} className="text-gray-700 hover:text-blue-600">
+                  Instructor
+                </button>
+              )}
               <span className="text-gray-700">{user.firstName}</span>
+              <button onClick={() => navigate('/profile')} className="text-gray-700 hover:text-blue-600">
+                Profile
+              </button>
               <button onClick={handleLogout} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
                 Logout
               </button>

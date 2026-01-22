@@ -35,8 +35,11 @@ export default function CourseEditor() {
     <div className="min-h-screen bg-gray-100">
       <nav className="bg-white shadow-md mb-6">
         <div className="container mx-auto px-4 py-4">
-          <button onClick={() => navigate('/admin')} className="text-blue-600 hover:underline">
-            ← Back to Admin
+          <button onClick={() => {
+            const isInstructor = window.location.pathname.includes('/instructor/');
+            navigate(isInstructor ? '/instructor' : '/admin');
+          }} className="text-blue-600 hover:underline">
+            ← Back to {window.location.pathname.includes('/instructor/') ? 'Instructor' : 'Admin'} Dashboard
           </button>
           <h1 className="text-2xl font-bold mt-2">{course.title}</h1>
         </div>

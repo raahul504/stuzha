@@ -22,9 +22,6 @@ const createCourse = async (courseData, creatorId) => {
  */
 const getAllCourses = async (userId = null) => {
   const courses = await prisma.course.findMany({
-    where: {
-      isPublished: true,
-    },
     include: {
       modules: {
         include: {

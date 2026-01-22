@@ -207,6 +207,28 @@ const getCurrentUser = async (req, res, next) => {
   }
 };
 
+const verifyEmail = async (req, res, next) => {
+  try {
+    const { token } = req.query;
+    
+    if (!token) {
+      return res.status(400).json({
+        error: { message: 'Verification token required' }
+      });
+    }
+
+    const result = await authService.verifyEmail(token);
+    res.json(result);
+  } catch (error) {
+    if (error.message === 'Invalid or expired verification token') {
+      return res.status(400).json({
+        error: { message: error.message }
+      });
+    }
+    next(error);
+  }
+};
+
 module.exports = {
   register,
   login,
@@ -214,5 +236,6 @@ module.exports = {
   logout,
   forgotPassword,
   resetPassword,
-  getCurrentUser
+  getCurrentUser,
+  verifyEmail
 };

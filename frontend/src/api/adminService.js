@@ -16,6 +16,11 @@ export const adminService = {
     return response.data;
   },
 
+  updateCourse: async (courseId, data) => {
+    const response = await apiClient.put(`/courses/${courseId}`, data);
+    return response.data;
+  },
+
   getModules: async (courseId) => {
     const response = await apiClient.get(`/courses/${courseId}/modules`);
     return response.data;
@@ -69,6 +74,16 @@ export const adminService = {
 
   addQuestion: async (contentId, data) => {
     const response = await apiClient.post(`/content/${contentId}/questions`, data);
+    return response.data;
+  },
+
+  reorderModules: async (courseId, orders) => {
+    const response = await apiClient.put(`/courses/${courseId}/modules/reorder`, { orders });
+    return response.data;
+  },
+
+  reorderContent: async (moduleId, orders) => {
+    const response = await apiClient.put(`/modules/${moduleId}/content/reorder`, { orders });
     return response.data;
   },
 };

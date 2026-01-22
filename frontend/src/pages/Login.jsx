@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import ErrorMessage from '../components/ErrorMessage';
 
 export default function Login() {
   const navigate = useNavigate();

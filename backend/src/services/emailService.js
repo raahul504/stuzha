@@ -65,7 +65,32 @@ const sendPasswordResetEmail = async (email, firstName, resetToken) => {
   }
 };
 
+const sendVerificationEmail = async (email, firstName, verificationToken) => {
+  const verifyUrl = `${process.env.CLIENT_URL}/verify-email?token=${verificationToken}`;
+
+  const mailOptions = {
+    from: process.env.EMAIL_FROM,
+    to: email,
+    subject: 'Verify Your Email',
+    html: `
+      <h1>Welcome, ${firstName}!</h1>
+      <p>Please verify your email address by clicking the link below:</p>
+      <a href="${verifyUrl}" style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; display: inline-block; margin: 20px 0;">Verify Email</a>
+      <p>This link will expire in 24 hours.</p>
+      <p>If you didn't create an account, please ignore this email.</p>
+    `
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Verification email sent to ${email}`);
+  } catch (error) {
+    console.error('Error sending verification email:', error);
+  }
+};
+
 module.exports = {
   sendWelcomeEmail,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  sendVerificationEmail
 };
