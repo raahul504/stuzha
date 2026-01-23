@@ -30,21 +30,21 @@ export default function VerifyEmail() {
   }, []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md text-center max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-auth-gradient">
+      <div className="bg-dcs-dark-gray p-12 rounded-[20px] shadow-2xl border border-dcs-purple/20 text-center max-w-md">
         {status === 'verifying' && (
           <div>
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p>Verifying email...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-dcs-purple mx-auto mb-4"></div>
+            <p className="text-white">Verifying email...</p>
           </div>
         )}
         {status === 'success' && (
           <>
-            <div className="text-green-600 text-5xl mb-4">✓</div>
-            <p className="text-green-600 text-xl mb-4">{message}</p>
+            <div className="text-green-400 text-6xl mb-6">✓</div>
+            <p className="text-green-400 text-xl mb-8">{message}</p>
             <button 
               onClick={() => navigate('/login')} 
-              className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
+              className="btn-purple"
             >
               Login
             </button>
@@ -52,11 +52,11 @@ export default function VerifyEmail() {
         )}
         {status === 'error' && (
           <>
-            <div className="text-red-600 text-5xl mb-4">✕</div>
-            <p className="text-red-600 text-xl mb-4">{message}</p>
+            <div className="text-red-400 text-6xl mb-6">✕</div>
+            <p className="text-red-400 text-xl mb-8">{message}</p>
             <button 
               onClick={() => navigate('/register')} 
-              className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
+              className="btn-purple"
             >
               Register Again
             </button>

@@ -80,87 +80,89 @@ export default function Profile() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-dcs-black">
       <Navbar />
-      <div className="container mx-auto px-4 py-8">
+      <div className="pt-32 pb-12 px-8">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl font-bold mb-6">My Profile</h1>
+          <h1 className="text-5xl text-center mb-12 bg-gradient-to-r from-white to-dcs-purple bg-clip-text text-transparent">
+            My Profile
+          </h1>
 
           {/* Tabs */}
-          <div className="bg-white rounded-lg shadow-md">
-            <div className="flex border-b">
+          <div className="card">
+            <div className="flex border-b border-dcs-purple/20">
               <button
                 onClick={() => setActiveTab('info')}
-                className={`px-6 py-3 font-semibold ${
+                className={`px-6 py-3 font-semibold transition-colors ${
                   activeTab === 'info'
-                    ? 'border-b-2 border-blue-600 text-blue-600'
-                    : 'text-gray-600'
+                    ? 'border-b-2 border-dcs-purple text-dcs-purple'
+                    : 'text-dcs-text-gray hover:text-white'
                 }`}
               >
                 Profile Information
               </button>
               <button
                 onClick={() => setActiveTab('password')}
-                className={`px-6 py-3 font-semibold ${
+                className={`px-6 py-3 font-semibold transition-colors ${
                   activeTab === 'password'
-                    ? 'border-b-2 border-blue-600 text-blue-600'
-                    : 'text-gray-600'
+                    ? 'border-b-2 border-dcs-purple text-dcs-purple'
+                    : 'text-dcs-text-gray hover:text-white'
                 }`}
               >
                 Change Password
               </button>
             </div>
 
-            <div className="p-6">
+            <div className="p-8">
 
               {/* Profile Info Tab */}
               {activeTab === 'info' && (
-                <form onSubmit={handleProfileUpdate} className="space-y-4">
+                <form onSubmit={handleProfileUpdate} className="space-y-6">
                   <div>
-                    <label className="block text-gray-700 mb-2">First Name</label>
+                    <label className="block text-dcs-text-gray mb-2 text-sm">First Name</label>
                     <input
                       type="text"
                       value={profileForm.firstName}
                       onChange={(e) =>
                         setProfileForm({ ...profileForm, firstName: e.target.value })
                       }
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="form-input"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-gray-700 mb-2">Last Name</label>
+                    <label className="block text-dcs-text-gray mb-2 text-sm">Last Name</label>
                     <input
                       type="text"
                       value={profileForm.lastName}
                       onChange={(e) =>
                         setProfileForm({ ...profileForm, lastName: e.target.value })
                       }
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="form-input"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-gray-700 mb-2">Email</label>
+                    <label className="block text-dcs-text-gray mb-2 text-sm">Email</label>
                     <input
                       type="email"
                       value={profileForm.email}
                       onChange={(e) =>
                         setProfileForm({ ...profileForm, email: e.target.value })
                       }
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="form-input"
                       required
                     />
                   </div>
 
-                  <div className="bg-gray-50 p-4 rounded">
-                    <p className="text-sm text-gray-600">
-                      <strong>Role:</strong> {user?.role}
+                  <div className="bg-dcs-black p-4 rounded border border-dcs-purple/20">
+                    <p className="text-sm text-dcs-text-gray mb-2">
+                      <strong className="text-white">Role:</strong> {user?.role}
                     </p>
-                    <p className="text-sm text-gray-600">
-                      <strong>Member since:</strong>{' '}
+                    <p className="text-sm text-dcs-text-gray">
+                      <strong className="text-white">Member since:</strong>{' '}
                       {new Date(user?.createdAt).toLocaleDateString()}
                     </p>
                   </div>
@@ -168,7 +170,8 @@ export default function Profile() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
+                    className="w-full py-4 bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo text-white rounded-lg font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{ boxShadow: loading ? 'none' : '0 5px 15px rgba(157, 80, 187, 0.4)' }}
                   >
                     {loading ? 'Updating...' : 'Update Profile'}
                   </button>
@@ -177,44 +180,44 @@ export default function Profile() {
 
               {/* Password Tab */}
               {activeTab === 'password' && (
-                <form onSubmit={handlePasswordChange} className="space-y-4">
+                <form onSubmit={handlePasswordChange} className="space-y-6">
                   <div>
-                    <label className="block text-gray-700 mb-2">Current Password</label>
+                    <label className="block text-dcs-text-gray mb-2 text-sm">Current Password</label>
                     <input
                       type="password"
                       value={passwordForm.currentPassword}
                       onChange={(e) =>
                         setPasswordForm({ ...passwordForm, currentPassword: e.target.value })
                       }
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="form-input"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-gray-700 mb-2">New Password</label>
+                    <label className="block text-dcs-text-gray mb-2 text-sm">New Password</label>
                     <input
                       type="password"
                       value={passwordForm.newPassword}
                       onChange={(e) =>
                         setPasswordForm({ ...passwordForm, newPassword: e.target.value })
                       }
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="form-input"
                       minLength={8}
                       required
                     />
-                    <p className="text-xs text-gray-500 mt-1">Minimum 8 characters</p>
+                    <p className="text-xs text-dcs-text-gray mt-1">Minimum 8 characters</p>
                   </div>
 
                   <div>
-                    <label className="block text-gray-700 mb-2">Confirm New Password</label>
+                    <label className="block text-dcs-text-gray mb-2 text-sm">Confirm New Password</label>
                     <input
                       type="password"
                       value={passwordForm.confirmPassword}
                       onChange={(e) =>
                         setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })
                       }
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="form-input"
                       required
                     />
                   </div>
@@ -222,7 +225,8 @@ export default function Profile() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
+                    className="w-full py-4 bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo text-white rounded-lg font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{ boxShadow: loading ? 'none' : '0 5px 15px rgba(157, 80, 187, 0.4)' }}
                   >
                     {loading ? 'Changing...' : 'Change Password'}
                   </button>

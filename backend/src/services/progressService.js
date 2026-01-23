@@ -54,6 +54,7 @@ const updateVideoProgress = async (userId, contentItemId, progressData) => {
     },
     update: {
       lastPositionSeconds,
+      totalWatchTimeSeconds: totalWatchTimeSeconds || 0,
       completed: completed || false,
       completedAt: completed ? new Date() : null,
     },
@@ -62,6 +63,7 @@ const updateVideoProgress = async (userId, contentItemId, progressData) => {
       contentItemId,
       enrollmentId: enrollment.id,
       lastPositionSeconds,
+      totalWatchTimeSeconds: totalWatchTimeSeconds || 0,
       durationSeconds: contentItem.videoDurationSeconds,
       completed: completed || false,
       completedAt: completed ? new Date() : null,

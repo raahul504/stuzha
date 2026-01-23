@@ -65,72 +65,74 @@ export default function CourseDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-    <Navbar />
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-        <div className="container mx-auto px-4 py-12">
+    <div className="min-h-screen bg-dcs-black">
+      <Navbar />
+      
+      {/* Hero */}
+      <div className="pt-32 pb-16 px-8 bg-gradient-to-br from-[#0a1a2e] to-dcs-black text-center">
+        <div className="max-w-[1200px] mx-auto">
           <button
             onClick={() => navigate('/courses')}
-            className="mb-4 text-white hover:underline"
+            className="mb-6 text-white hover:text-dcs-purple transition-colors"
           >
             ← Back to Courses
           </button>
 
-          <h1 className="text-4xl font-bold mb-4">{course.title}</h1>
-          <p className="text-lg mb-6">{course.shortDescription}</p>
+          <h1 className="text-5xl font-bold mb-4 text-white">{course.title}</h1>
+          <p className="text-lg mb-6 text-dcs-text-gray">{course.shortDescription || course.description}</p>
 
-          <div className="flex items-center space-x-6 text-sm">
+          <div className="flex items-center justify-center gap-6 text-sm">
             {course.difficultyLevel && (
-              <span className="bg-white/20 px-3 py-1 rounded">
+              <span className="bg-dcs-purple/20 text-dcs-purple px-4 py-2 rounded">
                 {course.difficultyLevel}
               </span>
             )}
             {course.estimatedDurationHours && (
-              <span>{course.estimatedDurationHours} hours</span>
+              <span className="text-dcs-text-gray">{course.estimatedDurationHours} hours</span>
             )}
-            <span className="text-2xl font-bold">
-              ${parseFloat(course.price).toFixed(2)}
-            </span>
           </div>
         </div>
       </div>
 
       {/* Content */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="max-w-[1200px] mx-auto px-8 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-[2.5fr_1fr] gap-12">
           {/* Main Content */}
-          <div className="lg:col-span-2">
+          <div>
             {/* Description */}
-            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-              <h2 className="text-2xl font-bold mb-4">About this course</h2>
-              <p className="text-gray-700 whitespace-pre-wrap">{course.description}</p>
+            <div className="card mb-8">
+              <h2 className="text-dcs-purple mb-6 text-2xl font-bold">What you'll learn</h2>
+              <p className="text-dcs-text-gray whitespace-pre-wrap leading-relaxed">{course.description}</p>
             </div>
 
             {/* Course Content */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-2xl font-bold mb-4">Course Content</h2>
+            <div className="card">
+              <h2 className="text-dcs-purple mb-6 text-2xl font-bold">Course Content</h2>
+              <p className="text-dcs-text-gray mb-6">
+                {course.modules.reduce((acc, m) => acc + (m.contentItems?.length || 0), 0)} lectures • 
+                {course.estimatedDurationHours || 'N/A'} hours total content
+              </p>
 
               {course.modules.map((module, index) => (
-                <div key={module.id} className="mb-6">
-                  <h3 className="text-lg font-semibold mb-3">
+                <div key={module.id} className="mb-8 last:mb-0">
+                  <h3 className="text-white text-lg font-semibold mb-3">
                     Module {index + 1}: {module.title}
                   </h3>
                   {module.description && (
-                    <p className="text-gray-600 mb-3">{module.description}</p>
+                    <p className="text-dcs-text-gray mb-4">{module.description}</p>
                   )}
 
-                  <ul className="space-y-2 ml-4">
-                    {module.contentItems.map((item) => (
-                      <li key={item.id} className="flex items-center text-gray-700">
-                        <span className="mr-2">
+                  <ul className="space-y-3 ml-4">
+                    {module.contentItems?.map((item) => (
+                      <li key={item.id} className="flex items-center text-dcs-text-gray">
+                        <span className="mr-3 text-lg">
                           {item.contentType === 'VIDEO' && '🎥'}
                           {item.contentType === 'ARTICLE' && '📄'}
                           {item.contentType === 'ASSESSMENT' && '✏️'}
                         </span>
                         <span>{item.title}</span>
                         {item.isPreview && (
-                          <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                          <span className="ml-3 text-xs bg-dcs-purple/20 text-dcs-purple px-2 py-1 rounded">
                             Preview
                           </span>
                         )}
@@ -143,23 +145,23 @@ export default function CourseDetail() {
           </div>
 
           {/* Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
+          <div>
+            <div className="card border-dcs-purple sticky top-24 text-center">
               {course.isPurchased ? (
                 <div>
-                  <div className="bg-green-100 text-green-800 p-4 rounded mb-4">
+                  <div className="bg-green-900/30 text-green-400 p-4 rounded mb-6 border border-green-500/30">
                     ✓ You're enrolled in this course
                   </div>
 
                   {course.enrollment && (
-                    <div className="mb-4">
-                      <div className="flex justify-between text-sm mb-2">
+                    <div className="mb-6">
+                      <div className="flex justify-between text-sm mb-2 text-dcs-text-gray">
                         <span>Progress</span>
-                        <span>{parseFloat(course.enrollment.progressPercentage).toFixed(0)}%</span>
+                        <span className="text-white">{parseFloat(course.enrollment.progressPercentage).toFixed(0)}%</span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="w-full bg-dcs-black rounded-full h-2">
                         <div
-                          className="bg-green-600 h-2 rounded-full"
+                          className="bg-dcs-purple h-2 rounded-full transition-all"
                           style={{ width: `${course.enrollment.progressPercentage}%` }}
                         />
                       </div>
@@ -168,26 +170,26 @@ export default function CourseDetail() {
 
                   <button
                     onClick={handleStartLearning}
-                    className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 font-semibold"
+                    className="w-full py-4 bg-dcs-purple text-white rounded-full font-bold hover:bg-dcs-dark-purple transition-all"
                   >
                     Continue Learning →
                   </button>
                 </div>
               ) : (
                 <div>
-                  <div className="text-3xl font-bold text-center mb-4">
+                  <div className="text-4xl font-bold mb-6 text-white">
                     ${parseFloat(course.price).toFixed(2)}
                   </div>
 
                   <button
                     onClick={handleEnroll}
                     disabled={enrolling}
-                    className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 font-semibold disabled:bg-gray-400"
+                    className="w-full py-4 bg-dcs-purple text-white rounded-full font-bold hover:bg-dcs-dark-purple transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {enrolling ? 'Enrolling...' : 'Enroll Now'}
                   </button>
 
-                  <p className="text-xs text-gray-500 text-center mt-4">
+                  <p className="text-xs text-dcs-text-gray text-center mt-4">
                     {isAuthenticated ? 'Click to enroll' : 'Login required to enroll'}
                   </p>
                 </div>

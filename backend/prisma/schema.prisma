@@ -247,6 +247,7 @@ model VideoProgress {
   enrollmentId        String    @map("enrollment_id")
   lastPositionSeconds Int       @default(0) @map("last_position_seconds")
   durationSeconds     Int       @map("duration_seconds")
+  totalWatchTimeSeconds Int     @default(0) @map("total_watch_time_seconds")
   completed           Boolean   @default(false)
   completedAt         DateTime? @map("completed_at")
   createdAt           DateTime  @default(now()) @map("created_at")

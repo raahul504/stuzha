@@ -98,24 +98,25 @@ export default function Courses() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-dcs-black">
       <Navbar />
 
       {/* Header */}
-      <div className="bg-white shadow-md">
-        <div className="container mx-auto px-4 py-6">
-          <h1 className="text-3xl font-bold">Available Courses</h1>
-          <p className="text-gray-600 mt-2">Browse and enroll in our courses</p>
+      <div className="pt-32 pb-12 px-8">
+        <div className="max-w-[1400px] mx-auto">
+          <h1 className="text-5xl text-center mb-12 bg-gradient-to-r from-white to-dcs-purple bg-clip-text text-transparent">
+            Explore Our Programs
+          </h1>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="max-w-[1400px] mx-auto" style={{ padding: '4rem 2rem' }}>
         {/* Search & Filters */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div className="card mb-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Search */}
             <div className="md:col-span-2">
-              <label className="block text-gray-700 text-sm font-semibold mb-2">
+              <label className="block text-white text-sm font-semibold mb-2">
                 Search Courses
               </label>
               <input
@@ -123,19 +124,19 @@ export default function Courses() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search by title or description..."
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="form-input"
               />
             </div>
 
             {/* Difficulty Filter */}
             <div>
-              <label className="block text-gray-700 text-sm font-semibold mb-2">
+              <label className="block text-white text-sm font-semibold mb-2">
                 Difficulty
               </label>
               <select
                 value={selectedDifficulty}
                 onChange={(e) => setSelectedDifficulty(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="form-input"
               >
                 <option value="">All Levels</option>
                 <option value="BEGINNER">Beginner</option>
@@ -146,13 +147,13 @@ export default function Courses() {
 
             {/* Price Filter */}
             <div>
-              <label className="block text-gray-700 text-sm font-semibold mb-2">
+              <label className="block text-white text-sm font-semibold mb-2">
                 Price Range
               </label>
               <select
                 value={priceRange}
                 onChange={(e) => setPriceRange(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="form-input"
               >
                 <option value="">All Prices</option>
                 <option value="free">Free</option>
@@ -168,7 +169,7 @@ export default function Courses() {
             <div className="mt-4">
               <button
                 onClick={clearFilters}
-                className="text-blue-600 hover:text-blue-800 text-sm font-semibold"
+                className="text-dcs-purple hover:text-dcs-electric-indigo text-sm font-semibold"
               >
                 Clear all filters
               </button>
@@ -176,13 +177,13 @@ export default function Courses() {
           )}
 
           {/* Results Count */}
-          <div className="mt-4 text-sm text-gray-600">
+          <div className="mt-4 text-sm text-dcs-text-gray">
             Showing {filteredCourses.length} of {courses.length} courses
           </div>
         </div>
 
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          <div className="bg-red-900/30 border border-red-500 text-red-300 px-4 py-3 rounded mb-4">
             {error}
           </div>
         )}
@@ -190,22 +191,38 @@ export default function Courses() {
         {/* Courses Grid */}
         {filteredCourses.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-600 text-lg">
+            <p className="text-dcs-text-gray text-lg">
               {courses.length === 0 
                 ? 'No courses available yet.' 
                 : 'No courses match your filters. Try adjusting your search.'}
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '2.5rem' }}>
             {filteredCourses.map((course) => (
               <div
                 key={course.id}
                 onClick={() => handleCourseClick(course.id)}
-                className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-xl transition-shadow"
+                className="bg-dcs-dark-gray rounded-[20px] overflow-hidden border border-dcs-purple/10 transition-all duration-400 cursor-pointer flex flex-col"
+                style={{ 
+                  textDecoration: 'none'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-15px)';
+                  e.currentTarget.style.borderColor = '#9D50BB';
+                  e.currentTarget.style.boxShadow = '0 20px 40px rgba(157, 80, 187, 0.2)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.borderColor = 'rgba(157, 80, 187, 0.1)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
               >
-                {/* Thumbnail */}
-                <div className="h-48 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+                {/* Banner */}
+                <div 
+                  className="h-[200px] flex items-center justify-center text-2xl font-bold text-white border-b-2 border-dcs-purple"
+                  style={{ background: 'linear-gradient(135deg, #6E48AA, #0A0A0A)' }}
+                >
                   {course.thumbnailUrl ? (
                     <img
                       src={course.thumbnailUrl}
@@ -213,50 +230,34 @@ export default function Courses() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <span className="text-white text-4xl font-bold">
-                      {course.title.charAt(0)}
-                    </span>
+                    <span>{course.title.charAt(0)}</span>
                   )}
                 </div>
 
                 {/* Content */}
-                <div className="p-6">
-                  {/* Purchased Badge */}
-                  {course.isPurchased && (
-                    <span className="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded mb-2">
+                <div className="p-8 flex-grow flex flex-col">
+                  {/* Tag */}
+                  {course.isPurchased ? (
+                    <span className="bg-dcs-purple/20 text-dcs-purple px-3 py-1.5 rounded text-xs font-bold uppercase mb-4 inline-block">
                       Enrolled
                     </span>
-                  )}
+                  ) : course.difficultyLevel ? (
+                    <span className="bg-dcs-purple/20 text-dcs-purple px-3 py-1.5 rounded text-xs font-bold uppercase mb-4 inline-block">
+                      {course.difficultyLevel}
+                    </span>
+                  ) : null}
 
-                  <h3 className="text-xl font-bold mb-2">{course.title}</h3>
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                  <h3 className="text-white text-xl mb-4 font-bold">{course.title}</h3>
+                  <p className="text-dcs-text-gray text-sm mb-6 line-clamp-2 flex-grow">
                     {course.shortDescription || course.description}
                   </p>
 
-                  {/* Meta Info */}
-                  <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                    {course.difficultyLevel && (
-                      <span className="capitalize">{course.difficultyLevel.toLowerCase()}</span>
-                    )}
-                    {course.estimatedDurationHours && (
-                      <span>{course.estimatedDurationHours}h</span>
-                    )}
-                  </div>
-
-                  {/* Price */}
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl font-bold text-blue-600">
+                  {/* Footer */}
+                  <div className="pt-6 border-t border-white/5 flex justify-between items-center mt-auto">
+                    <span className="text-dcs-purple font-bold text-xl">
                       ${parseFloat(course.price).toFixed(2)}
                     </span>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleCourseClick(course.id);
-                      }}
-                      className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                    >
-                      View Details
-                    </button>
+                    <span className="text-white text-sm">View Details →</span>
                   </div>
                 </div>
               </div>
@@ -264,6 +265,18 @@ export default function Courses() {
           </div>
         )}
       </div>
+
+      {/* Footer CTA */}
+      <footer className="bg-dcs-dark-gray py-16 px-8 text-center border-t border-dcs-purple/20 mt-20" style={{ borderTop: '1px solid rgba(157, 80, 187, 0.2)' }}>
+        <h3 className="text-dcs-purple mb-4 text-2xl font-bold">Ready to start?</h3>
+        <p className="text-dcs-text-gray mb-8">Join thousands of students transforming their careers.</p>
+        <button
+          onClick={() => navigate('/courses')}
+          className="btn-purple"
+        >
+          Enroll in a Course
+        </button>
+      </footer>
     </div>
   );
 }

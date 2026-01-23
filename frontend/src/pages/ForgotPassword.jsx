@@ -21,39 +21,40 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">Forgot Password</h2>
+    <div className="min-h-screen flex items-center justify-center bg-auth-gradient">
+      <div className="bg-dcs-dark-gray w-[90%] max-w-[450px] p-12 rounded-[20px] shadow-2xl border border-dcs-purple/20">
+        <h2 className="text-2xl font-bold mb-6 text-center text-white">Forgot Password</h2>
         
         {message && (
-          <div className="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded mb-4">
+          <div className="bg-blue-900/30 border border-blue-500/30 text-blue-300 px-4 py-3 rounded mb-4">
             {message}
           </div>
         )}
 
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2">Email</label>
+          <div className="mb-6">
+            <label className="block text-dcs-text-gray mb-2 text-sm">Email</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-3 py-2 border rounded-lg"
+              className="form-input"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
+            className="w-full py-4 bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo text-white rounded-lg font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ boxShadow: loading ? 'none' : '0 5px 15px rgba(157, 80, 187, 0.4)' }}
           >
             {loading ? 'Sending...' : 'Send Reset Link'}
           </button>
         </form>
 
-        <p className="text-center mt-4 text-gray-600">
-          <Link to="/login" className="text-blue-600 hover:underline">
+        <p className="text-center mt-6 text-sm text-dcs-text-gray">
+          <Link to="/login" className="text-dcs-purple no-underline font-bold hover:text-dcs-electric-indigo cursor-pointer">
             Back to Login
           </Link>
         </p>

@@ -42,9 +42,9 @@ export default function Learn() {
     setSelectedContent(content);
   };
 
-  const handleVideoProgress = async (contentId, position, completed) => {
+  const handleVideoProgress = async (contentId, position, completed, totalWatchTime) => {
     try {
-      await progressService.updateVideoProgress(contentId, position, completed);
+      await progressService.updateVideoProgress(contentId, position, completed, totalWatchTime);
       if (completed) {
         fetchCourse(); // Refresh to update progress
       }
@@ -69,31 +69,31 @@ export default function Learn() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
+    <div className="min-h-screen bg-dcs-black flex pt-24">
       {/* Sidebar - Course Contents */}
-      <div className="w-80 bg-white shadow-lg overflow-y-auto">
-        <div className="p-4 border-b">
-          <button onClick={() => navigate('/my-courses')} className="text-blue-600 hover:underline mb-2">
+      <div className="w-80 bg-dcs-dark-gray border-r border-dcs-purple/20 overflow-y-auto">
+        <div className="p-6 border-b border-dcs-purple/20">
+          <button onClick={() => navigate('/my-courses')} className="text-dcs-purple hover:text-dcs-electric-indigo mb-4 transition-colors">
             ← My Courses
           </button>
-          <h2 className="text-xl font-bold">{course.title}</h2>
-          <div className="mt-2">
-            <div className="text-sm text-gray-600">Progress</div>
-            <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+          <h2 className="text-xl font-bold text-white mb-4">{course.title}</h2>
+          <div className="mt-4">
+            <div className="text-sm text-dcs-text-gray mb-2">Progress</div>
+            <div className="w-full bg-dcs-black rounded-full h-2">
               <div
-                className="bg-green-600 h-2 rounded-full"
+                className="bg-dcs-purple h-2 rounded-full transition-all"
                 style={{ width: `${course.enrollment?.progressPercentage || 0}%` }}
               />
             </div>
-            <div className="text-xs text-gray-500 mt-1">
+            <div className="text-xs text-dcs-text-gray mt-2">
               {parseFloat(course.enrollment?.progressPercentage || 0).toFixed(0)}%
             </div>
           </div>
         </div>
 
         {course.enrollment?.completed && (
-            <div className="mt-4 p-3 bg-green-100 rounded">
-                <p className="text-sm text-green-800 font-semibold mb-2">🎉 Course Completed!</p>
+            <div className="m-4 p-4 bg-green-900/30 rounded border border-green-500/30">
+                <p className="text-sm text-green-400 font-semibold mb-3">🎉 Course Completed!</p>
                 <button
                 onClick={async () => {
                   try {
@@ -107,7 +107,7 @@ export default function Learn() {
                   }
                 }}
 
-                className="w-full bg-green-600 text-white py-2 rounded text-sm hover:bg-green-700"
+                className="w-full bg-green-600 text-white py-2 rounded-full text-sm hover:bg-green-700 transition-all"
                 >
                 Download Certificate
                 </button>
@@ -118,7 +118,7 @@ export default function Learn() {
         <div className="p-4">
           {course.modules.map((module, idx) => (
             <div key={module.id} className="mb-6">
-              <h3 className="font-semibold mb-2">
+              <h3 className="font-semibold mb-3 text-white">
                 {idx + 1}. {module.title}
               </h3>
               <ul className="space-y-1">
@@ -126,12 +126,14 @@ export default function Learn() {
                   <li
                     key={item.id}
                     onClick={() => handleContentSelect(item)}
-                    className={`p-2 rounded cursor-pointer hover:bg-gray-100 ${
-                      selectedContent?.id === item.id ? 'bg-blue-100 border-l-4 border-blue-600' : ''
+                    className={`p-3 rounded cursor-pointer transition-all ${
+                      selectedContent?.id === item.id 
+                        ? 'bg-dcs-purple/20 border-l-4 border-dcs-purple text-white' 
+                        : 'hover:bg-dcs-light-gray text-dcs-text-gray hover:text-white'
                     }`}
                   >
                     <div className="flex items-center text-sm">
-                      <span className="mr-2">
+                      <span className="mr-2 text-lg">
                         {item.contentType === 'VIDEO' && '🎥'}
                         {item.contentType === 'ARTICLE' && '📄'}
                         {item.contentType === 'ASSESSMENT' && '✏️'}
@@ -147,7 +149,7 @@ export default function Learn() {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 p-8">
+      <div className="flex-1 p-8 overflow-y-auto">
         {selectedContent ? (
           <ContentViewer
             content={selectedContent}
@@ -155,7 +157,7 @@ export default function Learn() {
             onAssessmentSubmit={handleAssessmentSubmit}
           />
         ) : (
-          <div className="text-center text-gray-500 mt-20">
+          <div className="text-center text-dcs-text-gray mt-20">
             Select a lesson to start learning
           </div>
         )}
@@ -183,7 +185,7 @@ function VideoPlayer({ content, onProgress }) {
   const [videoUrl, setVideoUrl] = useState('');
   const [error, setError] = useState(false);
   const [lastSavedTime, setLastSavedTime] = useState(0);
-  const [totalWatchTime, setTotalWatchTime] = useState(0); // NEW: Track actual watch time
+  const [totalWatchTime, setTotalWatchTime] = useState(content.totalWatchTimeSeconds || 0); // NEW: Track actual watch time
   const [lastUpdateTime, setLastUpdateTime] = useState(null); // NEW: Track when last updated
 
   useEffect(() => {
@@ -222,8 +224,8 @@ function VideoPlayer({ content, onProgress }) {
 
   if (error || !content.videoUrl) {
     return (
-      <div className="bg-yellow-100 border border-yellow-400 p-6 rounded">
-        <p className="text-yellow-800">⚠️ No video available for this lesson yet.</p>
+      <div className="bg-yellow-900/30 border border-yellow-500/30 p-6 rounded">
+        <p className="text-yellow-400">⚠️ No video available for this lesson yet.</p>
       </div>
     );
   }
@@ -247,7 +249,7 @@ function VideoPlayer({ content, onProgress }) {
     if (currentTime - lastSavedTime >= 5) {
       const videoDuration = content.videoDurationSeconds || video.duration;
       const completed = totalWatchTime >= videoDuration * 0.95; // 95% watch time required
-      onProgress(content.id, currentTime, completed);
+      onProgress(content.id, currentTime, completed, totalWatchTime);
       setLastSavedTime(currentTime);
     }
   };
@@ -271,19 +273,19 @@ function VideoPlayer({ content, onProgress }) {
   const handleEnded = () => {
     const videoDuration = content.videoDurationSeconds || 0;
     const completed = totalWatchTime >= videoDuration * 0.95;
-    onProgress(content.id, videoDuration, completed);
+    onProgress(content.id, videoDuration, completed, totalWatchTime);
   };
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-4">{content.title}</h1>
-      {content.description && <p className="text-gray-600 mb-6">{content.description}</p>}
+      <h1 className="text-4xl font-bold mb-4 text-white">{content.title}</h1>
+      {content.description && <p className="text-dcs-text-gray mb-6 text-lg">{content.description}</p>}
       
       {videoUrl ? (
         <video
           key={content.id}
           controls
-          className="w-full max-w-4xl rounded-lg shadow-lg"
+          className="w-full max-w-4xl rounded-lg shadow-2xl"
           onTimeUpdate={handleTimeUpdate}
           onEnded={handleEnded}
           onLoadedMetadata={handleLoadedMetadata}
@@ -294,7 +296,7 @@ function VideoPlayer({ content, onProgress }) {
           src={videoUrl}
         />
       ) : (
-        <div>Loading video...</div>
+        <div className="text-dcs-text-gray">Loading video...</div>
       )}
     </div>
   );
@@ -304,16 +306,16 @@ function VideoPlayer({ content, onProgress }) {
 function ArticleViewer({ content }) {
   return (
     <div className="max-w-4xl">
-      <h1 className="text-3xl font-bold mb-4">{content.title}</h1>
-      {content.description && <p className="text-gray-600 mb-6">{content.description}</p>}
+      <h1 className="text-4xl font-bold mb-4 text-white">{content.title}</h1>
+      {content.description && <p className="text-dcs-text-gray mb-6 text-lg">{content.description}</p>}
       
-      <div className="bg-white rounded-lg shadow-md p-8">
-        <div className="prose max-w-none mb-6" dangerouslySetInnerHTML={{ __html: content.articleContent }} />
+      <div className="card">
+        <div className="prose prose-invert max-w-none mb-6 text-dcs-text-gray" dangerouslySetInnerHTML={{ __html: content.articleContent }} />
         
         {content.articleFileUrl && (
           <a
             href={`http://localhost:5000${content.articleFileUrl}`}
-            className="mt-4 inline-block bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700"
+            className="mt-4 inline-block bg-dcs-purple text-white px-6 py-3 rounded-full hover:bg-dcs-dark-purple transition-all"
             download
           >
             Download Article
@@ -351,29 +353,29 @@ function AssessmentViewer({ content, onSubmit }) {
 
   return (
     <div className="max-w-4xl">
-      <h1 className="text-3xl font-bold mb-4">{content.title}</h1>
-      {content.description && <p className="text-gray-600 mb-6">{content.description}</p>}
+      <h1 className="text-4xl font-bold mb-4 text-white">{content.title}</h1>
+      {content.description && <p className="text-dcs-text-gray mb-6 text-lg">{content.description}</p>}
 
       {/* Show score summary if assessment has been attempted */}
       {content.attemptCount > 0 && !showQuestions && (
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-2xl font-bold mb-4">Assessment Summary</h2>
+        <div className="card mb-6">
+          <h2 className="text-2xl font-bold mb-6 text-white">Assessment Summary</h2>
           
           <div className="grid grid-cols-2 gap-4 mb-6">
-            <div className="bg-blue-50 p-4 rounded">
-              <p className="text-sm text-gray-600">Latest Score</p>
-              <p className="text-3xl font-bold text-blue-600">{content.latestScore.toFixed(0)}%</p>
+            <div className="bg-dcs-purple/20 p-6 rounded border border-dcs-purple/30">
+              <p className="text-sm text-dcs-text-gray mb-2">Latest Score</p>
+              <p className="text-3xl font-bold text-dcs-purple">{content.latestScore.toFixed(0)}%</p>
             </div>
-            <div className="bg-green-50 p-4 rounded">
-              <p className="text-sm text-gray-600">Best Score</p>
-              <p className="text-3xl font-bold text-green-600">{content.bestScore.toFixed(0)}%</p>
+            <div className="bg-green-900/30 p-6 rounded border border-green-500/30">
+              <p className="text-sm text-dcs-text-gray mb-2">Best Score</p>
+              <p className="text-3xl font-bold text-green-400">{content.bestScore.toFixed(0)}%</p>
             </div>
           </div>
 
-          <div className="mb-4">
-            <p className="text-sm text-gray-600">Total Attempts: <span className="font-semibold">{content.attemptCount}</span></p>
-            <p className="text-sm text-gray-600">Status: 
-              <span className={`font-semibold ml-2 ${content.hasPassed ? 'text-green-600' : 'text-orange-600'}`}>
+          <div className="mb-6">
+            <p className="text-sm text-dcs-text-gray mb-2">Total Attempts: <span className="font-semibold text-white">{content.attemptCount}</span></p>
+            <p className="text-sm text-dcs-text-gray">Status: 
+              <span className={`font-semibold ml-2 ${content.hasPassed ? 'text-green-400' : 'text-orange-400'}`}>
                 {content.hasPassed ? '✓ Passed' : 'Not Passed'}
               </span>
             </p>
@@ -381,7 +383,7 @@ function AssessmentViewer({ content, onSubmit }) {
 
           <button
             onClick={handleRetake}
-            className="w-full bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700"
+            className="w-full bg-dcs-purple text-white px-6 py-3 rounded-full hover:bg-dcs-dark-purple transition-all"
           >
             Retake Assessment
           </button>
@@ -390,51 +392,51 @@ function AssessmentViewer({ content, onSubmit }) {
 
       {/* Show questions */}
       {showQuestions && (
-        <div className="bg-white rounded-lg shadow-md p-8">
+        <div className="card">
           {content.questions?.map((q, idx) => (
-            <div key={q.id} className="mb-6">
-              <p className="font-semibold mb-3">
+            <div key={q.id} className="mb-8">
+              <p className="font-semibold mb-4 text-white text-lg">
                 {idx + 1}. {q.questionText}
               </p>
 
               {q.questionType === 'MCQ' ? (
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {['A', 'B', 'C', 'D'].map((opt) => (
                     q[`option${opt}`] && (
-                      <label key={opt} className="flex items-center">
+                      <label key={opt} className="flex items-center p-3 rounded hover:bg-dcs-light-gray cursor-pointer transition-colors">
                         <input
                           type="radio"
                           name={q.id}
                           value={opt}
                           onChange={(e) => handleAnswerChange(q.id, e.target.value)}
-                          className="mr-2"
+                          className="mr-3 w-4 h-4 text-dcs-purple"
                         />
-                        {opt}. {q[`option${opt}`]}
+                        <span className="text-dcs-text-gray">{opt}. {q[`option${opt}`]}</span>
                       </label>
                     )
                   ))}
                 </div>
               ) : (
-                <div className="space-y-2">
-                  <label className="flex items-center">
+                <div className="space-y-3">
+                  <label className="flex items-center p-3 rounded hover:bg-dcs-light-gray cursor-pointer transition-colors">
                     <input
                       type="radio"
                       name={q.id}
                       value="TRUE"
                       onChange={(e) => handleAnswerChange(q.id, e.target.value)}
-                      className="mr-2"
+                      className="mr-3 w-4 h-4 text-dcs-purple"
                     />
-                    True
+                    <span className="text-dcs-text-gray">True</span>
                   </label>
-                  <label className="flex items-center">
+                  <label className="flex items-center p-3 rounded hover:bg-dcs-light-gray cursor-pointer transition-colors">
                     <input
                       type="radio"
                       name={q.id}
                       value="FALSE"
                       onChange={(e) => handleAnswerChange(q.id, e.target.value)}
-                      className="mr-2"
+                      className="mr-3 w-4 h-4 text-dcs-purple"
                     />
-                    False
+                    <span className="text-dcs-text-gray">False</span>
                   </label>
                 </div>
               )}
@@ -444,7 +446,7 @@ function AssessmentViewer({ content, onSubmit }) {
           <button
             onClick={handleSubmit}
             disabled={Object.keys(answers).length !== content.questions?.length}
-            className="bg-green-600 text-white px-6 py-3 rounded hover:bg-green-700 disabled:bg-gray-400"
+            className="w-full bg-green-600 text-white px-6 py-4 rounded-full hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-semibold"
           >
             Submit Assessment
           </button>

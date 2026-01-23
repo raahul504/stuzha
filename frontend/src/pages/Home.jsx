@@ -1,110 +1,180 @@
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import Navbar from '../components/Navbar';
 
 export default function Home() {
-  const { user, logout, isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
-
-  const handleLogout = async () => {
-    await logout();
-    navigate('/login');
-  };
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold mb-4">Welcome to LMS Platform</h1>
-          <p className="text-gray-600 mb-8">Please login or register to continue</p>
-          <div className="space-x-4">
-            <button
-              onClick={() => navigate('/login')}
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
-            >
-              Login
-            </button>
-            <button
-              onClick={() => navigate('/register')}
-              className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700"
-            >
-              Register
-            </button>
+      <div className="min-h-screen bg-dcs-black">
+        <Navbar />
+        <section className="pt-32 pb-24 px-8" style={{ background: 'linear-gradient(135deg, #0A0A0A 0%, #1a0a2e 100%)' }}>
+          <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-12 items-center">
+            <div>
+              <h1 className="text-5xl mb-6" style={{ background: 'linear-gradient(135deg, #FFFFFF, #9D50BB)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                Welcome to <span className="text-dcs-purple">LMS Platform</span>
+              </h1>
+              <p className="text-lg text-dcs-text-gray mb-10">
+                Transform your career with our comprehensive learning management system. 
+                Access expert-led courses and advance your skills.
+              </p>
+              <div className="mb-10">
+                <button
+                  onClick={() => navigate('/courses')}
+                  className="btn-purple"
+                >
+                  Start Learning Today
+                </button>
+              </div>
+              <div className="flex gap-12">
+                <div>
+                  <h2 className="text-3xl text-dcs-purple mb-2">100+</h2>
+                  <p className="text-dcs-text-gray">Courses Available</p>
+                </div>
+                <div>
+                  <h2 className="text-3xl text-dcs-purple mb-2">24/7</h2>
+                  <p className="text-dcs-text-gray">Access Anytime</p>
+                </div>
+                <div>
+                  <h2 className="text-3xl text-dcs-purple mb-2">Expert</h2>
+                  <p className="text-dcs-text-gray">Instructors</p>
+                </div>
+              </div>
+            </div>
+            <div className="card animate-float" style={{ background: '#121212' }}>
+              <h3 className="text-dcs-purple mb-6 text-xl font-semibold">Platform Highlights</h3>
+              <ul className="list-none text-dcs-text-gray leading-8 space-y-2">
+                <li>✓ Comprehensive Course Library</li>
+                <li>✓ Expert Instructors</li>
+                <li>✓ Interactive Learning Experience</li>
+                <li>✓ Progress Tracking</li>
+                <li>✓ Certificates on Completion</li>
+              </ul>
+            </div>
           </div>
-        </div>
+        </section>
+
+        <section className="max-w-[1400px] mx-auto" style={{ padding: '5rem 2rem' }}>
+          <h2 className="section-title">
+            Why Choose <span className="purple-text">Our Platform?</span>
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="card">
+              <h3 className="text-dcs-purple mb-4 text-xl">🎓 Expert Faculty</h3>
+              <p className="text-dcs-text-gray">
+                Learn from industry veterans and professionals with real-world expertise.
+              </p>
+            </div>
+            <div className="card">
+              <h3 className="text-dcs-purple mb-4 text-xl">💼 Career Support</h3>
+              <p className="text-dcs-text-gray">
+                Comprehensive career guidance and resources to help you succeed.
+              </p>
+            </div>
+            <div className="card">
+              <h3 className="text-dcs-purple mb-4 text-xl">🔧 Hands-on Training</h3>
+              <p className="text-dcs-text-gray">
+                Over 50% experiential learning with real-world projects and exercises.
+              </p>
+            </div>
+          </div>
+        </section>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <nav className="bg-white shadow-md">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-xl font-bold cursor-pointer" onClick={() => navigate('/')}>
-            LMS Platform
-          </h1>
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={() => navigate('/courses')}
-              className="text-gray-700 hover:text-blue-600"
-            >
-              Courses
-            </button>
+    <div className="min-h-screen bg-dcs-black">
+      <Navbar />
+      <section className="pt-32 pb-24 px-8" style={{ background: 'linear-gradient(135deg, #0A0A0A 0%, #1a0a2e 100%)' }}>
+        <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-12 items-center">
+          <div>
+            <h1 className="text-5xl mb-6" style={{ background: 'linear-gradient(135deg, #FFFFFF, #9D50BB)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              Welcome back, <span className="text-dcs-purple">{user?.firstName}</span>
+            </h1>
+            <p className="text-lg text-dcs-text-gray mb-10">
+              Continue your learning journey. Explore new courses and track your progress.
+            </p>
+            <div className="mb-10">
+              <button
+                onClick={() => navigate('/courses')}
+                className="btn-purple"
+              >
+                Browse Courses
+              </button>
+            </div>
+            <div className="flex gap-12">
+              <div>
+                <h2 className="text-3xl text-dcs-purple mb-2">100+</h2>
+                <p className="text-dcs-text-gray">Courses Available</p>
+              </div>
+              <div>
+                <h2 className="text-3xl text-dcs-purple mb-2">24/7</h2>
+                <p className="text-dcs-text-gray">Access Anytime</p>
+              </div>
+              <div>
+                <h2 className="text-3xl text-dcs-purple mb-2">Expert</h2>
+                <p className="text-dcs-text-gray">Instructors</p>
+              </div>
+            </div>
+          </div>
+          <div className="card animate-float" style={{ background: '#121212' }}>
+            <h3 className="text-dcs-purple mb-6 text-xl font-semibold">Quick Actions</h3>
+            <ul className="list-none text-dcs-text-gray leading-8 space-y-2">
+              <li>✓ View My Courses</li>
+              <li>✓ Browse Catalog</li>
+              <li>✓ Track Progress</li>
+              <li>✓ Update Profile</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section className="max-w-[1400px] mx-auto" style={{ background: '#121212', padding: '5rem 2rem' }}>
+        <h2 className="section-title">
+          Your <span className="purple-text">Learning Path</span>
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="card bg-dcs-black">
+            <h3 className="text-dcs-purple mb-4 text-xl">📚 My Courses</h3>
+            <p className="text-dcs-text-gray mb-4">
+              Continue learning from your enrolled courses.
+            </p>
             <button
               onClick={() => navigate('/my-courses')}
-              className="text-gray-700 hover:text-blue-600"
+              className="text-dcs-purple hover:text-dcs-electric-indigo transition-colors font-semibold"
             >
-              My Courses
+              View My Courses →
             </button>
-            {(user?.role === 'ADMIN') && (
-                <button onClick={() => navigate('/admin')} className="text-gray-700 hover:text-blue-600">
-                  Admin
-                </button>
-              )}
-              {(user?.role === 'INSTRUCTOR') && (
-                <button onClick={() => navigate('/instructor')} className="text-gray-700 hover:text-blue-600">
-                  Instructor
-                </button>
-              )}
-            <span className="text-gray-700">
-              {user.firstName} {user.lastName}
-            </span>
-            <button onClick={() => navigate('/profile')} className="text-gray-700 hover:text-blue-600">
-              Profile
-            </button>
+          </div>
+          <div className="card bg-dcs-black">
+            <h3 className="text-dcs-purple mb-4 text-xl">🔍 Explore</h3>
+            <p className="text-dcs-text-gray mb-4">
+              Discover new courses and expand your skills.
+            </p>
             <button
-              onClick={handleLogout}
-              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
+              onClick={() => navigate('/courses')}
+              className="text-dcs-purple hover:text-dcs-electric-indigo transition-colors font-semibold"
             >
-              Logout
+              Browse All Courses →
+            </button>
+          </div>
+          <div className="card bg-dcs-black">
+            <h3 className="text-dcs-purple mb-4 text-xl">👤 Profile</h3>
+            <p className="text-dcs-text-gray mb-4">
+              Manage your account and preferences.
+            </p>
+            <button
+              onClick={() => navigate('/profile')}
+              className="text-dcs-purple hover:text-dcs-electric-indigo transition-colors font-semibold"
+            >
+              View Profile →
             </button>
           </div>
         </div>
-      </nav>
-
-      <div className="container mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-bold mb-4">Dashboard</h2>
-          <div className="space-y-2">
-            <p><strong>Email:</strong> {user.email}</p>
-            <p><strong>Role:</strong> {user.role}</p>
-          </div>
-
-          <div className="mt-6 space-x-4">
-            <button
-              onClick={() => navigate('/courses')}
-              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
-            >
-              Browse All Courses
-            </button>
-            <button
-              onClick={() => navigate('/my-courses')}
-              className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700"
-            >
-              My Enrolled Courses
-            </button>
-          </div>
-        </div>
-      </div>
+      </section>
     </div>
   );
 }

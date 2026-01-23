@@ -31,55 +31,61 @@ export default function Register() {
       navigate('/login');
     } catch (err) {
       setError(err.response?.data?.error?.message || 'Registration failed');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
+    <div className="min-h-screen flex items-center justify-center bg-auth-gradient">
+      <div className="bg-dcs-dark-gray w-[90%] max-w-[450px] p-12 rounded-[20px] shadow-2xl border border-dcs-purple/20">
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-bold text-white mb-2">LMS Platform</h1>
+        </div>
+        
+        <h2 className="text-center mb-6 font-bold text-white text-2xl">Join the Wave</h2>
         
         {error && <ErrorMessage message={error} onClose={() => setError('')} />}
 
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2">First Name</label>
+          <div className="mb-6">
+            <label className="block mb-2 text-sm text-dcs-text-gray">First Name</label>
             <input
               type="text"
               name="firstName"
               value={formData.firstName}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="form-input"
             />
           </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2">Last Name</label>
+          <div className="mb-6">
+            <label className="block mb-2 text-sm text-dcs-text-gray">Last Name</label>
             <input
               type="text"
               name="lastName"
               value={formData.lastName}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="form-input"
             />
           </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2">Email</label>
+          <div className="mb-6">
+            <label className="block mb-2 text-sm text-dcs-text-gray">Email</label>
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="form-input"
             />
           </div>
 
           <div className="mb-6">
-            <label className="block text-gray-700 mb-2">Password</label>
+            <label className="block mb-2 text-sm text-dcs-text-gray">Password</label>
             <input
               type="password"
               name="password"
@@ -87,26 +93,29 @@ export default function Register() {
               onChange={handleChange}
               required
               minLength={8}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="form-input"
             />
-            <p className="text-sm text-gray-500 mt-1">Minimum 8 characters</p>
+            <p className="text-xs text-dcs-text-gray mt-1">Minimum 8 characters</p>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
+            className="w-full py-4 bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo text-white rounded-lg font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ boxShadow: loading ? 'none' : '0 5px 15px rgba(157, 80, 187, 0.4)' }}
           >
             {loading ? 'Registering...' : 'Register'}
           </button>
         </form>
 
-        <p className="text-center mt-4 text-gray-600">
-          Already have an account?{' '}
-          <Link to="/login" className="text-blue-600 hover:underline">
-            Login
-          </Link>
-        </p>
+        <div className="mt-6 text-center text-sm text-dcs-text-gray">
+          <p>
+            Already have an account?{' '}
+            <Link to="/login" className="text-dcs-purple no-underline font-bold hover:text-dcs-electric-indigo cursor-pointer">
+              Return to Login
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
