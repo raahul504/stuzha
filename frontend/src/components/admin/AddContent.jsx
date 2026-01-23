@@ -16,7 +16,7 @@ export default function AddContent({ moduleId, onAdd }) {
       if (type === 'VIDEO' && videoFile) {
         await adminService.uploadVideo(moduleId, { ...formData, videoDurationSeconds: 300 }, videoFile);
       } else if (type === 'ARTICLE' && articleFile) {
-        await adminService.createContent(moduleId, formData, articleFile);
+        await adminService.uploadArticle(moduleId, formData, articleFile);
       } else if (type === 'ASSESSMENT') {
         await adminService.createContent(moduleId, { ...formData, contentType: 'ASSESSMENT' });
       }
@@ -75,16 +75,6 @@ export default function AddContent({ moduleId, onAdd }) {
             <p className="text-xs text-gray-500 mt-1">Supported: PDF, Word, PowerPoint, Excel, Images</p>
           </div>
         )}
-
-        <label className="flex items-center text-sm">
-          <input
-            type="checkbox"
-            checked={formData.isPreview}
-            onChange={(e) => setFormData({ ...formData, isPreview: e.target.checked })}
-            className="mr-2"
-          />
-          Make this a preview
-        </label>
 
         <button type="submit" disabled={loading} className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed">
           {loading ? 'Adding...' : 'Add {type}'}

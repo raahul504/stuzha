@@ -200,9 +200,18 @@ const uploadArticle = async (req, res, next) => {
       include: { course: true },
     });
 
-    if (!module || module.course.createdBy !== req.user.id) {
+    if (!module) {
       return res.status(403).json({ error: { message: 'Unauthorized' } });
     }
+    // Get user to check role
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.id },
+      select: { role: true },
+    });
+
+    // Allow if user is the creator OR if user is an ADMIN
+    if (module.course.createdBy !== req.user.id && user.role !== 'ADMIN') {
+      return res.status(403).json({ error: { message: 'Unauthorized' } });}
 
     const lastContent = await prisma.contentItem.findFirst({
       where: { moduleId },

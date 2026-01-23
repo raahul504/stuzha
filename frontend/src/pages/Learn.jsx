@@ -183,6 +183,8 @@ function VideoPlayer({ content, onProgress }) {
   const [videoUrl, setVideoUrl] = useState('');
   const [error, setError] = useState(false);
   const [lastSavedTime, setLastSavedTime] = useState(0);
+  const [totalWatchTime, setTotalWatchTime] = useState(0); // NEW: Track actual watch time
+  const [lastUpdateTime, setLastUpdateTime] = useState(null); // NEW: Track when last updated
 
   useEffect(() => {
     if (!content.videoUrl) {
@@ -193,7 +195,11 @@ function VideoPlayer({ content, onProgress }) {
       .then(res => res.blob())
       .then(blob => setVideoUrl(URL.createObjectURL(blob)))
       .catch(() => setError(true));
-  }, [content.id]);
+
+      // Reset watch time for new video
+      setTotalWatchTime(0);
+      setLastUpdateTime(null);
+    }, [content.id]);
 
   // Set initial video position from saved progress
   const handleLoadedMetadata = (e) => {
@@ -225,17 +231,47 @@ function VideoPlayer({ content, onProgress }) {
   const handleTimeUpdate = (e) => {
     const video = e.target;
     const currentTime = Math.floor(video.currentTime);
+    const now = Date.now();
+    
+    // Calculate watch time increment
+    if (lastUpdateTime && !video.paused && !video.seeking) {
+      const timeDiff = (now - lastUpdateTime) / 1000; // Convert to seconds
+      // Only count if time diff is reasonable (between 0.1 and 2 seconds to avoid skips)
+      if (timeDiff > 0.1 && timeDiff < 2) {
+        setTotalWatchTime(prev => prev + timeDiff);
+      }
+    }
+    setLastUpdateTime(now);
     
     // Save progress every 5 seconds
     if (currentTime - lastSavedTime >= 5) {
-      const completed = video.currentTime / video.duration > 0.9;
+      const videoDuration = content.videoDurationSeconds || video.duration;
+      const completed = totalWatchTime >= videoDuration * 0.95; // 95% watch time required
       onProgress(content.id, currentTime, completed);
       setLastSavedTime(currentTime);
     }
   };
 
+  const handlePause = () => {
+    setLastUpdateTime(null); // Stop counting when paused
+  };
+
+  const handlePlay = () => {
+    setLastUpdateTime(Date.now()); // Resume counting when playing
+  };
+
+  const handleSeeking = () => {
+    setLastUpdateTime(null); // Stop counting during seek
+  };
+
+  const handleSeeked = () => {
+    setLastUpdateTime(Date.now()); // Resume after seek
+  };
+
   const handleEnded = () => {
-    onProgress(content.id, content.videoDurationSeconds || Math.floor(content.videoDurationSeconds), true);
+    const videoDuration = content.videoDurationSeconds || 0;
+    const completed = totalWatchTime >= videoDuration * 0.95;
+    onProgress(content.id, videoDuration, completed);
   };
 
   return (
@@ -251,6 +287,10 @@ function VideoPlayer({ content, onProgress }) {
           onTimeUpdate={handleTimeUpdate}
           onEnded={handleEnded}
           onLoadedMetadata={handleLoadedMetadata}
+          onPause={handlePause}
+          onPlay={handlePlay}
+          onSeeking={handleSeeking}
+          onSeeked={handleSeeked}
           src={videoUrl}
         />
       ) : (
