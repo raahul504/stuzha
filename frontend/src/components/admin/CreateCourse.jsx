@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { adminService } from '../../api/adminService';
+import { showSuccess, showError } from '../../utils/toast';
 
 export default function CreateCourse() {
   const [formData, setFormData] = useState({
@@ -22,7 +23,7 @@ export default function CreateCourse() {
     e.preventDefault();
     try {
       await adminService.createCourse(formData);
-      alert('Course created successfully!');
+      showSuccess('Course created successfully!');
       setFormData({
         title: '',
         slug: '',
@@ -34,7 +35,7 @@ export default function CreateCourse() {
         isPublished: false,
       });
     } catch (err) {
-      alert(err.response?.data?.error?.message || 'Failed to create course');
+      showError(err.response?.data?.error?.message || 'Failed to create course');
     }
   };
 

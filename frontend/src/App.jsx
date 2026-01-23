@@ -13,6 +13,8 @@ import VerifyEmail from './pages/VerifyEmail';
 import Profile from './pages/Profile';
 import InstructorDashboard from './pages/IntructorDashboard';
 import InstructorCreateCourse from './pages/InstructorCreateCourse';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
@@ -43,6 +45,8 @@ function App() {
           <Route path="/instructor" element={<ProtectedRoute><InstructorDashboard /></ProtectedRoute>} />
           <Route path="/instructor/create-course" element={<ProtectedRoute><InstructorCreateCourse /></ProtectedRoute>} />
           <Route path="/instructor/course/:id" element={<ProtectedRoute><CourseEditor /></ProtectedRoute>} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

@@ -13,7 +13,14 @@ const createModule = async (courseId, moduleData, userId) => {
     throw new Error('Course not found');
   }
 
-  if (course.createdBy !== userId) {
+  // Get user to check role
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { role: true },
+  });
+
+  // Allow if user is the creator OR if user is an ADMIN
+  if (course.createdBy !== userId && user.role !== 'ADMIN') {
     throw new Error('Unauthorized to modify this course');
   }
 
@@ -67,7 +74,14 @@ const updateModule = async (moduleId, updateData, userId) => {
     throw new Error('Module not found');
   }
 
-  if (module.course.createdBy !== userId) {
+  // Get user to check role
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { role: true },
+  });
+
+  // Allow if user is the creator OR if user is an ADMIN
+  if (module.course.createdBy !== userId && user.role !== 'ADMIN') {
     throw new Error('Unauthorized to modify this module');
   }
 
@@ -92,7 +106,14 @@ const deleteModule = async (moduleId, userId) => {
     throw new Error('Module not found');
   }
 
-  if (module.course.createdBy !== userId) {
+  // Get user to check role
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { role: true },
+  });
+
+  // Allow if user is the creator OR if user is an ADMIN
+  if (module.course.createdBy !== userId && user.role !== 'ADMIN') {
     throw new Error('Unauthorized to delete this module');
   }
 
@@ -116,7 +137,14 @@ const reorderModules = async (courseId, moduleOrders, userId) => {
     throw new Error('Course not found');
   }
 
-  if (course.createdBy !== userId) {
+  // Get user to check role
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { role: true },
+  });
+
+  // Allow if user is the creator OR if user is an ADMIN
+  if (course.createdBy !== userId && user.role !== 'ADMIN') {
     throw new Error('Unauthorized to modify this course');
   }
 

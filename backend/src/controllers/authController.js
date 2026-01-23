@@ -5,7 +5,7 @@ const {
   validateForgotPassword,
   validatePasswordReset
 } = require('../utils/validators');
-
+const isProd = process.env.NODE_ENV === 'production';
 /**
  * Register new user
  * POST /api/auth/register
@@ -60,15 +60,15 @@ const login = async (req, res, next) => {
     // Set HTTP-only cookies
     res.cookie('access_token', accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // HTTPS only in production
-      sameSite: 'strict',
+      secure: isProd,
+      sameSite: isProd ? 'strict' : 'lax',
       maxAge: 15 * 60 * 1000 // 15 minutes
     });
 
     res.cookie('refresh_token', refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: isProd,
+      sameSite: isProd ? 'strict' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     });
 
@@ -106,8 +106,8 @@ const refresh = async (req, res, next) => {
     // Set new access token cookie
     res.cookie('access_token', accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: isProd,
+      sameSite: isProd ? 'strict' : 'lax',
       maxAge: 15 * 60 * 1000
     });
 

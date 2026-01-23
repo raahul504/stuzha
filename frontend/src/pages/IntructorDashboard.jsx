@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { adminService } from '../api/adminService';
 import Navbar from '../components/Navbar';
+import { showSuccess, showError } from '../utils/toast';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 export default function InstructorDashboard() {
   const { user } = useAuth();
@@ -13,7 +15,7 @@ export default function InstructorDashboard() {
 
   useEffect(() => {
     if (user?.role !== 'INSTRUCTOR' && user?.role !== 'ADMIN') {
-      alert('Access denied. Instructors only.');
+      showError('Access denied. Instructors only.');
       navigate('/');
       return;
     }
@@ -33,7 +35,7 @@ export default function InstructorDashboard() {
         draft: myCourses.filter(c => !c.isPublished).length,
         });
     } catch (err) {
-        alert('Failed to load courses');
+        showError('Failed to load courses');
     } finally {
         setLoading(false);
     }
@@ -42,19 +44,15 @@ export default function InstructorDashboard() {
   const handleTogglePublish = async (courseId, currentStatus) => {
     try {
       await adminService.updateCourse(courseId, { isPublished: !currentStatus });
-      alert(`Course ${!currentStatus ? 'published' : 'unpublished'}`);
+      showSuccess(`Course ${!currentStatus ? 'published' : 'unpublished'}`);
       fetchCourses();
     } catch (err) {
-      alert('Failed to update course');
+      showError('Failed to update course');
     }
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    );
+    return <LoadingSpinner message="Loading dashboard..." />;
   }
 
   return (

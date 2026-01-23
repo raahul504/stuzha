@@ -1,7 +1,7 @@
 const prisma = require('../config/database');
 const { hashPassword, comparePassword } = require('../utils/password');
 const { generateAccessToken, generateRefreshToken, hashToken } = require('../utils/jwt');
-const { sendWelcomeEmail, sendPasswordResetEmail } = require('./emailService');
+const { sendWelcomeEmail, sendPasswordResetEmail, sendVerificationEmail } = require('./emailService');
 const crypto = require('crypto');
 
 /**
@@ -26,7 +26,8 @@ const registerUser = async ({ email, password, firstName, lastName }) => {
       email: email.toLowerCase(),
       passwordHash,
       firstName,
-      lastName
+      lastName,
+      emailVerified: false
     },
     select: {
       id: true,
@@ -38,10 +39,61 @@ const registerUser = async ({ email, password, firstName, lastName }) => {
     }
   });
 
-  // Send welcome email (non-blocking)
-  sendWelcomeEmail(user.email, user.firstName);
+  // Generate verification token
+  const verificationToken = crypto.randomBytes(32).toString('hex');
+  const tokenHash = hashToken(verificationToken);
+  const expiresAt = new Date();
+  expiresAt.setHours(expiresAt.getHours() + 24); // 24 hours
+
+  await prisma.emailVerificationToken.create({
+    data: {
+      userId: user.id,
+      tokenHash,
+      expiresAt
+    }
+  });
+
+  // Send verification email
+  await sendVerificationEmail(user.email, user.firstName, verificationToken);
+
+  /* Send welcome email (non-blocking)
+  sendWelcomeEmail(user.email, user.firstName);*/
 
   return user;
+};
+
+// Add this new function
+const verifyEmail = async (token) => {
+  const tokenHash = hashToken(token);
+
+  const verificationToken = await prisma.emailVerificationToken.findFirst({
+    where: { tokenHash },
+  });
+
+  // Token not found or expired
+  if (
+    !verificationToken ||
+    verificationToken.expiresAt < new Date()
+  ) {
+    throw new Error('Invalid or expired verification token');
+  }
+
+  // ✅ Idempotent behavior (important)
+  if (verificationToken.used) {
+    return { message: 'Email already verified' };
+  }
+  await prisma.$transaction([
+    prisma.user.update({
+      where: { id: verificationToken.userId },
+      data: { emailVerified: true }
+    }),
+    prisma.emailVerificationToken.update({
+      where: { id: verificationToken.id },
+      data: { used: true, usedAt: new Date() }
+    })
+  ]);
+
+  return { message: 'Email verified successfully' };
 };
 
 /**
@@ -67,6 +119,10 @@ const loginUser = async ({ email, password }) => {
 
   if (!isPasswordValid) {
     throw new Error('Invalid email or password');
+  }
+
+  if (!user.emailVerified) {
+    throw new Error('Please verify your email before logging in');
   }
 
   // Generate tokens
@@ -251,5 +307,6 @@ module.exports = {
   refreshAccessToken,
   logoutUser,
   requestPasswordReset,
-  resetPassword
+  resetPassword,
+  verifyEmail
 };

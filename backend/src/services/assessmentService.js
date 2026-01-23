@@ -31,9 +31,7 @@ const addQuestion = async (contentItemId, questionData, userId) => {
     throw new Error('Content item is not an assessment');
   }
 
-  if (contentItem.module.course.createdBy !== userId) {
-    throw new Error('Unauthorized to modify this assessment');
-  }
+  // Permission already checked by checkPermission function
 
   // Get next order index
   const lastQuestion = await prisma.assessmentQuestion.findFirst({

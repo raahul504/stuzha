@@ -62,6 +62,17 @@ export const adminService = {
     return response.data;
   },
 
+  uploadArticle: async (moduleId, data, file) => {
+  const formData = new FormData();
+  formData.append('article', file);
+  Object.keys(data).forEach(key => formData.append(key, data[key]));
+  
+  const response = await apiClient.post(`/articles/upload/${moduleId}`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return response.data;
+},
+
   deleteContent: async (contentId) => {
     const response = await apiClient.delete(`/content/${contentId}`);
     return response.data;

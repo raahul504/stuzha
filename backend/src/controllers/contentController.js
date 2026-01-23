@@ -1,6 +1,9 @@
 const prisma = require('../config/database');
 const contentService = require('../services/contentService');
 const Joi = require('joi');
+const { ARTICLES_DIR } = require('../middleware/upload');
+const fs = require('fs');
+const path = require('path');
 
 // Add after imports
 JSON.stringify = ((stringify) => {
@@ -37,12 +40,12 @@ const createContentSchema = Joi.object({
   // Article fields
   articleContent: Joi.string().when('contentType', {
     is: 'ARTICLE',
-    then: Joi.optional(),
+    then: Joi.optional().allow(''),
     otherwise: Joi.forbidden(),
   }),
   articleFileUrl: Joi.string().when('contentType', {
     is: 'ARTICLE',
-    then: Joi.optional(),
+    then: Joi.optional().allow(''),
     otherwise: Joi.forbidden(),
   }),
   
@@ -185,13 +188,75 @@ const reorderContentItems = async (req, res, next) => {
   }
 };
 
+const uploadArticle = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: { message: 'No file uploaded' } });
+    }
+
+    const { moduleId } = req.params;
+    const module = await prisma.module.findUnique({
+      where: { id: moduleId },
+      include: { course: true },
+    });
+
+    if (!module || module.course.createdBy !== req.user.id) {
+      return res.status(403).json({ error: { message: 'Unauthorized' } });
+    }
+
+    const lastContent = await prisma.contentItem.findFirst({
+      where: { moduleId },
+      orderBy: { orderIndex: 'desc' },
+    });
+
+    const articleFileUrl = `/api/articles/download/${req.file.filename}`;
+
+    const contentItem = await prisma.contentItem.create({
+      data: {
+        moduleId,
+        contentType: 'ARTICLE',
+        title: req.body.title,
+        description: req.body.description || '',
+        articleFileUrl,
+        orderIndex: lastContent ? lastContent.orderIndex + 1 : 0,
+        isPreview: req.body.isPreview === 'true',
+      },
+    });
+
+    res.status(201).json({
+      message: 'Article uploaded successfully',
+      contentItem,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const downloadArticle = async (req, res, next) => {
+  try {
+    const { filename } = req.params;
+    const filePath = path.join(ARTICLES_DIR, filename);
+
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ error: { message: 'File not found' } });
+    }
+
+    res.download(filePath);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createContentItem,
   getContentByModule,
   updateContentItem,
   deleteContentItem,
   reorderContentItems,
+  uploadArticle,
+  downloadArticle,
 };
+
 // GET /api/modules/:moduleId/content
 module.exports.getModuleContent = async (req, res) => {
   const items = await prisma.contentItem.findMany({

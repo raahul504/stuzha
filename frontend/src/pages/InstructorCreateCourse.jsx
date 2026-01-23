@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { adminService } from '../api/adminService';
 import Navbar from '../components/Navbar';
+import { showSuccess, showError } from '../utils/toast';
 
 export default function InstructorCreateCourse() {
   const navigate = useNavigate();
@@ -30,10 +31,10 @@ export default function InstructorCreateCourse() {
 
     try {
       const response = await adminService.createCourse(formData);
-      alert('Course created successfully!');
+      showSuccess('Course created successfully!');
       navigate(`/instructor/course/${response.course.id}`);
     } catch (err) {
-      alert(err.response?.data?.error?.message || 'Failed to create course');
+      showError(err.response?.data?.error?.message || 'Failed to create course');
     } finally {
       setLoading(false);
     }

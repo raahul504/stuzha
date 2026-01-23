@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { adminService } from '../api/adminService';
 import ModuleList from '../components/admin/ModuleList';
 import AddModule from '../components/admin/AddModule';
+import { showError } from '../utils/toast';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 export default function CourseEditor() {
   const { id } = useParams();
@@ -22,14 +24,14 @@ export default function CourseEditor() {
       const modulesData = await adminService.getModules(id);
       setModules(modulesData.modules);
     } catch (err) {
-      alert('Failed to load course');
+      showError('Failed to load course');
       navigate('/admin');
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  if (loading) return <LoadingSpinner message="Loading course..." />;
 
   return (
     <div className="min-h-screen bg-gray-100">

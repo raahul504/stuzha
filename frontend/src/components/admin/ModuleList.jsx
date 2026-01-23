@@ -2,24 +2,35 @@ import { useState, useEffect } from 'react';
 import { adminService } from '../../api/adminService';
 import AddContent from './AddContent';
 import AddQuestion from './AddQuestion';
+import { showSuccess, showError } from '../../utils/toast';
+import ConfirmModal from '../ConfirmModal';
 
 export default function ModuleList({ modules, courseId, onUpdate }) {
   const [expandedModule, setExpandedModule] = useState(null);
   const [editingModule, setEditingModule] = useState(null);
   const [editForm, setEditForm] = useState({ title: '', description: '' });
+  const [deletingId, setDeletingId] = useState(null);
+  const [confirmModal, setConfirmModal] = useState({ isOpen: false, moduleId: null });
 
   const toggleModule = (moduleId) => {
     setExpandedModule(expandedModule === moduleId ? null : moduleId);
   };
 
   const handleDeleteModule = async (moduleId) => {
-    if (!confirm('Delete this module?')) return;
+    setConfirmModal({ isOpen: true, moduleId });
+  };
+
+  const executeDeleteModule = async () => {
+    const moduleId = confirmModal.moduleId;
+    setDeletingId(moduleId);
     try {
       await adminService.deleteModule(moduleId);
-      alert('Module deleted');
+      showSuccess('Module deleted');
       onUpdate();
     } catch (err) {
-      alert('Failed to delete module');
+      showError('Failed to delete module');
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -31,11 +42,11 @@ export default function ModuleList({ modules, courseId, onUpdate }) {
   const handleSaveEdit = async (moduleId) => {
     try {
       await adminService.updateModule(moduleId, editForm);
-      alert('Module updated');
+      showSuccess('Module updated');
       setEditingModule(null);
       onUpdate();
     } catch (err) {
-      alert('Failed to update');
+      showError('Failed to update');
     }
   };
 
@@ -55,7 +66,7 @@ export default function ModuleList({ modules, courseId, onUpdate }) {
       await adminService.reorderModules(courseId, orders);
       onUpdate();
     } catch (err) {
-      alert('Failed to reorder');
+      showError('Failed to reorder');
     }
   };
 
@@ -105,7 +116,21 @@ export default function ModuleList({ modules, courseId, onUpdate }) {
                   ↓
                 </button>
                 <button onClick={(e) => { e.stopPropagation(); handleEdit(module); }} className="text-blue-600 hover:underline text-sm">Edit</button>
-                <button onClick={(e) => { e.stopPropagation(); handleDeleteModule(module.id); }} className="text-red-600 hover:underline text-sm">Delete</button>
+                <button 
+                    onClick={() => handleDeleteModule(module.id)} 
+                    disabled={deletingId === module.id}
+                    className="text-red-600 text-xs hover:underline disabled:text-gray-400"
+                  >
+                    {deletingId === module.id ? 'Deleting...' : 'Delete'}
+                  </button>
+                  <ConfirmModal
+                    isOpen={confirmModal.isOpen}
+                    onClose={() => setConfirmModal({ isOpen: false, moduleId: null })}
+                    onConfirm={executeDeleteModule}
+                    title="Delete Module"
+                    message="Are you sure you want to delete this module? This action cannot be undone."
+                    confirmText="Delete"
+                  />
                 <span className="cursor-pointer" onClick={() => toggleModule(module.id)}>{expandedModule === module.id ? '▲' : '▼'}</span>
               </div>
             </div>
@@ -127,6 +152,8 @@ function ContentList({ moduleId, onUpdate }) {
   const [content, setContent] = useState([]);
   const [selectedAssessment, setSelectedAssessment] = useState(null);
   const [questions, setQuestions] = useState([]);
+  const [deletingId, setDeletingId] = useState(null);
+  const [confirmModal, setConfirmModal] = useState({ isOpen: false, contentId: null });
 
   useEffect(() => {
     fetchContent();
@@ -151,14 +178,21 @@ function ContentList({ moduleId, onUpdate }) {
     }
   };
 
-  const handleDelete = async (contentId) => {
-    if (!confirm('Delete this content?')) return;
+  const handleDeleteContent = async (contentId) => {
+    setConfirmModal({ isOpen: true, contentId });
+  };
+
+  const executeDeleteContent = async () => {
+    const contentId = confirmModal.contentId;
+    setDeletingId(contentId);
     try {
       await adminService.deleteContent(contentId);
       alert('Content deleted');
       onUpdate();
     } catch (err) {
       alert('Failed to delete');
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -178,7 +212,7 @@ function ContentList({ moduleId, onUpdate }) {
       await adminService.reorderContent(moduleId, orders);
       onUpdate();
     } catch (err) {
-      alert('Failed to reorder');
+      showError('Failed to reorder');
     }
   };
 
@@ -220,9 +254,21 @@ function ContentList({ moduleId, onUpdate }) {
                       Questions
                     </button>
                   )}
-                  <button onClick={() => handleDelete(item.id)} className="text-red-600 text-xs hover:underline">
-                    Delete
+                  <button 
+                    onClick={() => handleDeleteContent(item.id)} 
+                    disabled={deletingId === item.id}
+                    className="text-red-600 text-xs hover:underline disabled:text-gray-400"
+                  >
+                    {deletingId === item.id ? 'Deleting...' : 'Delete'}
                   </button>
+                  <ConfirmModal
+                    isOpen={confirmModal.isOpen}
+                    onClose={() => setConfirmModal({ isOpen: false, contentId: null })}
+                    onConfirm={executeDeleteContent}
+                    title="Delete Content"
+                    message="Are you sure you want to delete this content? This action cannot be undone."
+                    confirmText="Delete"
+                  />
                 </div>
               </div>
 

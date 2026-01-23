@@ -14,7 +14,14 @@ const createContentItem = async (moduleId, contentData, userId) => {
     throw new Error('Module not found');
   }
 
-  if (module.course.createdBy !== userId) {
+  // Get user to check role
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { role: true },
+  });
+
+  // Allow if user is the creator OR if user is an ADMIN
+  if (module.course.createdBy !== userId && user.role !== 'ADMIN') {
     throw new Error('Unauthorized to modify this module');
   }
 
@@ -97,7 +104,14 @@ const updateContentItem = async (contentId, updateData, userId) => {
     throw new Error('Content item not found');
   }
 
-  if (content.module.course.createdBy !== userId) {
+  // Get user to check role
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { role: true },
+  });
+
+  // Allow if user is the creator OR if user is an ADMIN
+  if (content.module.course.createdBy !== userId && user.role !== 'ADMIN') {
     throw new Error('Unauthorized to modify this content');
   }
 
@@ -122,7 +136,14 @@ const deleteContentItem = async (contentId, userId) => {
     throw new Error('Content item not found');
   }
 
-  if (content.module.course.createdBy !== userId) {
+  // Get user to check role
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { role: true },
+  });
+
+  // Allow if user is the creator OR if user is an ADMIN
+  if (content.module.course.createdBy !== userId && user.role !== 'ADMIN') {
     throw new Error('Unauthorized to delete this content');
   }
 
@@ -146,7 +167,14 @@ const reorderContentItems = async (moduleId, contentOrders, userId) => {
     throw new Error('Module not found');
   }
 
-  if (module.course.createdBy !== userId) {
+  // Get user to check role
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { role: true },
+  });
+
+  // Allow if user is the creator OR if user is an ADMIN
+  if (module.course.createdBy !== userId && user.role !== 'ADMIN') {
     throw new Error('Unauthorized to modify this module');
   }
 

@@ -1,27 +1,34 @@
 import { useState } from 'react';
 import { adminService } from '../../api/adminService';
+import { showSuccess, showError } from '../../utils/toast';
 
 export default function AddContent({ moduleId, onAdd }) {
   const [type, setType] = useState('VIDEO');
   const [formData, setFormData] = useState({ title: '', description: '', isPreview: false });
   const [videoFile, setVideoFile] = useState(null);
+  const [articleFile, setArticleFile] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       if (type === 'VIDEO' && videoFile) {
         await adminService.uploadVideo(moduleId, { ...formData, videoDurationSeconds: 300 }, videoFile);
-      } else if (type === 'ARTICLE') {
-        await adminService.createContent(moduleId, { ...formData, contentType: 'ARTICLE', articleContent: 'Sample article content' });
+      } else if (type === 'ARTICLE' && articleFile) {
+        await adminService.createContent(moduleId, formData, articleFile);
       } else if (type === 'ASSESSMENT') {
         await adminService.createContent(moduleId, { ...formData, contentType: 'ASSESSMENT' });
       }
-      alert('Content added!');
+      showSuccess('Content added!');
       setFormData({ title: '', description: '', isPreview: false });
       setVideoFile(null);
+      setArticleFile(null);
       onAdd();
     } catch (err) {
-      alert('Failed to add content');
+      showError('Failed to add content');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -56,6 +63,19 @@ export default function AddContent({ moduleId, onAdd }) {
           <input type="file" accept="video/*" onChange={(e) => setVideoFile(e.target.files[0])} className="w-full" />
         )}
 
+        {type === 'ARTICLE' && (
+          <div>
+            <input 
+              type="file" 
+              accept=".pdf,.doc,.docx,.txt,.ppt,.pptx,.xls,.xlsx,.png,.jpg,.jpeg,.gif" 
+              onChange={(e) => setArticleFile(e.target.files[0])} 
+              className="w-full" 
+              required 
+            />
+            <p className="text-xs text-gray-500 mt-1">Supported: PDF, Word, PowerPoint, Excel, Images</p>
+          </div>
+        )}
+
         <label className="flex items-center text-sm">
           <input
             type="checkbox"
@@ -66,8 +86,8 @@ export default function AddContent({ moduleId, onAdd }) {
           Make this a preview
         </label>
 
-        <button type="submit" className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">
-          Add {type}
+        <button type="submit" disabled={loading} className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed">
+          {loading ? 'Adding...' : 'Add {type}'}
         </button>
       </form>
     </div>

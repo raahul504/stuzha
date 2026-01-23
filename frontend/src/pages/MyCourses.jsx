@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { courseService } from '../api/courseService';
 import Navbar from '../components/Navbar';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 export default function MyCourses() {
   const [courses, setCourses] = useState([]);
@@ -24,11 +25,7 @@ export default function MyCourses() {
   };
 
   if (loading) {
-    return (
-        <div className="min-h-screen flex items-center justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        </div>
-    );
+    return <LoadingSpinner message="Loading your courses..." />;
   }
 
   return (

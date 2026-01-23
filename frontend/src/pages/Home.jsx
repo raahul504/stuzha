@@ -55,6 +55,16 @@ export default function Home() {
             >
               My Courses
             </button>
+            {(user?.role === 'ADMIN') && (
+                <button onClick={() => navigate('/admin')} className="text-gray-700 hover:text-blue-600">
+                  Admin
+                </button>
+              )}
+              {(user?.role === 'INSTRUCTOR') && (
+                <button onClick={() => navigate('/instructor')} className="text-gray-700 hover:text-blue-600">
+                  Instructor
+                </button>
+              )}
             <span className="text-gray-700">
               {user.firstName} {user.lastName}
             </span>

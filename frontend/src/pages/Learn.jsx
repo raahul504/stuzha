@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { courseService } from '../api/courseService';
 import { progressService } from '../api/progressService';
 import { certificateService } from '../api/certificateService';
+import { showSuccess, showError } from '../utils/toast';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 export default function Learn() {
   const { id } = useParams();
@@ -19,7 +21,7 @@ export default function Learn() {
     try {
       const data = await courseService.getCourseById(id);
       if (!data.course.isPurchased) {
-        alert('You must enroll in this course first');
+        showError('You must enroll in this course first');
         navigate(`/courses/${id}`);
         return;
       }
@@ -29,7 +31,7 @@ export default function Learn() {
         setSelectedContent(data.course.modules[0].contentItems[0]);
       }
     } catch (err) {
-      alert('Failed to load course');
+      showError('Failed to load course');
       navigate('/my-courses');
     } finally {
       setLoading(false);
@@ -54,16 +56,16 @@ export default function Learn() {
   const handleAssessmentSubmit = async (contentId, answers) => {
     try {
       const result = await progressService.submitAssessment(contentId, answers);
-      alert(result.message);
+      showSuccess(result.message);
       fetchCourse(); // Refresh progress
       return result;
     } catch (err) {
-      alert('Failed to submit assessment');
+      showError('Failed to submit assessment');
     }
   };
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return <LoadingSpinner message="Loading course content..." />;
   }
 
   return (
@@ -94,13 +96,17 @@ export default function Learn() {
                 <p className="text-sm text-green-800 font-semibold mb-2">🎉 Course Completed!</p>
                 <button
                 onClick={async () => {
-                    try {
-                    await certificateService.generateCertificate(id);
-                    window.open(`http://localhost:5000/api/certificates/download/CERT-...pdf`, '_blank');
-                    } catch (err) {
-                    alert('Certificate generation failed');
-                    }
+                  try {
+                    const res = await certificateService.generateCertificate(id);
+                    window.open(
+                      `http://localhost:5000${res.certificate.fileUrl}`,
+                      '_blank'
+                    );
+                  } catch (err) {
+                    showError('Certificate generation failed');
+                  }
                 }}
+
                 className="w-full bg-green-600 text-white py-2 rounded text-sm hover:bg-green-700"
                 >
                 Download Certificate
@@ -262,12 +268,12 @@ function ArticleViewer({ content }) {
       {content.description && <p className="text-gray-600 mb-6">{content.description}</p>}
       
       <div className="bg-white rounded-lg shadow-md p-8">
-        <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: content.articleContent }} />
+        <div className="prose max-w-none mb-6" dangerouslySetInnerHTML={{ __html: content.articleContent }} />
         
         {content.articleFileUrl && (
           <a
-            href={content.articleFileUrl}
-            className="mt-4 inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            href={`http://localhost:5000${content.articleFileUrl}`}
+            className="mt-4 inline-block bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700"
             download
           >
             Download Article
@@ -338,23 +344,6 @@ function AssessmentViewer({ content, onSubmit }) {
             className="w-full bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700"
           >
             Retake Assessment
-          </button>
-        </div>
-      )}
-
-      {/* Show result after submission */}
-      {submitted && result && (
-        <div className={`p-6 rounded-lg mb-6 ${result.result.passed ? 'bg-green-100' : 'bg-red-100'}`}>
-          <h2 className="text-xl font-bold mb-2">
-            {result.result.passed ? '✅ Passed!' : '❌ Not Passed'}
-          </h2>
-          <p>Score: {result.result.score.toFixed(0)}%</p>
-          <p>Correct: {result.result.correctCount}/{result.result.totalQuestions}</p>
-          <button
-            onClick={handleRetake}
-            className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-          >
-            Try Again
           </button>
         </div>
       )}

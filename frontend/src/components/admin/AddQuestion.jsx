@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { adminService } from '../../api/adminService';
+import { showSuccess, showError } from '../../utils/toast';
 
 export default function AddQuestion({ contentId, onAdd }) {
   const [type, setType] = useState('MCQ');
@@ -40,7 +41,7 @@ export default function AddQuestion({ contentId, onAdd }) {
 
       console.log('Sending data:', payload); // Debug
       await adminService.addQuestion(contentId, payload);
-      alert('Question added!');
+      showSuccess('Question added!');
       setFormData({ 
         questionText: '', 
         correctAnswer: '', 
@@ -56,7 +57,7 @@ export default function AddQuestion({ contentId, onAdd }) {
       console.error('Full error:', err); // Debug
       console.error('Response data:', err.response?.data); // Debug
       console.error('Response status:', err.response?.status); // Debug
-      alert(err.response?.data?.error?.message || 'Failed to add question');
+      showError(err.response?.data?.error?.message || 'Failed to add question');
     }
   };
 

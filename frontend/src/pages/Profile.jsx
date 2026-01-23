@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { userService } from '../api/userService';
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
+import { showSuccess, showError } from '../utils/toast';
 
 export default function Profile() {
   const { user } = useAuth();
@@ -48,10 +49,10 @@ export default function Profile() {
 
     try {
       const data = await userService.updateProfile(profileForm);
-      alert('Profile updated successfully');
+      showSuccess('Profile updated successfully');
     } catch (err) {
       console.error('Error caught:', err); // Debug
-      alert(err.response?.data?.error?.message || 'Update failed');
+      showError(err.response?.data?.error?.message || 'Update failed');
     } finally {
       setLoading(false);
     }
@@ -61,7 +62,7 @@ export default function Profile() {
     e.preventDefault();
 
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      alert('Passwords do not match');
+      showError('Passwords do not match');
       return;
     }
 
@@ -69,10 +70,10 @@ export default function Profile() {
 
     try {
       await userService.changePassword(passwordForm.currentPassword, passwordForm.newPassword);
-      alert('Password changed successfully');
+      showSuccess('Password changed successfully');
       setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
     } catch (err) {
-      alert(err.response?.data?.error?.message || 'Password change failed');
+      showError(err.response?.data?.error?.message || 'Password change failed');
     } finally {
       setLoading(false);
     }

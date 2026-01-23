@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { adminService } from '../../api/adminService';
+import { showSuccess, showError } from '../../utils/toast';
 
 export default function AddModule({ courseId, onAdd }) {
   const [formData, setFormData] = useState({ title: '', description: '' });
@@ -12,6 +13,7 @@ export default function AddModule({ courseId, onAdd }) {
       setFormData({ title: '', description: '' });
       onAdd();
     } catch (err) {
+      console.error('Full error:', JSON.stringify(err.response?.data, null, 2)); // Log the actual error
       alert('Failed to add module');
     }
   };

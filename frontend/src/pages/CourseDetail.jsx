@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { courseService } from '../api/courseService';
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
+import { showSuccess, showError } from '../utils/toast';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 export default function CourseDetail() {
   const { id } = useParams();
@@ -37,10 +39,10 @@ export default function CourseDetail() {
     setEnrolling(true);
     try {
       await courseService.enrollInCourse(id);
-      alert('Enrolled successfully!');
+      showSuccess('Enrolled successfully!');
       fetchCourse(); // Refresh to show enrolled status
     } catch (err) {
-      alert(err.response?.data?.error?.message || 'Enrollment failed');
+      showError(err.response?.data?.error?.message || 'Enrollment failed');
     } finally {
       setEnrolling(false);
     }
@@ -51,11 +53,7 @@ export default function CourseDetail() {
   };
 
   if (loading) {
-    return (
-        <div className="min-h-screen flex items-center justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        </div>
-    );
+    return <LoadingSpinner message="Loading course details..." />;
   }
 
   if (error || !course) {
