@@ -5,6 +5,7 @@ import { progressService } from '../api/progressService';
 import { certificateService } from '../api/certificateService';
 import { showSuccess, showError } from '../utils/toast';
 import LoadingSpinner from '../components/LoadingSpinner';
+import Navbar from '../components/Navbar';
 
 export default function Learn() {
   const { id } = useParams();
@@ -38,7 +39,17 @@ export default function Learn() {
     }
   };
 
-  const handleContentSelect = (content) => {
+  const handleContentSelect = (content, module) => {
+    // Check if assessment is locked
+    if (content.contentType === 'ASSESSMENT') {
+      const videosInModule = module.contentItems.filter(item => item.contentType === 'VIDEO');
+      const completedVideos = videosInModule.filter(item => item.videoCompleted);
+      
+      if (videosInModule.length > 0 && completedVideos.length < videosInModule.length) {
+        alert(`Complete all ${videosInModule.length} videos in this module before taking the assessment (${completedVideos.length}/${videosInModule.length} completed)`);
+        return;
+      }
+    }
     setSelectedContent(content);
   };
 
@@ -64,12 +75,24 @@ export default function Learn() {
     }
   };
 
+  // Helper function to check if assessment is locked
+  const isAssessmentLocked = (content, module) => {
+    if (content.contentType !== 'ASSESSMENT') return false;
+    
+    const videosInModule = module.contentItems.filter(item => item.contentType === 'VIDEO');
+    const completedVideos = videosInModule.filter(item => item.videoCompleted);
+    
+    return videosInModule.length > 0 && completedVideos.length < videosInModule.length;
+  };
+
+
   if (loading) {
     return <LoadingSpinner message="Loading course content..." />;
   }
 
   return (
-    <div className="min-h-screen bg-dcs-black flex pt-24">
+    <div className="min-h-screen bg-dcs-black flex pt-20">
+      <Navbar />
       {/* Sidebar - Course Contents */}
       <div className="w-80 bg-dcs-dark-gray border-r border-dcs-purple/20 overflow-y-auto">
         <div className="p-6 border-b border-dcs-purple/20">
@@ -113,40 +136,59 @@ export default function Learn() {
                 </button>
             </div>
             )}
-
-        {/* Modules & Content */}
-        <div className="p-4">
-          {course.modules.map((module, idx) => (
-            <div key={module.id} className="mb-6">
-              <h3 className="font-semibold mb-3 text-white">
-                {idx + 1}. {module.title}
-              </h3>
-              <ul className="space-y-1">
-                {module.contentItems.map((item) => (
-                  <li
-                    key={item.id}
-                    onClick={() => handleContentSelect(item)}
-                    className={`p-3 rounded cursor-pointer transition-all ${
-                      selectedContent?.id === item.id 
-                        ? 'bg-dcs-purple/20 border-l-4 border-dcs-purple text-white' 
-                        : 'hover:bg-dcs-light-gray text-dcs-text-gray hover:text-white'
-                    }`}
-                  >
-                    <div className="flex items-center text-sm">
-                      <span className="mr-2 text-lg">
-                        {item.contentType === 'VIDEO' && '🎥'}
-                        {item.contentType === 'ARTICLE' && '📄'}
-                        {item.contentType === 'ASSESSMENT' && '✏️'}
-                      </span>
-                      <span>{item.title}</span>
+            
+          {/* Modules & Content */}
+          <div className="p-4">
+            {course.modules.map((module, idx) => {
+              const videosInModule = module.contentItems.filter(item => item.contentType === 'VIDEO');
+              const completedVideos = videosInModule.filter(item => item.videoCompleted);
+              
+              return (
+                <div key={module.id} className="mb-6">
+                  <h3 className="font-semibold mb-2 text-white">
+                    {idx + 1}. {module.title}
+                  </h3>
+                  {videosInModule.length > 0 && (
+                    <div className="text-xs text-gray-600 mb-2">
+                      Videos: {completedVideos.length}/{videosInModule.length} completed
                     </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+                  )}
+                  <ul className="space-y-1">
+                    {module.contentItems.map((item) => {
+                      const locked = isAssessmentLocked(item, module);
+                      
+                      return (
+                        <li
+                          key={item.id}
+                          onClick={() => handleContentSelect(item, module)}
+                          className={`p-3 rounded cursor-pointer ${
+                            locked ? 'opacity-50 cursor-not-allowed' : 'hover:bg-dark-purple'
+                          } ${
+                            selectedContent?.id === item.id ? 'bg-dcs-dark-gray hover:bg-dcs-dark-purple border-l-4 border-dcs-purple' : 'hover:bg-dcs-electric-indigo text-dcs-text-gray hover:text-white'
+                          }`}
+                        >
+                          <div className="flex items-center text-sm justify-between">
+                            <div className="flex items-center">
+                              <span className="mr-2 text-lg">
+                                {item.contentType === 'VIDEO' && (item.videoCompleted ? '✅' : '🎥')}
+                                {item.contentType === 'ARTICLE' && '📄'}
+                                {item.contentType === 'ASSESSMENT' && (locked ? '🔒' : '✏️')}
+                              </span>
+                              <span>{item.title}</span>
+                            </div>
+                            {locked && (
+                              <span className="text-xs text-red-600 ml-2">Locked</span>
+                            )}
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              );
+            })}
+          </div>
         </div>
-      </div>
 
       {/* Main Content Area */}
       <div className="flex-1 p-8 overflow-y-auto">
@@ -248,7 +290,7 @@ function VideoPlayer({ content, onProgress }) {
     // Save progress every 5 seconds
     if (currentTime - lastSavedTime >= 5) {
       const videoDuration = content.videoDurationSeconds || video.duration;
-      const completed = totalWatchTime >= videoDuration * 0.95; // 95% watch time required
+      const completed = totalWatchTime >= videoDuration * 1.00; // 100% watch time required
       onProgress(content.id, currentTime, completed, totalWatchTime);
       setLastSavedTime(currentTime);
     }

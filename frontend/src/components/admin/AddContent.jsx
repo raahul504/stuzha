@@ -33,13 +33,13 @@ export default function AddContent({ moduleId, onAdd }) {
   };
 
   return (
-    <div className="bg-white p-4 rounded border">
-      <h4 className="font-semibold mb-3">Add Content</h4>
+    <div className="bg-dcs-dark-gray p-6 rounded-lg border border-dcs-purple/20">
+      <h4 className="font-semibold mb-4 text-white text-lg">Add Content</h4>
       <form onSubmit={handleSubmit} className="space-y-3">
-        <select value={type} onChange={(e) => setType(e.target.value)} className="w-full px-3 py-2 border rounded">
-          <option value="VIDEO">Video</option>
+        <select value={type} onChange={(e) => setType(e.target.value)} className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-dcs-black text-white focus:border-dcs-purple focus:outline-none">
           <option value="ARTICLE">Article</option>
           <option value="ASSESSMENT">Assessment</option>
+          <option value="VIDEO">Video</option>
         </select>
 
         <input
@@ -48,19 +48,19 @@ export default function AddContent({ moduleId, onAdd }) {
           value={formData.title}
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           required
-          className="w-full px-3 py-2 border rounded"
+          className="w-full px-3 py-2 border border-gray-600 rounded-lg bg-dcs-black text-white focus:border-dcs-purple focus:outline-none"
         />
 
         <textarea
           placeholder="Description"
           value={formData.description}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          className="w-full px-3 py-2 border rounded"
+          className="w-full px-3 py-2 border border-gray-600 rounded-lg bg-dcs-black text-white focus:border-dcs-purple focus:outline-none"
           rows={2}
         />
 
         {type === 'VIDEO' && (
-          <input type="file" accept="video/*" onChange={(e) => setVideoFile(e.target.files[0])} className="w-full" />
+          <input type="file" accept="video/*" onChange={(e) => setVideoFile(e.target.files[0])} className="w-full" required />
         )}
 
         {type === 'ARTICLE' && (
@@ -76,7 +76,7 @@ export default function AddContent({ moduleId, onAdd }) {
           </div>
         )}
 
-        <button type="submit" disabled={loading} className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed">
+        <button type="submit" disabled={loading} className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-3 rounded-lg hover:shadow-lg transition-all font-semibold">
           {loading ? 'Adding...' : 'Add {type}'}
         </button>
       </form>

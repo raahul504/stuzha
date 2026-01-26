@@ -10,17 +10,17 @@ export default function Home() {
     return (
       <div className="min-h-screen bg-dcs-black">
         <Navbar />
-        <section className="pt-32 pb-24 px-8" style={{ background: 'linear-gradient(135deg, #0A0A0A 0%, #1a0a2e 100%)' }}>
+        <section className="pt-32 pb-24 px-8" style={{ background: 'linear-gradient(135deg, #0A0A0A 0%, #1a0a2e 100%)', height:"100vh" }}>
           <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-12 items-center">
             <div>
-              <h1 className="text-5xl mb-6" style={{ background: 'linear-gradient(135deg, #FFFFFF, #9D50BB)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              <h1 className="text-5xl mt-10 mb-6" style={{ background: 'linear-gradient(135deg, #FFFFFF, #9D50BB)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                 Welcome to <span className="text-dcs-purple">LMS Platform</span>
               </h1>
               <p className="text-lg text-dcs-text-gray mb-10">
                 Transform your career with our comprehensive learning management system. 
                 Access expert-led courses and advance your skills.
               </p>
-              <div className="mb-10">
+              <div className="mb-20">
                 <button
                   onClick={() => navigate('/courses')}
                   className="btn-purple"
@@ -43,9 +43,9 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div className="card animate-float" style={{ background: '#121212' }}>
-              <h3 className="text-dcs-purple mb-6 text-xl font-semibold">Platform Highlights</h3>
-              <ul className="list-none text-dcs-text-gray leading-8 space-y-2">
+            <div className="card animate-float mt-10 bg-gradient-to-r from-dcs-dark-purple to-dcs-electric-indigo text-white shadow-lg" >
+              <h3 className="text-white mb-6 text-xl font-bold">Platform Highlights</h3>
+              <ul className="list-none text-white leading-8 space-y-2 font-semibold">
                 <li>✓ Comprehensive Course Library</li>
                 <li>✓ Expert Instructors</li>
                 <li>✓ Interactive Learning Experience</li>
@@ -88,13 +88,13 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-dcs-black">
       <Navbar />
-      <section className="pt-32 pb-24 px-8" style={{ background: 'linear-gradient(135deg, #0A0A0A 0%, #1a0a2e 100%)' }}>
+      <section className="pt-32 pb-24 px-8" style={{ background: 'linear-gradient(135deg, #0A0A0A 0%, #1a0a2e 100%)', height:"100vh" }}>
         <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-12 items-center">
           <div>
-            <h1 className="text-5xl mb-6" style={{ background: 'linear-gradient(135deg, #FFFFFF, #9D50BB)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            <h1 className="text-5xl mt-10 mb-6 leading-normal" style={{ background: 'linear-gradient(135deg, #FFFFFF, #9D50BB)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
               Welcome back, <span className="text-dcs-purple">{user?.firstName}</span>
             </h1>
-            <p className="text-lg text-dcs-text-gray mb-10">
+            <p className="text-lg text-dcs-text-gray mb-20">
               Continue your learning journey. Explore new courses and track your progress.
             </p>
             <div className="mb-10">
@@ -120,9 +120,9 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div className="card animate-float" style={{ background: '#121212' }}>
-            <h3 className="text-dcs-purple mb-6 text-xl font-semibold">Quick Actions</h3>
-            <ul className="list-none text-dcs-text-gray leading-8 space-y-2">
+          <div className="card animate-float mt-10 bg-gradient-to-r from-dcs-dark-purple to-dcs-electric-indigo text-white shadow-lg">
+            <h3 className="text-white mb-6 text-xl font-semibold">Quick Actions</h3>
+            <ul className="list-none text-gray leading-8 space-y-2">
               <li>✓ View My Courses</li>
               <li>✓ Browse Catalog</li>
               <li>✓ Track Progress</li>

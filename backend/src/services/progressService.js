@@ -27,7 +27,7 @@ const updateVideoProgress = async (userId, contentItemId, progressData) => {
     throw new Error('Not enrolled in this course');
   }
 
-  const { lastPositionSeconds, completed } = progressData;
+  const { lastPositionSeconds, completed, totalWatchTime } = progressData;
 
   // Check if video is already completed
   const existingProgress = await prisma.videoProgress.findUnique({

@@ -21,6 +21,11 @@ export const adminService = {
     return response.data;
   },
 
+  deleteCourse: async (courseId) => {
+    const response = await apiClient.delete(`/courses/${courseId}`);
+    return response.data;
+  },
+
   getModules: async (courseId) => {
     const response = await apiClient.get(`/courses/${courseId}/modules`);
     return response.data;

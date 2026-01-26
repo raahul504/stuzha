@@ -4,6 +4,7 @@ const Joi = require('joi');
 const updateVideoProgressSchema = Joi.object({
   lastPositionSeconds: Joi.number().integer().min(0).required(),
   completed: Joi.boolean().optional(),
+  totalWatchTime: Joi.number().min(0).optional(),
   totalWatchTimeSeconds: Joi.number().min(0).optional().default(0)
 });
 

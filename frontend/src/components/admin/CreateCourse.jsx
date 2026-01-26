@@ -40,7 +40,7 @@ export default function CreateCourse() {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div className="bg-dcs-black rounded-lg shadow-md p-6 w-auto max-w-[80vw]">
       <h2 className="text-2xl font-bold mb-6">Create New Course</h2>
       
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -52,7 +52,7 @@ export default function CreateCourse() {
             value={formData.title}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border rounded"
+            className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-dcs-black text-white focus:border-dcs-purple focus:outline-none transition-all"
           />
         </div>
 
@@ -64,7 +64,7 @@ export default function CreateCourse() {
             value={formData.slug}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border rounded"
+            className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-dcs-black text-white focus:border-dcs-purple focus:outline-none transition-all"
             placeholder="intro-to-react"
           />
         </div>
@@ -77,7 +77,7 @@ export default function CreateCourse() {
             value={formData.shortDescription}
             onChange={handleChange}
             maxLength={500}
-            className="w-full px-3 py-2 border rounded"
+            className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-dcs-black text-white focus:border-dcs-purple focus:outline-none transition-all"
           />
         </div>
 
@@ -89,7 +89,7 @@ export default function CreateCourse() {
             onChange={handleChange}
             required
             rows={5}
-            className="w-full px-3 py-2 border rounded"
+            className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-dcs-black text-white focus:border-dcs-purple focus:outline-none transition-all"
           />
         </div>
 
@@ -104,7 +104,7 @@ export default function CreateCourse() {
               required
               step="0.01"
               min="0"
-              className="w-full px-3 py-2 border rounded"
+              className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-dcs-black text-white focus:border-dcs-purple focus:outline-none transition-all"
             />
           </div>
 
@@ -114,7 +114,7 @@ export default function CreateCourse() {
               name="difficultyLevel"
               value={formData.difficultyLevel}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded"
+              className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-dcs-black text-white focus:border-dcs-purple focus:outline-none transition-all"
             >
               <option value="BEGINNER">Beginner</option>
               <option value="INTERMEDIATE">Intermediate</option>
@@ -131,7 +131,7 @@ export default function CreateCourse() {
             value={formData.estimatedDurationHours}
             onChange={handleChange}
             min="1"
-            className="w-full px-3 py-2 border rounded"
+            className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-dcs-black text-white focus:border-dcs-purple focus:outline-none transition-all"
           />
         </div>
 
@@ -148,7 +148,7 @@ export default function CreateCourse() {
 
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700"
+          className="w-full py-4 bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo text-white rounded-lg font-semibold hover:shadow-lg transition-all"
         >
           Create Course
         </button>

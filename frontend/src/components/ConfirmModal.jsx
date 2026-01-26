@@ -3,13 +3,13 @@ export default function ConfirmModal({ isOpen, onClose, onConfirm, title, messag
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-        <h3 className="text-xl font-bold mb-4">{title}</h3>
-        <p className="text-gray-600 mb-6">{message}</p>
+      <div className="bg-dcs-dark-gray rounded-lg p-8 border border-dcs-purple/20 shadow-2xl">
+        <h3 className="text-2xl font-bold mb-4 text-white">{title}</h3>
+        <p className="text-dcs-gray-600 mb-8">{message}</p>
         <div className="flex justify-end space-x-3">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
+            className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all"
           >
             {cancelText}
           </button>
@@ -18,7 +18,7 @@ export default function ConfirmModal({ isOpen, onClose, onConfirm, title, messag
               onConfirm();
               onClose();
             }}
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+            className="px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg hover:shadow-lg transition-all"
           >
             {confirmText}
           </button>

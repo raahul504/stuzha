@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { adminService } from '../../api/adminService';
+import ConfirmModal from '../ConfirmModal';
+import { showSuccess, showError } from '../../utils/toast';
 
 export default function ManageCourses() {
   const [courses, setCourses] = useState([]);
   const navigate = useNavigate();
+  const [confirmDelete, setConfirmDelete] = useState(null);
 
   useEffect(() => {
     fetchCourses();
@@ -22,9 +25,24 @@ export default function ManageCourses() {
   const handleEdit = (courseId) => {
     navigate(`/admin/course/${courseId}`);
   };
+  
+  const handleDeleteCourse = (courseId) => {
+    setConfirmDelete(courseId);
+  };
+
+  const executeDelete = async () => {
+    try {
+      await adminService.deleteCourse(confirmDelete);
+      showSuccess('Course deleted successfully');
+      fetchCourses();
+      setConfirmDelete(null);
+    } catch (err) {
+      showError('Failed to delete course');
+    }
+  };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div className="bg-dcs-dark-gray rounded-lg shadow-md p-6">
       <h2 className="text-2xl font-bold mb-6">Manage Courses</h2>
       
       {courses.length === 0 ? (
@@ -32,20 +50,37 @@ export default function ManageCourses() {
       ) : (
         <div className="space-y-4">
           {courses.map((course) => (
-            <div key={course.id} className="border rounded p-4 flex justify-between items-center">
+            <div key={course.id} className="border border-dcs-purple/20 rounded-lg p-6 hover:border-dcs-purple transition-all bg-dcs-dark-gray">
               <div>
                 <h3 className="font-bold">{course.title}</h3>
-                <p className="text-sm text-gray-600">{course.shortDescription}</p>
-                <span className={`text-xs px-2 py-1 rounded ${course.isPublished ? 'bg-green-100 text-green-800' : 'bg-gray-100'}`}>
+                <p className="text-sm text-gray-600 mb-3">{course.shortDescription}</p>
+                <span className={`text-xs px-3 py-1.5 rounded-full font-semibold ${course.isPublished 
+                    ? 'bg-green-900/30 text-green-400 border border-green-500/30' 
+                    : 'bg-gray-700 text-gray-300'
+                }`}>
                   {course.isPublished ? 'Published' : 'Draft'}
                 </span>
               </div>
               <button
                 onClick={() => handleEdit(course.id)}
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                className="bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo justify-end text-white px-6 py-2 mt-5 mr-3 rounded-lg hover:shadow-lg transition-all"
               >
                 Manage
               </button>
+              <button
+                onClick={() => handleDeleteCourse(course.id)}
+                className="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-2 mt-5 rounded-lg hover:shadow-lg transition-all"
+              >
+                Delete
+              </button>
+              <ConfirmModal
+                isOpen={!!confirmDelete}
+                onClose={() => setConfirmDelete(null)}
+                onConfirm={executeDelete}
+                title="Delete Course"
+                message="Are you sure? This will delete all modules, content, and student progress. This action cannot be undone."
+                confirmText="Delete Course"
+              />
             </div>
           ))}
         </div>

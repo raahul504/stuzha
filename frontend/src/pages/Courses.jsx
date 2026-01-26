@@ -18,6 +18,7 @@ export default function Courses() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDifficulty, setSelectedDifficulty] = useState('');
   const [priceRange, setPriceRange] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     fetchCourses();
@@ -102,84 +103,97 @@ export default function Courses() {
       <Navbar />
 
       {/* Header */}
-      <div className="pt-32 pb-12 px-8">
+      <div className="pt-27 pb-5 px-8">
         <div className="max-w-[1400px] mx-auto">
-          <h1 className="text-5xl text-center mb-12 bg-gradient-to-r from-white to-dcs-purple bg-clip-text text-transparent">
+          <h1 className="text-5xl leading-normal text-center mb-2 bg-gradient-to-r from-white to-dcs-purple bg-clip-text text-transparent">
             Explore Our Programs
           </h1>
         </div>
       </div>
 
-      <div className="max-w-[1400px] mx-auto" style={{ padding: '4rem 2rem' }}>
+      <div className="max-w-[1400px] mx-auto" style={{ padding: '1rem 2rem' }}>
         {/* Search & Filters */}
-        <div className="card mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {/* Search */}
-            <div className="md:col-span-2">
-              <label className="block text-white text-sm font-semibold mb-2">
-                Search Courses
-              </label>
+        <div className="mb-12">
+          <div className="flex gap-4">
+            {/* Search Bar */}
+            <div className="flex-1 relative">
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search by title or description..."
-                className="form-input"
+                placeholder="Search courses..."
+                className="w-full px-6 py-4 bg-dcs-dark-gray border border-dcs-purple/30 rounded-full text-white placeholder-dcs-text-gray focus:border-dcs-purple focus:outline-none transition-all"
               />
+              <svg className="absolute right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-dcs-text-gray" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
             </div>
 
-            {/* Difficulty Filter */}
-            <div>
-              <label className="block text-white text-sm font-semibold mb-2">
-                Difficulty
-              </label>
-              <select
-                value={selectedDifficulty}
-                onChange={(e) => setSelectedDifficulty(e.target.value)}
-                className="form-input"
-              >
-                <option value="">All Levels</option>
-                <option value="BEGINNER">Beginner</option>
-                <option value="INTERMEDIATE">Intermediate</option>
-                <option value="ADVANCED">Advanced</option>
-              </select>
-            </div>
-
-            {/* Price Filter */}
-            <div>
-              <label className="block text-white text-sm font-semibold mb-2">
-                Price Range
-              </label>
-              <select
-                value={priceRange}
-                onChange={(e) => setPriceRange(e.target.value)}
-                className="form-input"
-              >
-                <option value="">All Prices</option>
-                <option value="free">Free</option>
-                <option value="under50">Under $50</option>
-                <option value="50to100">$50 - $100</option>
-                <option value="over100">Over $100</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Clear Filters */}
-          {(searchTerm || selectedDifficulty || priceRange) && (
-            <div className="mt-4">
+            {/* Filter Button */}
+            <div className="relative">
               <button
-                onClick={clearFilters}
-                className="text-dcs-purple hover:text-dcs-electric-indigo text-sm font-semibold"
+                onClick={() => setShowFilters(!showFilters)}
+                className="px-8 py-4 bg-dcs-purple/20 border border-dcs-purple/50 rounded-full text-white font-semibold hover:bg-dcs-purple/30 transition-all flex items-center gap-2"
               >
-                Clear all filters
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                </svg>
+                Filters
               </button>
-            </div>
-          )}
 
-          {/* Results Count */}
-          <div className="mt-4 text-sm text-dcs-text-gray">
-            Showing {filteredCourses.length} of {courses.length} courses
+              {/* Dropdown */}
+              {showFilters && (
+                <div className="absolute right-0 top-full mt-2 w-80 bg-dcs-dark-gray border border-dcs-purple/30 rounded-2xl p-6 shadow-2xl z-50">
+                  <div className="mb-4">
+                    <label className="block text-white text-sm font-semibold mb-2">
+                      Difficulty
+                    </label>
+                    <select
+                      value={selectedDifficulty}
+                      onChange={(e) => setSelectedDifficulty(e.target.value)}
+                      className="w-full px-4 py-3 bg-dcs-black border border-dcs-purple/30 rounded-lg text-white focus:border-dcs-purple focus:outline-none"
+                    >
+                      <option value="">All Levels</option>
+                      <option value="BEGINNER">Beginner</option>
+                      <option value="INTERMEDIATE">Intermediate</option>
+                      <option value="ADVANCED">Advanced</option>
+                    </select>
+                  </div>
+
+                  <div className="mb-4">
+                    <label className="block text-white text-sm font-semibold mb-2">
+                      Price Range
+                    </label>
+                    <select
+                      value={priceRange}
+                      onChange={(e) => setPriceRange(e.target.value)}
+                      className="w-full px-4 py-3 bg-dcs-black border border-dcs-purple/30 rounded-lg text-white focus:border-dcs-purple focus:outline-none"
+                    >
+                      <option value="">All Prices</option>
+                      <option value="free">Free</option>
+                      <option value="under50">Under $50</option>
+                      <option value="50to100">$50 - $100</option>
+                      <option value="over100">Over $100</option>
+                    </select>
+                  </div>
+
+                  {(selectedDifficulty || priceRange) && (
+                    <button
+                      onClick={clearFilters}
+                      className="w-full py-2 text-red-400 hover:text-red-300 text-sm font-semibold transition-colors"
+                    >
+                      Clear Filters
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
+
+          {/* Results Count
+          <div className="mt-4  text-sm text-dcs-text-gray">
+            Showing {filteredCourses.length} of {courses.length} courses
+          </div> */}
         </div>
 
         {error && (

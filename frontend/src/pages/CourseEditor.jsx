@@ -34,20 +34,20 @@ export default function CourseEditor() {
   if (loading) return <LoadingSpinner message="Loading course..." />;
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <nav className="bg-white shadow-md mb-6">
-        <div className="container mx-auto px-4 py-4">
+    <div className="min-h-screen bg-dcs-black">
+      <nav className="bg-dcs-black shadow-md mb-6">
+        <div className="container mx-auto px-4 bg-dcs-black">
           <button onClick={() => {
             const isInstructor = window.location.pathname.includes('/instructor/');
             navigate(isInstructor ? '/instructor' : '/admin');
-          }} className="text-blue-600 hover:underline">
+          }} className="text-blue-600 hover:underline mt-7 mb-10">
             ← Back to {window.location.pathname.includes('/instructor/') ? 'Instructor' : 'Admin'} Dashboard
           </button>
-          <h1 className="text-2xl font-bold mt-2">{course.title}</h1>
+          <h1 className="text-5xl font-bold mt-2">{course.title}</h1>
         </div>
       </nav>
 
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 mt-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <ModuleList modules={modules} courseId={id} onUpdate={fetchCourse} />

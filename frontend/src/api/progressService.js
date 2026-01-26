@@ -5,6 +5,7 @@ export const progressService = {
     const response = await apiClient.put(`/progress/video/${contentId}`, {
       lastPositionSeconds,
       completed,
+      totalWatchTime,
       totalWatchTimeSeconds,
     });
     return response.data;

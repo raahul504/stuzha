@@ -75,23 +75,23 @@ export default function ModuleList({ modules, courseId, onUpdate }) {
       <h2 className="text-2xl font-bold">Course Modules</h2>
       
       {modules.map((module, index) => (
-        <div key={module.id} className="bg-gray-50 rounded-lg">
+        <div key={module.id} className="bg-dcs-dark-gray rounded-lg border border-dcs-purple/20">
           {editingModule === module.id ? (
             <div className="p-4 space-y-2">
               <input
                 value={editForm.title}
                 onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
-                className="w-full px-3 py-2 border rounded"
+                className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-dcs-black text-white focus:border-dcs-purple focus:outline-none transition-all"
               />
               <textarea
                 value={editForm.description}
                 onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-                className="w-full px-3 py-2 border rounded"
+                className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-dcs-black text-white focus:border-dcs-purple focus:outline-none transition-all"
                 rows={2}
               />
               <div className="flex space-x-2">
-                <button onClick={() => handleSaveEdit(module.id)} className="bg-green-600 text-white px-4 py-2 rounded">Save</button>
-                <button onClick={() => setEditingModule(null)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
+                <button onClick={() => handleSaveEdit(module.id)} className="bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-2 rounded-lg hover:shadow-lg">Save</button>
+                <button onClick={() => setEditingModule(null)} className="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700">Cancel</button>
               </div>
             </div>
           ) : (
@@ -115,11 +115,11 @@ export default function ModuleList({ modules, courseId, onUpdate }) {
                 >
                   ↓
                 </button>
-                <button onClick={(e) => { e.stopPropagation(); handleEdit(module); }} className="text-blue-600 hover:underline text-sm">Edit</button>
+                <button onClick={(e) => { e.stopPropagation(); handleEdit(module); }} className="text-dcs-purple hover:text-dcs-electric-indigo transition-colors font-semibold">Edit</button>
                 <button 
                     onClick={() => handleDeleteModule(module.id)} 
                     disabled={deletingId === module.id}
-                    className="text-red-600 text-xs hover:underline disabled:text-gray-400"
+                    className="text-red-400 hover:text-red-500 transition-colors font-semibold"
                   >
                     {deletingId === module.id ? 'Deleting...' : 'Delete'}
                   </button>
@@ -225,7 +225,7 @@ function ContentList({ moduleId, onUpdate }) {
         <ul className="space-y-2">
           {content.map((item, index) => (
             <li key={item.id}>
-              <div className="flex justify-between items-center bg-white p-2 rounded">
+              <div className="flex justify-between items-center bg-dcs-dark-gray p-2 border border-dcs-purple/20 rounded-lg">
                 <span className="text-sm">
                   {item.contentType === 'VIDEO' && '🎥'} 
                   {item.contentType === 'ARTICLE' && '📄'} 
@@ -273,39 +273,35 @@ function ContentList({ moduleId, onUpdate }) {
               </div>
 
               {selectedAssessment === item.id && (
-                <div className="ml-4 mt-2 p-3 bg-gray-50 rounded">
-                  <p className="text-sm font-semibold mb-2">{questions.length} Questions</p>
+                <div className="ml-4 mt-2 p-3 bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo rounded">
+                  <p className="text-md font-semibold mb-2">{questions.length} Questions</p>
                   {questions.map((q, idx) => (
-                    <div key={q.id} className="text-xs mb-3 p-3 bg-white rounded border">
+                    <div key={q.id} className="text-xs text-gray-600 mb-3 p-3 bg-white rounded">
                       <p className="font-semibold mb-2">
                         {idx + 1}. {q.questionText}
                       </p>
-                      <p className="text-gray-600 mb-1">Type: {q.questionType}</p>
-                      
+                      <p className="text-gray-600">Type: {q.questionType}</p>                      
                       {q.questionType === 'MCQ' ? (
-                        <div className="ml-3 space-y-1">
+                        <div className="ml-3 text-gray-600 space-y-1">
                           {q.optionA && <p>A. {q.optionA}</p>}
                           {q.optionB && <p>B. {q.optionB}</p>}
                           {q.optionC && <p>C. {q.optionC}</p>}
                           {q.optionD && <p>D. {q.optionD}</p>}
                         </div>
                       ) : (
-                        <div className="ml-3 space-y-1">
+                        <div className="ml-3 text-gray-600 space-y-1">
                           <p>• True</p>
                           <p>• False</p>
                         </div>
-                      )}
-                      
+                      )}                    
                       <p className="mt-2 text-green-700 font-medium">
                         Correct Answer: {q.correctAnswer}
-                      </p>
-                      
+                      </p>                      
                       {q.explanation && (
                         <p className="mt-1 text-gray-600 italic">
                           Explanation: {q.explanation}
                         </p>
-                      )}
-                      
+                      )}                      
                       <p className="mt-1 text-gray-500">
                         Points: {q.points}
                       </p>

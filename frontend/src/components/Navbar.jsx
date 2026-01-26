@@ -33,8 +33,8 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="fixed top-0 w-full bg-dcs-black/95 backdrop-blur-lg z-50 border-b border-dcs-purple/20 shadow-lg">
-      <div className="max-w-[1400px] mx-auto px-8 py-4 flex justify-between items-center">
+    <nav className="fixed top-0 w-full max-w-[100vw] bg-dcs-black/95 backdrop-blur-lg z-50 border-b border-dcs-purple/20 shadow-lg">
+      <div className="max-w-[1400px] mx-auto px-8 py-4 flex justify-end items-center">
         
         <ul className="flex gap-6 list-none items-center">
           <li>

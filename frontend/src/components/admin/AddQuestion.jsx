@@ -62,10 +62,10 @@ export default function AddQuestion({ contentId, onAdd }) {
   };
 
   return (
-    <div className="bg-white p-4 rounded border mt-4">
-      <h4 className="font-semibold mb-3">Add Question</h4>
+    <div className="bg-dcs-dark-gray p-6 rounded-lg border border-dcs-purple/20">
+      <h4 className="font-semibold mb-4 text-white text-lg">Add Question</h4>
       <form onSubmit={handleSubmit} className="space-y-3">
-        <select value={type} onChange={(e) => setType(e.target.value)} className="w-full px-3 py-2 border rounded">
+        <select value={type} onChange={(e) => setType(e.target.value)} className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-dcs-black text-white focus:border-dcs-purple focus:outline-none">
           <option value="MCQ">Multiple Choice</option>
           <option value="TRUE_FALSE">True/False</option>
         </select>
@@ -75,7 +75,7 @@ export default function AddQuestion({ contentId, onAdd }) {
           value={formData.questionText}
           onChange={(e) => setFormData({ ...formData, questionText: e.target.value })}
           required
-          className="w-full px-3 py-2 border rounded"
+          className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-dcs-black text-white focus:border-dcs-purple focus:outline-none"
           rows={2}
         />
 
@@ -87,7 +87,7 @@ export default function AddQuestion({ contentId, onAdd }) {
               value={formData.optionA}
               onChange={(e) => setFormData({ ...formData, optionA: e.target.value })}
               required
-              className="w-full px-3 py-2 border rounded"
+              className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-dcs-black text-white focus:border-dcs-purple focus:outline-none"
             />
             <input
               type="text"
@@ -95,21 +95,21 @@ export default function AddQuestion({ contentId, onAdd }) {
               value={formData.optionB}
               onChange={(e) => setFormData({ ...formData, optionB: e.target.value })}
               required
-              className="w-full px-3 py-2 border rounded"
+              className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-dcs-black text-white focus:border-dcs-purple focus:outline-none"
             />
             <input
               type="text"
               placeholder="Option C (optional)"
               value={formData.optionC}
               onChange={(e) => setFormData({ ...formData, optionC: e.target.value })}
-              className="w-full px-3 py-2 border rounded"
+              className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-dcs-black text-white focus:border-dcs-purple focus:outline-none"
             />
             <input
               type="text"
               placeholder="Option D (optional)"
               value={formData.optionD}
               onChange={(e) => setFormData({ ...formData, optionD: e.target.value })}
-              className="w-full px-3 py-2 border rounded"
+              className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-dcs-black text-white focus:border-dcs-purple focus:outline-none"
             />
             <input
               type="text"
@@ -118,7 +118,7 @@ export default function AddQuestion({ contentId, onAdd }) {
               onChange={(e) => setFormData({ ...formData, correctAnswer: e.target.value.toUpperCase() })}
               required
               maxLength={1}
-              className="w-full px-3 py-2 border rounded"
+              className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-dcs-black text-white focus:border-dcs-purple focus:outline-none"
             />
           </>
         ) : (
@@ -126,7 +126,7 @@ export default function AddQuestion({ contentId, onAdd }) {
             value={formData.correctAnswer}
             onChange={(e) => setFormData({ ...formData, correctAnswer: e.target.value })}
             required
-            className="w-full px-3 py-2 border rounded"
+            className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-dcs-black text-white focus:border-dcs-purple focus:outline-none"
           >
             <option value="">Select correct answer</option>
             <option value="TRUE">True</option>
@@ -138,7 +138,7 @@ export default function AddQuestion({ contentId, onAdd }) {
           placeholder="Explanation (optional)"
           value={formData.explanation}
           onChange={(e) => setFormData({ ...formData, explanation: e.target.value })}
-          className="w-full px-3 py-2 border rounded"
+          className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-dcs-black text-white focus:border-dcs-purple focus:outline-none"
           rows={2}
         />
 
@@ -151,7 +151,7 @@ export default function AddQuestion({ contentId, onAdd }) {
             required
         />
 
-        <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+        <button type="submit" className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-3 rounded-lg hover:shadow-lg transition-all font-semibold">
           Add Question
         </button>
       </form>

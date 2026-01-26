@@ -41,10 +41,10 @@ export default function InstructorCreateCourse() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-dcs-black">
       <Navbar />
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 bg-dcs-black">
         <div className="max-w-3xl mx-auto">
           <div className="mb-6">
             <button
@@ -56,7 +56,7 @@ export default function InstructorCreateCourse() {
             <h1 className="text-3xl font-bold">Create New Course</h1>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-dcs-black rounded-lg shadow-md p-6">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-gray-700 mb-2">Title *</label>
@@ -66,7 +66,7 @@ export default function InstructorCreateCourse() {
                   value={formData.title}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 border rounded"
+                  className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-dcs-black text-white focus:border-dcs-purple focus:outline-none transition-all"
                 />
               </div>
 
@@ -78,7 +78,7 @@ export default function InstructorCreateCourse() {
                   value={formData.slug}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 border rounded"
+                  className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-dcs-black text-white focus:border-dcs-purple focus:outline-none transition-all"
                   placeholder="intro-to-react"
                 />
               </div>
@@ -91,7 +91,7 @@ export default function InstructorCreateCourse() {
                   value={formData.shortDescription}
                   onChange={handleChange}
                   maxLength={500}
-                  className="w-full px-3 py-2 border rounded"
+                 className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-dcs-black text-white focus:border-dcs-purple focus:outline-none transition-all"
                 />
               </div>
 
@@ -103,7 +103,7 @@ export default function InstructorCreateCourse() {
                   onChange={handleChange}
                   required
                   rows={5}
-                  className="w-full px-3 py-2 border rounded"
+                  className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-dcs-black text-white focus:border-dcs-purple focus:outline-none transition-all"
                 />
               </div>
 
@@ -118,7 +118,7 @@ export default function InstructorCreateCourse() {
                     required
                     step="0.01"
                     min="0"
-                    className="w-full px-3 py-2 border rounded"
+                    className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-dcs-black text-white focus:border-dcs-purple focus:outline-none transition-all"
                   />
                 </div>
 
@@ -128,7 +128,7 @@ export default function InstructorCreateCourse() {
                     name="difficultyLevel"
                     value={formData.difficultyLevel}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border rounded"
+                    className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-dcs-black text-white focus:border-dcs-purple focus:outline-none transition-all"
                   >
                     <option value="BEGINNER">Beginner</option>
                     <option value="INTERMEDIATE">Intermediate</option>
@@ -145,7 +145,7 @@ export default function InstructorCreateCourse() {
                   value={formData.estimatedDurationHours}
                   onChange={handleChange}
                   min="1"
-                  className="w-full px-3 py-2 border rounded"
+                  className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-dcs-black text-white focus:border-dcs-purple focus:outline-none transition-all"
                 />
               </div>
 
