@@ -64,6 +64,7 @@ export default function ModuleList({ modules, courseId, onUpdate }) {
 
     try {
       await adminService.reorderModules(courseId, orders);
+      showSuccess('Module reordered');
       onUpdate();
     } catch (err) {
       showError('Failed to reorder');
@@ -210,6 +211,7 @@ function ContentList({ moduleId, onUpdate }) {
 
     try {
       await adminService.reorderContent(moduleId, orders);
+      showSuccess('Content reordered');
       onUpdate();
     } catch (err) {
       showError('Failed to reorder');

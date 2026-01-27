@@ -128,6 +128,8 @@ const deleteModule = async (moduleId, userId) => {
  * Reorder modules
  */
 const reorderModules = async (courseId, moduleOrders, userId) => {
+  console.log('reorderModules called:', { courseId, moduleOrders, userId });
+  
   // Verify permission
   const course = await prisma.course.findUnique({
     where: { id: courseId },
@@ -148,15 +150,42 @@ const reorderModules = async (courseId, moduleOrders, userId) => {
     throw new Error('Unauthorized to modify this course');
   }
 
-  // Update all module orders in transaction
-  await prisma.$transaction(
-    moduleOrders.map(({ moduleId, orderIndex }) =>
-      prisma.module.update({
-        where: { id: moduleId },
-        data: { orderIndex },
-      })
-    )
-  );
+  console.log('About to update module orders:', moduleOrders);
+
+  // Update all module orders in transaction using two-phase approach
+  // Phase 1: Set all modules to temporary negative indices to avoid unique constraint conflicts
+  // Phase 2: Update to final indices
+  try {
+    await prisma.$transaction(async (tx) => {
+      // Phase 1: Set temporary negative indices
+      console.log('Phase 1: Setting temporary negative indices...');
+      await Promise.all(
+        moduleOrders.map((item, idx) =>
+          tx.module.update({
+            where: { id: item.moduleId },
+            data: { orderIndex: -1000 - idx }, // Use negative indices temporarily
+          })
+        )
+      );
+      console.log('Phase 1 complete: Temporary indices set');
+
+      // Phase 2: Set final indices
+      console.log('Phase 2: Setting final indices...');
+      await Promise.all(
+        moduleOrders.map(({ moduleId, orderIndex }) =>
+          tx.module.update({
+            where: { id: moduleId },
+            data: { orderIndex },
+          })
+        )
+      );
+      console.log('Phase 2 complete: Final indices set');
+    });
+    console.log('Module reorder successful');
+  } catch (error) {
+    console.error('Error in module reorder transaction:', error);
+    throw error;
+  }
 
   return { message: 'Modules reordered successfully' };
 };

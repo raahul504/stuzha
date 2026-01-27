@@ -94,8 +94,13 @@ export const adminService = {
   },
 
   reorderModules: async (courseId, orders) => {
-    const response = await apiClient.put(`/courses/${courseId}/modules/reorder`, { orders });
-    return response.data;
+    try {
+      const response = await apiClient.put(`/courses/${courseId}/modules/reorder`, { orders });
+      return response.data;
+    } catch (error) {
+      console.error('Error reordering modules:', error);
+      throw error;
+    }
   },
 
   reorderContent: async (moduleId, orders) => {

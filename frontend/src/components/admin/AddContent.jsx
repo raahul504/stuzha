@@ -6,15 +6,37 @@ export default function AddContent({ moduleId, onAdd }) {
   const [type, setType] = useState('VIDEO');
   const [formData, setFormData] = useState({ title: '', description: '', isPreview: false });
   const [videoFile, setVideoFile] = useState(null);
+  const [videoDuration, setVideoDuration] = useState(null);
   const [articleFile, setArticleFile] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  const handleVideoFileChange = (e) => {
+    const file = e.target.files[0];
+    setVideoFile(file);
+    
+    if (file) {
+      // Extract video duration
+      const video = document.createElement('video');
+      video.preload = 'metadata';
+      video.onloadedmetadata = () => {
+        setVideoDuration(Math.ceil(video.duration));
+        window.URL.revokeObjectURL(video.src);
+      };
+      video.src = URL.createObjectURL(file);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
       if (type === 'VIDEO' && videoFile) {
-        await adminService.uploadVideo(moduleId, { ...formData, videoDurationSeconds: 300 }, videoFile);
+        if (!videoDuration) {
+          showError('Could not determine video duration. Please try again.');
+          setLoading(false);
+          return;
+        }
+        await adminService.uploadVideo(moduleId, { ...formData, videoDurationSeconds: videoDuration }, videoFile);
       } else if (type === 'ARTICLE' && articleFile) {
         await adminService.uploadArticle(moduleId, formData, articleFile);
       } else if (type === 'ASSESSMENT') {
@@ -23,6 +45,7 @@ export default function AddContent({ moduleId, onAdd }) {
       showSuccess('Content added!');
       setFormData({ title: '', description: '', isPreview: false });
       setVideoFile(null);
+      setVideoDuration(null);
       setArticleFile(null);
       onAdd();
     } catch (err) {
@@ -60,7 +83,18 @@ export default function AddContent({ moduleId, onAdd }) {
         />
 
         {type === 'VIDEO' && (
-          <input type="file" accept="video/*" onChange={(e) => setVideoFile(e.target.files[0])} className="w-full" required />
+          <div>
+            <input 
+              type="file" 
+              accept="video/*" 
+              onChange={handleVideoFileChange}
+              className="w-full" 
+              required 
+            />
+            {videoDuration && (
+              <p className="text-xs text-green-400 mt-1">Duration: {videoDuration} seconds</p>
+            )}
+          </div>
         )}
 
         {type === 'ARTICLE' && (

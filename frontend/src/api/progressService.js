@@ -1,11 +1,10 @@
 import apiClient from './axios';
 
 export const progressService = {
-  updateVideoProgress: async (contentId, lastPositionSeconds, completed = false) => {
+  updateVideoProgress: async (contentId, lastPositionSeconds, completed = false, totalWatchTimeSeconds = 0) => {
     const response = await apiClient.put(`/progress/video/${contentId}`, {
       lastPositionSeconds,
       completed,
-      totalWatchTime,
       totalWatchTimeSeconds,
     });
     return response.data;

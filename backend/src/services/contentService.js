@@ -178,14 +178,35 @@ const reorderContentItems = async (moduleId, contentOrders, userId) => {
     throw new Error('Unauthorized to modify this module');
   }
 
-  await prisma.$transaction(
-    contentOrders.map(({ contentId, orderIndex }) =>
-      prisma.contentItem.update({
-        where: { id: contentId },
-        data: { orderIndex },
-      })
-    )
-  );
+  // Use two-phase approach to avoid unique constraint conflicts
+  // Phase 1: Set to temporary negative indices
+  // Phase 2: Set to final indices
+  try {
+    await prisma.$transaction(async (tx) => {
+      // Phase 1: Set temporary negative indices
+      await Promise.all(
+        contentOrders.map((item, idx) =>
+          tx.contentItem.update({
+            where: { id: item.contentId },
+            data: { orderIndex: -1000 - idx },
+          })
+        )
+      );
+
+      // Phase 2: Set final indices
+      await Promise.all(
+        contentOrders.map(({ contentId, orderIndex }) =>
+          tx.contentItem.update({
+            where: { id: contentId },
+            data: { orderIndex },
+          })
+        )
+      );
+    });
+  } catch (error) {
+    console.error('Error in content reorder transaction:', error);
+    throw error;
+  }
 
   return { message: 'Content items reordered successfully' };
 };

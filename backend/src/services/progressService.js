@@ -4,11 +4,15 @@ const prisma = require('../config/database');
  * Update video progress
  */
 const updateVideoProgress = async (userId, contentItemId, progressData) => {
+  console.log('updateVideoProgress called:', { userId, contentItemId, progressData });
+  
   // Verify user is enrolled
   const contentItem = await prisma.contentItem.findUnique({
     where: { id: contentItemId },
     include: { module: true },
   });
+
+  console.log('contentItem found:', !!contentItem);
 
   if (!contentItem || contentItem.contentType !== 'VIDEO') {
     throw new Error('Invalid video content item');
@@ -23,11 +27,14 @@ const updateVideoProgress = async (userId, contentItemId, progressData) => {
     },
   });
 
+  console.log('enrollment found:', !!enrollment);
+
   if (!enrollment) {
     throw new Error('Not enrolled in this course');
   }
 
-  const { lastPositionSeconds, completed, totalWatchTime } = progressData;
+  const { lastPositionSeconds, completed, totalWatchTimeSeconds } = progressData;
+  console.log('Destructured data:', { lastPositionSeconds, completed, totalWatchTimeSeconds });
 
   // Check if video is already completed
   const existingProgress = await prisma.videoProgress.findUnique({
@@ -39,12 +46,20 @@ const updateVideoProgress = async (userId, contentItemId, progressData) => {
     },
   });
 
-  // If video is already completed, don't update progress (allow rewatching without affecting completion)
-  if (existingProgress && existingProgress.completed) {
+  console.log('existingProgress:', existingProgress);
+
+  // If video is already completed AND we're not trying to update it with new data, don't recalculate
+  // But always update the record with latest position/watch time
+  const wasAlreadyCompleted = existingProgress && existingProgress.completed;
+  
+  if (wasAlreadyCompleted && !completed) {
+    // Video was already completed, and we're not completing it again - just return
+    console.log('Video already completed, returning existing progress');
     return existingProgress;
   }
 
   // Update or create video progress
+  console.log('About to upsert with:', { lastPositionSeconds, totalWatchTimeSeconds: totalWatchTimeSeconds || 0, completed: completed || false });
   const videoProgress = await prisma.videoProgress.upsert({
     where: {
       userId_contentItemId: {
@@ -70,8 +85,15 @@ const updateVideoProgress = async (userId, contentItemId, progressData) => {
     },
   });
 
-  // Recalculate course progress only if this is a new completion
-  if (completed && !existingProgress?.completed) {
+  console.log('videoProgress after upsert:', videoProgress);
+  console.log('Checking if should recalculate: completed=', completed, 'wasAlreadyCompleted=', wasAlreadyCompleted);
+
+  // Recalculate course progress whenever a video is marked as completed
+  // This ensures progress is always accurate even if rewatching or updating completion status
+  if (completed) {
+    console.log('Video is completed, recalculating course progress');
+    // Small delay to ensure database writes
+    await new Promise(resolve => setTimeout(resolve, 100));
     await recalculateCourseProgress(enrollment.id);
   }
 
@@ -179,6 +201,8 @@ const submitAssessment = async (userId, contentItemId, answers) => {
  * Recalculate course completion percentage
  */
 const recalculateCourseProgress = async (enrollmentId) => {
+  console.log('recalculateCourseProgress called for enrollmentId:', enrollmentId);
+  
   const enrollment = await prisma.enrollment.findUnique({
     where: { id: enrollmentId },
     include: {
@@ -211,6 +235,10 @@ const recalculateCourseProgress = async (enrollmentId) => {
     m.contentItems.filter((c) => c.contentType === 'ASSESSMENT')
   );
 
+  console.log('allVideos count:', allVideos.length);
+  console.log('allAssessments count:', allAssessments.length);
+  console.log('videoProgress count:', enrollment.videoProgress.length);
+
   let totalWeight = 0;
   let completedWeight = 0;
 
@@ -222,6 +250,8 @@ const recalculateCourseProgress = async (enrollmentId) => {
     const progress = enrollment.videoProgress.find(
       (vp) => vp.contentItemId === video.id
     );
+    console.log(`Video ${video.id} (${video.title}): weight=${weight}, completed=${progress?.completed || false}`);
+    
     if (progress && progress.completed) {
       completedWeight += weight;
     }
@@ -235,6 +265,8 @@ const recalculateCourseProgress = async (enrollmentId) => {
     const attempt = enrollment.assessmentAttempts.find(
       (a) => a.contentItemId === assessment.id
     );
+    console.log(`Assessment ${assessment.id} (${assessment.title}): weight=${ASSESSMENT_WEIGHT}, passed=${attempt?.passed || false}`);
+    
     if (attempt && attempt.passed) {
       completedWeight += ASSESSMENT_WEIGHT;
     }
@@ -243,6 +275,8 @@ const recalculateCourseProgress = async (enrollmentId) => {
   const progressPercentage = totalWeight > 0 ? (completedWeight / totalWeight) * 100 : 0;
   const completed = progressPercentage >= 100;
   const wasCompleted = enrollment.completed;
+
+  console.log('Progress calculation:', { totalWeight, completedWeight, progressPercentage: progressPercentage.toFixed(2), completed, wasCompleted });
 
   // Update enrollment
   await prisma.enrollment.update({

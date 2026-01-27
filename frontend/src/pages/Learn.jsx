@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { courseService } from '../api/courseService';
 import { progressService } from '../api/progressService';
@@ -39,28 +39,21 @@ export default function Learn() {
     }
   };
 
-  const handleContentSelect = (content, module) => {
-    // Check if assessment is locked
-    if (content.contentType === 'ASSESSMENT') {
-      const videosInModule = module.contentItems.filter(item => item.contentType === 'VIDEO');
-      const completedVideos = videosInModule.filter(item => item.videoCompleted);
-      
-      if (videosInModule.length > 0 && completedVideos.length < videosInModule.length) {
-        alert(`Complete all ${videosInModule.length} videos in this module before taking the assessment (${completedVideos.length}/${videosInModule.length} completed)`);
-        return;
-      }
-    }
+  const handleContentSelect = (content) => {
+    console.log('Selected content:', { id: content.id, title: content.title, contentType: content.contentType });
     setSelectedContent(content);
   };
 
   const handleVideoProgress = async (contentId, position, completed, totalWatchTime) => {
     try {
+      console.log('handleVideoProgress called:', { contentId, position, completed, totalWatchTime });
       await progressService.updateVideoProgress(contentId, position, completed, totalWatchTime);
       if (completed) {
+        console.log('Video marked as completed, refreshing course');
         fetchCourse(); // Refresh to update progress
       }
     } catch (err) {
-      console.error('Failed to update progress');
+      console.error('Failed to update progress:', err);
     }
   };
 
@@ -74,17 +67,6 @@ export default function Learn() {
       showError('Failed to submit assessment');
     }
   };
-
-  // Helper function to check if assessment is locked
-  const isAssessmentLocked = (content, module) => {
-    if (content.contentType !== 'ASSESSMENT') return false;
-    
-    const videosInModule = module.contentItems.filter(item => item.contentType === 'VIDEO');
-    const completedVideos = videosInModule.filter(item => item.videoCompleted);
-    
-    return videosInModule.length > 0 && completedVideos.length < videosInModule.length;
-  };
-
 
   if (loading) {
     return <LoadingSpinner message="Loading course content..." />;
@@ -136,64 +118,46 @@ export default function Learn() {
                 </button>
             </div>
             )}
-            
-          {/* Modules & Content */}
-          <div className="p-4">
-            {course.modules.map((module, idx) => {
-              const videosInModule = module.contentItems.filter(item => item.contentType === 'VIDEO');
-              const completedVideos = videosInModule.filter(item => item.videoCompleted);
-              
-              return (
-                <div key={module.id} className="mb-6">
-                  <h3 className="font-semibold mb-2 text-white">
-                    {idx + 1}. {module.title}
-                  </h3>
-                  {videosInModule.length > 0 && (
-                    <div className="text-xs text-gray-600 mb-2">
-                      Videos: {completedVideos.length}/{videosInModule.length} completed
+
+        {/* Modules & Content */}
+        <div className="p-4">
+          {course.modules.map((module, idx) => (
+            <div key={module.id} className="mb-6">
+              <h3 className="font-semibold mb-3 text-white">
+                {idx + 1}. {module.title}
+              </h3>
+              <ul className="space-y-1">
+                {module.contentItems.map((item) => (
+                  <li
+                    key={item.id}
+                    onClick={() => handleContentSelect(item)}
+                    className={`p-3 rounded cursor-pointer transition-all ${
+                      selectedContent?.id === item.id 
+                        ? 'bg-dcs-purple/20 border-l-4 border-dcs-purple text-white' 
+                        : 'hover:bg-dcs-light-gray text-dcs-text-gray hover:text-white'
+                    }`}
+                  >
+                    <div className="flex items-center text-sm">
+                      <span className="mr-2 text-lg">
+                        {item.contentType === 'VIDEO' && '🎥'}
+                        {item.contentType === 'ARTICLE' && '📄'}
+                        {item.contentType === 'ASSESSMENT' && '✏️'}
+                      </span>
+                      <span>{item.title}</span>
                     </div>
-                  )}
-                  <ul className="space-y-1">
-                    {module.contentItems.map((item) => {
-                      const locked = isAssessmentLocked(item, module);
-                      
-                      return (
-                        <li
-                          key={item.id}
-                          onClick={() => handleContentSelect(item, module)}
-                          className={`p-3 rounded cursor-pointer ${
-                            locked ? 'opacity-50 cursor-not-allowed' : 'hover:bg-dark-purple'
-                          } ${
-                            selectedContent?.id === item.id ? 'bg-dcs-dark-gray hover:bg-dcs-dark-purple border-l-4 border-dcs-purple' : 'hover:bg-dcs-electric-indigo text-dcs-text-gray hover:text-white'
-                          }`}
-                        >
-                          <div className="flex items-center text-sm justify-between">
-                            <div className="flex items-center">
-                              <span className="mr-2 text-lg">
-                                {item.contentType === 'VIDEO' && (item.videoCompleted ? '✅' : '🎥')}
-                                {item.contentType === 'ARTICLE' && '📄'}
-                                {item.contentType === 'ASSESSMENT' && (locked ? '🔒' : '✏️')}
-                              </span>
-                              <span>{item.title}</span>
-                            </div>
-                            {locked && (
-                              <span className="text-xs text-red-600 ml-2">Locked</span>
-                            )}
-                          </div>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              );
-            })}
-          </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
+      </div>
 
       {/* Main Content Area */}
       <div className="flex-1 p-8 overflow-y-auto">
         {selectedContent ? (
           <ContentViewer
+            key={selectedContent.id}
             content={selectedContent}
             onVideoProgress={handleVideoProgress}
             onAssessmentSubmit={handleAssessmentSubmit}
@@ -227,8 +191,8 @@ function VideoPlayer({ content, onProgress }) {
   const [videoUrl, setVideoUrl] = useState('');
   const [error, setError] = useState(false);
   const [lastSavedTime, setLastSavedTime] = useState(0);
-  const [totalWatchTime, setTotalWatchTime] = useState(content.totalWatchTimeSeconds || 0); // NEW: Track actual watch time
-  const [lastUpdateTime, setLastUpdateTime] = useState(null); // NEW: Track when last updated
+  const totalWatchTimeRef = useRef(content.totalWatchTimeSeconds || 0); // Use ref to track watch time
+  const lastUpdateTimeRef = useRef(null);
 
   useEffect(() => {
     if (!content.videoUrl) {
@@ -241,8 +205,9 @@ function VideoPlayer({ content, onProgress }) {
       .catch(() => setError(true));
 
       // Reset watch time for new video
-      setTotalWatchTime(0);
-      setLastUpdateTime(null);
+      totalWatchTimeRef.current = 0;
+      lastUpdateTimeRef.current = null;
+      setLastSavedTime(0);
     }, [content.id]);
 
   // Set initial video position from saved progress
@@ -278,44 +243,45 @@ function VideoPlayer({ content, onProgress }) {
     const now = Date.now();
     
     // Calculate watch time increment
-    if (lastUpdateTime && !video.paused && !video.seeking) {
-      const timeDiff = (now - lastUpdateTime) / 1000; // Convert to seconds
+    if (lastUpdateTimeRef.current && !video.paused && !video.seeking) {
+      const timeDiff = (now - lastUpdateTimeRef.current) / 1000; // Convert to seconds
       // Only count if time diff is reasonable (between 0.1 and 2 seconds to avoid skips)
       if (timeDiff > 0.1 && timeDiff < 2) {
-        setTotalWatchTime(prev => prev + timeDiff);
+        totalWatchTimeRef.current += timeDiff;
       }
     }
-    setLastUpdateTime(now);
+    lastUpdateTimeRef.current = now;
     
     // Save progress every 5 seconds
     if (currentTime - lastSavedTime >= 5) {
       const videoDuration = content.videoDurationSeconds || video.duration;
-      const completed = totalWatchTime >= videoDuration * 1.00; // 100% watch time required
-      onProgress(content.id, currentTime, completed, totalWatchTime);
+      const completed = totalWatchTimeRef.current >= videoDuration * 0.90; // 90% watch time required
+      onProgress(content.id, currentTime, completed, totalWatchTimeRef.current);
       setLastSavedTime(currentTime);
     }
   };
 
   const handlePause = () => {
-    setLastUpdateTime(null); // Stop counting when paused
+    lastUpdateTimeRef.current = null; // Stop counting when paused
   };
 
   const handlePlay = () => {
-    setLastUpdateTime(Date.now()); // Resume counting when playing
+    lastUpdateTimeRef.current = Date.now(); // Resume counting when playing
   };
 
   const handleSeeking = () => {
-    setLastUpdateTime(null); // Stop counting during seek
+    lastUpdateTimeRef.current = null; // Stop counting during seek
   };
 
   const handleSeeked = () => {
-    setLastUpdateTime(Date.now()); // Resume after seek
+    lastUpdateTimeRef.current = Date.now(); // Resume after seek
   };
 
   const handleEnded = () => {
     const videoDuration = content.videoDurationSeconds || 0;
-    const completed = totalWatchTime >= videoDuration * 0.95;
-    onProgress(content.id, videoDuration, completed, totalWatchTime);
+    const completed = totalWatchTimeRef.current >= videoDuration * 0.90;
+    console.log('Video ended:', { videoDuration, totalWatchTime: totalWatchTimeRef.current, watchPercentage: (totalWatchTimeRef.current / videoDuration * 100).toFixed(2), completed });
+    onProgress(content.id, videoDuration, completed, totalWatchTimeRef.current);
   };
 
   return (
