@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
-  const { user, logout, isAuthenticated } = useAuth();
+  const { user, logout, isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
@@ -21,7 +21,7 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     await logout();
-    navigate('/login');
+    navigate('/');
     setShowDropdown(false);
   };
 
@@ -31,6 +31,17 @@ export default function Navbar() {
     const lastName = user.lastName || '';
     return (firstName.charAt(0) + (lastName.charAt(0) || '')).toUpperCase() || 'U';
   };
+
+  // Don't render user info while loading
+  if (loading) {
+    return (
+      <nav className="fixed top-0 w-full max-w-[100vw] bg-dcs-black/95 backdrop-blur-lg z-50 border-b border-dcs-purple/20 shadow-lg">
+        <div className="max-w-[1400px] mx-auto px-8 py-4 flex justify-end items-center">
+          <div className="text-white">Loading...</div>
+        </div>
+      </nav>
+    );
+  }
 
   return (
     <nav className="fixed top-0 w-full max-w-[100vw] bg-dcs-black/95 backdrop-blur-lg z-50 border-b border-dcs-purple/20 shadow-lg">
@@ -94,7 +105,7 @@ export default function Navbar() {
                   <span className="text-white text-sm">{user?.firstName || 'User'}</span>
                 </div>
                 {showDropdown && (
-                  <div className="absolute top-11 right-0 bg-dcs-dark-gray border border-dcs-purple rounded-xl w-60 p-6 z-[1100] shadow-2xl">
+                  <div className="absolute top-11 right-0 bg-dcs-dark-gray border border-dcs-purple rounded-xl w-60 p-6 mt-5 z-[1100] shadow-2xl">
                     <h4 className="my-2 text-white font-semibold">
                       {user?.firstName} {user?.lastName}
                     </h4>

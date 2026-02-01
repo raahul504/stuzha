@@ -131,11 +131,11 @@ export default function CourseDetail() {
                           {item.contentType === 'ASSESSMENT' && '✏️'}
                         </span>
                         <span>{item.title}</span>
-                        {item.isPreview && (
+                        {/*{item.isPreview && (
                           <span className="ml-3 text-xs bg-dcs-purple/20 text-dcs-purple px-2 py-1 rounded">
                             Preview
                           </span>
-                        )}
+                        )}*/}
                       </li>
                     ))}
                   </ul>

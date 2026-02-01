@@ -49,7 +49,7 @@ export default function InstructorCreateCourse() {
           <div className="mb-6">
             <button
               onClick={() => navigate('/instructor')}
-              className="text-blue-600 hover:underline mb-4"
+              className="text-blue-600 hover:underline mb-4 mt-12"
             >
               ← Back to Dashboard
             </button>

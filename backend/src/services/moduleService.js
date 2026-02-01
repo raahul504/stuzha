@@ -128,7 +128,6 @@ const deleteModule = async (moduleId, userId) => {
  * Reorder modules
  */
 const reorderModules = async (courseId, moduleOrders, userId) => {
-  console.log('reorderModules called:', { courseId, moduleOrders, userId });
   
   // Verify permission
   const course = await prisma.course.findUnique({
@@ -150,8 +149,6 @@ const reorderModules = async (courseId, moduleOrders, userId) => {
     throw new Error('Unauthorized to modify this course');
   }
 
-  console.log('About to update module orders:', moduleOrders);
-
   // Update all module orders in transaction using two-phase approach
   // Phase 1: Set all modules to temporary negative indices to avoid unique constraint conflicts
   // Phase 2: Update to final indices
@@ -167,8 +164,6 @@ const reorderModules = async (courseId, moduleOrders, userId) => {
           })
         )
       );
-      console.log('Phase 1 complete: Temporary indices set');
-
       // Phase 2: Set final indices
       console.log('Phase 2: Setting final indices...');
       await Promise.all(
@@ -179,7 +174,6 @@ const reorderModules = async (courseId, moduleOrders, userId) => {
           })
         )
       );
-      console.log('Phase 2 complete: Final indices set');
     });
     console.log('Module reorder successful');
   } catch (error) {

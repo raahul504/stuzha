@@ -1,13 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { adminService } from '../../api/adminService';
-import ConfirmModal from '../ConfirmModal';
-import { showSuccess, showError } from '../../utils/toast';
 
 export default function ManageCourses() {
   const [courses, setCourses] = useState([]);
   const navigate = useNavigate();
-  const [confirmDelete, setConfirmDelete] = useState(null);
 
   useEffect(() => {
     fetchCourses();
@@ -26,21 +23,6 @@ export default function ManageCourses() {
     navigate(`/admin/course/${courseId}`);
   };
   
-  const handleDeleteCourse = (courseId) => {
-    setConfirmDelete(courseId);
-  };
-
-  const executeDelete = async () => {
-    try {
-      await adminService.deleteCourse(confirmDelete);
-      showSuccess('Course deleted successfully');
-      fetchCourses();
-      setConfirmDelete(null);
-    } catch (err) {
-      showError('Failed to delete course');
-    }
-  };
-
   return (
     <div className="bg-dcs-dark-gray rounded-lg shadow-md p-6">
       <h2 className="text-2xl font-bold mb-6">Manage Courses</h2>
@@ -68,19 +50,11 @@ export default function ManageCourses() {
                 Manage
               </button>
               <button
-                onClick={() => handleDeleteCourse(course.id)}
-                className="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-2 mt-5 rounded-lg hover:shadow-lg transition-all"
+                onClick={() => navigate(`/admin/course/${course.id}/settings`)}
+                className="bg-gray-600 text-white px-6 py-2 mt-5 rounded-lg hover:bg-gray-700 transition-all"
               >
-                Delete
+                Settings
               </button>
-              <ConfirmModal
-                isOpen={!!confirmDelete}
-                onClose={() => setConfirmDelete(null)}
-                onConfirm={executeDelete}
-                title="Delete Course"
-                message="Are you sure? This will delete all modules, content, and student progress. This action cannot be undone."
-                confirmText="Delete Course"
-              />
             </div>
           ))}
         </div>

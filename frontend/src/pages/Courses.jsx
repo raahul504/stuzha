@@ -212,7 +212,7 @@ export default function Courses() {
             </p>
           </div>
         ) : (
-          <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '2.5rem' }}>
+          <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '2.5rem' }}>
             {filteredCourses.map((course) => (
               <div
                 key={course.id}
@@ -244,7 +244,7 @@ export default function Courses() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <span>{course.title.charAt(0)}</span>
+                    <span>{course.title}</span>
                   )}
                 </div>
 

@@ -6,7 +6,7 @@ import Navbar from '../components/Navbar';
 import { showSuccess, showError } from '../utils/toast';
 
 export default function Profile() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('info');
   const [loading, setLoading] = useState(false);
@@ -50,6 +50,7 @@ export default function Profile() {
     try {
       const data = await userService.updateProfile(profileForm);
       showSuccess('Profile updated successfully');
+      updateUser(data.user);
     } catch (err) {
       console.error('Error caught:', err); // Debug
       showError(err.response?.data?.error?.message || 'Update failed');

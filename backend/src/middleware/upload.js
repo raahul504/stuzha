@@ -48,19 +48,14 @@ const videoFilter = (req, file, cb) => {
 };
 
 const articleFilter = (req, file, cb) => {
-  const allowedTypes = /pdf|doc|docx|txt|ppt|pptx|xls|xlsx|png|jpg|jpeg|gif/;
+  const allowedTypes = /pdf|png|jpg|jpeg|gif|webp/;
   const ext = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-  const mime = file.mimetype.startsWith('image/') || 
-                file.mimetype.includes('pdf') || 
-                file.mimetype.includes('word') || 
-                file.mimetype.includes('document') ||
-                file.mimetype.includes('presentation') ||
-                file.mimetype.includes('spreadsheet');
+  const mime = file.mimetype.startsWith('image/') || file.mimetype === 'application/pdf';
 
-  if (ext || mime) {
+  if (ext && mime) {
     cb(null, true);
   } else {
-    cb(new Error('Only documents and images are allowed'));
+    cb(new Error('Only PDF and image files are allowed for articles'));
   }
 };
 

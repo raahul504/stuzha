@@ -53,21 +53,6 @@ export default function InstructorDashboard() {
     }
   };
 
-  const handleDeleteCourse = (courseId) => {
-    setConfirmDelete(courseId);
-  };
-
-  const executeDelete = async () => {
-    try {
-      await adminService.deleteCourse(confirmDelete);
-      showSuccess('Course deleted successfully');
-      fetchCourses();
-      setConfirmDelete(null);
-    } catch (err) {
-      showError('Failed to delete course');
-    }
-  };
-
   if (loading) {
     return <LoadingSpinner message="Loading dashboard..." />;
   }
@@ -152,34 +137,26 @@ export default function InstructorDashboard() {
                     <div className="flex flex-col gap-2 ml-4">
                       <button
                         onClick={() => navigate(`/instructor/course/${course.id}`)}
-                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm"
+                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm"
                       >
                         Edit Content
+                      </button>
+                      <button
+                        onClick={() => navigate(`/instructor/course/${course.id}/settings`)}
+                        className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 text-sm"
+                      >
+                        Settings
                       </button>
                       <button
                         onClick={() => handleTogglePublish(course.id, course.isPublished)}
                         className={`px-4 py-2 rounded text-sm ${
                           course.isPublished
-                            ? 'bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-all'
-                            : 'bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all font-semibold'
+                            ? 'bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-2 rounded-lg hover:shadow-lg transition-all font-semibold'
+                            : 'bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo text-white px-4 py-2 rounded-lg hover:shadow-lg transition-all font-semibold'
                         }`}
                       >
                         {course.isPublished ? 'Unpublish' : 'Publish'}
                       </button>
-                      <button
-                        onClick={() => handleDeleteCourse(course.id)}
-                        className="bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-2 rounded-lg hover:shadow-lg transition-all text-sm"
-                      >
-                        Delete
-                      </button>
-                      <ConfirmModal
-                        isOpen={!!confirmDelete}
-                        onClose={() => setConfirmDelete(null)}
-                        onConfirm={executeDelete}
-                        title="Delete Course"
-                        message="Are you sure? This will delete all modules, content, and student progress. This action cannot be undone."
-                        confirmText="Delete Course"
-                      />
                     </div>
                   </div>
                 </div>

@@ -40,7 +40,6 @@ export default function Learn() {
   };
 
   const handleContentSelect = (content) => {
-    console.log('Selected content:', { id: content.id, title: content.title, contentType: content.contentType });
     setSelectedContent(content);
   };
 
@@ -66,6 +65,23 @@ export default function Learn() {
     } catch (err) {
       showError('Failed to submit assessment');
     }
+  };
+
+  // Add this helper function near the top of the Learn component, after state declarations
+  const isContentLocked = (contentItem, moduleContentItems) => {
+    // Only lock assessments
+    if (contentItem.contentType !== 'ASSESSMENT') return false;
+    
+    // Get all videos in the same module
+    const moduleVideos = moduleContentItems.filter(item => item.contentType === 'VIDEO');
+    
+    // If no videos in module, assessment is not locked
+    if (moduleVideos.length === 0) return false;
+    
+    // Check if all videos are completed
+    const allVideosCompleted = moduleVideos.every(video => video.videoCompleted);
+    
+    return !allVideosCompleted;
   };
 
   if (loading) {
@@ -127,26 +143,45 @@ export default function Learn() {
                 {idx + 1}. {module.title}
               </h3>
               <ul className="space-y-1">
-                {module.contentItems.map((item) => (
-                  <li
-                    key={item.id}
-                    onClick={() => handleContentSelect(item)}
-                    className={`p-3 rounded cursor-pointer transition-all ${
-                      selectedContent?.id === item.id 
-                        ? 'bg-dcs-purple/20 border-l-4 border-dcs-purple text-white' 
-                        : 'hover:bg-dcs-light-gray text-dcs-text-gray hover:text-white'
-                    }`}
-                  >
-                    <div className="flex items-center text-sm">
-                      <span className="mr-2 text-lg">
-                        {item.contentType === 'VIDEO' && '🎥'}
-                        {item.contentType === 'ARTICLE' && '📄'}
-                        {item.contentType === 'ASSESSMENT' && '✏️'}
-                      </span>
-                      <span>{item.title}</span>
-                    </div>
-                  </li>
-                ))}
+                {module.contentItems.map((item) => {
+                  const locked = isContentLocked(item, module.contentItems);
+                  
+                  return (
+                    <li
+                      key={item.id}
+                      onClick={() => !locked && handleContentSelect(item)}
+                      className={`p-3 rounded transition-all ${
+                        locked 
+                          ? 'opacity-50 cursor-not-allowed bg-dcs-light-gray/30' 
+                          : selectedContent?.id === item.id 
+                            ? 'bg-dcs-purple/20 border-l-4 border-dcs-purple text-white cursor-pointer' 
+                            : 'hover:bg-dcs-light-gray text-dcs-text-gray hover:text-white cursor-pointer'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between text-sm">
+                        <div className="flex items-center">
+                          <span className="mr-2 text-lg">
+                            {item.contentType === 'VIDEO' && '🎥'}
+                            {item.contentType === 'ARTICLE' && '📄'}
+                            {item.contentType === 'ASSESSMENT' && (locked ? '🔒' : '✏️')}
+                          </span>
+                          <span>{item.title}</span>
+                        </div>
+                        {item.contentType === 'VIDEO' && item.videoCompleted && (
+                          <span className="text-green-400 text-xs">✓</span>
+                        )}
+                        {item.contentType === 'ASSESSMENT' && item.hasPassed && (
+                          <span className="text-green-400 text-xs">✓</span>
+                        )}
+                      </div>
+                      {locked && (
+                        <p className="text-xs text-dcs-text-gray mt-1 ml-7">
+                          Complete all videos to unlock
+                        </p>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}
@@ -280,7 +315,6 @@ function VideoPlayer({ content, onProgress }) {
   const handleEnded = () => {
     const videoDuration = content.videoDurationSeconds || 0;
     const completed = totalWatchTimeRef.current >= videoDuration * 0.90;
-    console.log('Video ended:', { videoDuration, totalWatchTime: totalWatchTimeRef.current, watchPercentage: (totalWatchTimeRef.current / videoDuration * 100).toFixed(2), completed });
     onProgress(content.id, videoDuration, completed, totalWatchTimeRef.current);
   };
 
@@ -312,22 +346,80 @@ function VideoPlayer({ content, onProgress }) {
 
 // Article Viewer Component
 function ArticleViewer({ content }) {
+  const [fileUrl, setFileUrl] = useState('');
+  const [fileType, setFileType] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (content.articleFileUrl) {
+      const extension = content.articleFileUrl.split('.').pop().toLowerCase();
+      setFileType(extension);
+      
+      const url = content.articleFileUrl.replace('/download/', '/view/');
+      
+      // Fetch and create blob URL
+      fetch(`http://localhost:5000${url}`, {
+        credentials: 'include'
+      })
+        .then(res => {
+          if (!res.ok) throw new Error('Failed to fetch');
+          return res.blob();
+        })
+        .then(blob => {
+          const blobUrl = URL.createObjectURL(blob);
+          setFileUrl(blobUrl);
+          setLoading(false);
+        })
+        .catch(err => {
+          console.error('Failed to load article:', err);
+          setLoading(false);
+        });
+    }
+    
+    return () => {
+      if (fileUrl) URL.revokeObjectURL(fileUrl);
+    };
+  }, [content.id]);
+
+  if (loading) {
+    return (
+      <div className="max-w-4xl">
+        <h1 className="text-4xl font-bold mb-4 text-white">{content.title}</h1>
+        {content.description && <p className="text-dcs-text-gray mb-6 text-lg">{content.description}</p>}
+        <div className="card">
+          <p className="text-dcs-text-gray">Loading article...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-4xl">
       <h1 className="text-4xl font-bold mb-4 text-white">{content.title}</h1>
       {content.description && <p className="text-dcs-text-gray mb-6 text-lg">{content.description}</p>}
       
       <div className="card">
-        <div className="prose prose-invert max-w-none mb-6 text-dcs-text-gray" dangerouslySetInnerHTML={{ __html: content.articleContent }} />
+        {content.articleContent && (
+          <div className="prose prose-invert max-w-none mb-6 text-dcs-text-gray" 
+               dangerouslySetInnerHTML={{ __html: content.articleContent }} />
+        )}
         
-        {content.articleFileUrl && (
-          <a
-            href={`http://localhost:5000${content.articleFileUrl}`}
-            className="mt-4 inline-block bg-dcs-purple text-white px-6 py-3 rounded-full hover:bg-dcs-dark-purple transition-all"
-            download
-          >
-            Download Article
-          </a>
+        {fileUrl && (
+          <div className="mt-6">
+            {fileType === 'pdf' ? (
+              <iframe
+                src={fileUrl}
+                className="w-full h-[800px] border border-dcs-purple/20 rounded-lg"
+                title="PDF Viewer"
+              />
+            ) : (
+              <img
+                src={fileUrl}
+                alt={content.title}
+                className="w-full rounded-lg border border-dcs-purple/20"
+              />
+            )}
+          </div>
         )}
       </div>
     </div>

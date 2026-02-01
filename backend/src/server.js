@@ -19,7 +19,8 @@ const app = express();
 app.use(helmet()); // Security headers
 app.use(cors({
   origin: process.env.CLIENT_URL,
-  credentials: true // Allow cookies
+  credentials: true, // Allow cookies
+  exposedHeaders: ['Content-Type', 'Content-Length', 'Content-Disposition']
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

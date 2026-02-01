@@ -13,16 +13,17 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const checkAuth = async () => {
-  try {
-    const data = await authService.getCurrentUser();
-    setUser(data.user);
-  } catch (error) {
-    // Silently fail - user is not authenticated
-    setUser(null);
-  } finally {
-    setLoading(false);
-  }
-};
+    try {
+      const data = await authService.getCurrentUser();
+      setUser(data.user);
+    } catch (error) {
+      // Silently fail - user is not authenticated
+      // Don't log errors for expected 401s
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const login = async (credentials) => {
     const data = await authService.login(credentials);
@@ -37,8 +38,13 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
-    await authService.logout();
-    setUser(null);
+    try {
+      await authService.logout();
+    } catch (error) {
+      // Ignore logout errors
+    } finally {
+      setUser(null);
+    }
   };
 
   const updateUser = (updatedUser) => {
@@ -51,6 +57,7 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
+    updateUser,
     isAuthenticated: !!user,
   };
 

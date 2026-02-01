@@ -218,7 +218,7 @@ const uploadArticle = async (req, res, next) => {
       orderBy: { orderIndex: 'desc' },
     });
 
-    const articleFileUrl = `/api/articles/download/${req.file.filename}`;
+    const articleFileUrl = `/api/articles/view/${req.file.filename}`;
 
     const contentItem = await prisma.contentItem.create({
       data: {
@@ -245,13 +245,41 @@ const downloadArticle = async (req, res, next) => {
   try {
     const { filename } = req.params;
     const filePath = path.join(ARTICLES_DIR, filename);
+    
+    if (fs.existsSync(filePath)) {
+    }
 
     if (!fs.existsSync(filePath)) {
+      console.log('ERROR: File not found!');
       return res.status(404).json({ error: { message: 'File not found' } });
     }
 
-    res.download(filePath);
+    const ext = path.extname(filename).toLowerCase();
+    const contentTypes = {
+      '.pdf': 'application/pdf',
+      '.png': 'image/png',
+      '.jpg': 'image/jpeg',
+      '.jpeg': 'image/jpeg',
+      '.gif': 'image/gif',
+      '.webp': 'image/webp',
+    };
+
+    const contentType = contentTypes[ext] || 'application/octet-stream';
+    res.set({
+      'Content-Type': contentType,
+      'Content-Disposition': 'inline',
+      'Cache-Control': 'public, max-age=31536000',
+    });
+    
+    res.sendFile(filePath, (err) => {
+      if (err) {
+        console.error('SendFile error:', err);
+        next(err);
+      } else {
+      }
+    });
   } catch (error) {
+    console.error('Article serve error:', error);
     next(error);
   }
 };

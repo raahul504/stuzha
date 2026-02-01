@@ -3,8 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 
 export default function Home() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
+
+  console.log('Home render:', { user, isAuthenticated, loading });
+  // Show loading state while checking auth
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-dcs-black flex items-center justify-center">
+        <div className="text-white">Loading...</div>
+      </div>
+    );
+  }
+
 
   if (!isAuthenticated) {
     return (
@@ -43,7 +54,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div className="card animate-float mt-10 bg-gradient-to-r from-dcs-dark-purple to-dcs-electric-indigo text-white shadow-lg" >
+            <div className="card" >
               <h3 className="text-white mb-6 text-xl font-bold">Platform Highlights</h3>
               <ul className="list-none text-white leading-8 space-y-2 font-semibold">
                 <li>✓ Comprehensive Course Library</li>
@@ -56,7 +67,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="max-w-[1400px] mx-auto" style={{ padding: '5rem 2rem' }}>
+        <section className="max-w-[1400px] mx-auto bg-dcs-dark-gray" style={{ padding: '5rem 2rem' }}>
           <h2 className="section-title">
             Why Choose <span className="purple-text">Our Platform?</span>
           </h2>
@@ -79,6 +90,112 @@ export default function Home() {
                 Over 50% experiential learning with real-world projects and exercises.
               </p>
             </div>
+          </div>
+        </section>
+        {/* Our Vision Section */}
+        <section className="vision-section bg-dcs-black" style={{ padding: '6rem 2rem' }}>
+          <div className="vision-container">
+            <h2 className="section-title-custom">
+              Our <span className="purple-text">Vision</span>
+            </h2>
+            <p className="vision-text">
+              <strong>Empower every learner to achieve excellence through innovative education.</strong><br/><br/>
+              In the process, we enable, equip and encourage learning beyond conventional limits.
+            </p>
+          </div>
+        </section>
+
+        {/* Our Core Domains Section */}
+        <section className="core-domains-section bg-dcs-dark-gray" style={{ padding: '6rem 2rem' }}>
+          <div className="domains-container">
+            <h2 className="section-title-custom">
+              Our <span className="purple-text">Core Domains</span>
+            </h2>
+            <div className="domains-grid">
+              <div className="domain-card">
+                <div className="domain-icon-wrapper">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="2" y="3" width="20" height="14" rx="2"/>
+                    <path d="M8 21h8M12 17v4"/>
+                  </svg>
+                </div>
+                <h3>Enterprise Technologies</h3>
+                <p>Comprehensive solutions designed for enterprise-scale operations with plug-and-play deployment and seamless integration.</p>
+              </div>
+              <div className="domain-card">
+                <div className="domain-icon-wrapper">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="2" y="2" width="20" height="8" rx="2"/>
+                    <rect x="2" y="14" width="20" height="8" rx="2"/>
+                    <path d="M6 6h.01M6 18h.01"/>
+                  </svg>
+                </div>
+                <h3>Cloud Services</h3>
+                <p>Scalable cloud infrastructure and migration services designed to build towards exponential business growth.</p>
+              </div>
+              <div className="domain-card">
+                <div className="domain-icon-wrapper">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                    <line x1="12" y1="22.08" x2="12" y2="12"/>
+                  </svg>
+                </div>
+                <h3>Gen AI Solutions</h3>
+                <p>Cutting-edge AI and machine learning products revolutionizing education. Advanced artificial intelligence capabilities tailored for modern learning.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Our Team Section */}
+        <section className="team-section bg-dcs-black" style={{ padding: '6rem 2rem' }}>
+          <div className="team-container-custom">
+            <h2 className="section-title-custom">
+              Our <span className="purple-text">Team</span>
+            </h2>
+            
+            <div className="team-content-custom">
+              <div className="team-vision-custom">
+                <h3>Leadership Vision</h3>
+                <p>Our Leadership Team's core vision is to build solutions that empower learners to achieve their full potential and unlock unlimited opportunities.</p>
+                <p>We press for every action to be viewed through a leadership lens. We achieve this by the right level of investment to impart knowledge that nourishes minds to think relevant, new and ahead of time.</p>
+                <p>We are a strong team of experts working consistently to build cutting-edge educational products and learning solutions. Completely focused on the core objective, we aim to enable our global students towards their success.</p>
+                <p><strong>Our operations are currently spanned across multiple regions, with dedicated support available 24/7.</strong></p>
+              </div>
+              <div className="team-stats-custom">
+                <div className="stat-card-custom">
+                  <div className="stat-number-custom">100+</div>
+                  <div className="stat-label-custom">Courses Available</div>
+                </div>
+                <div className="stat-card-custom">
+                  <div className="stat-number-custom">10,000+</div>
+                  <div className="stat-label-custom">Active Learners</div>
+                </div>
+                <div className="stat-card-custom">
+                  <div className="stat-number-custom">50+</div>
+                  <div className="stat-label-custom">Expert Instructors</div>
+                </div>
+                <div className="stat-card-custom">
+                  <div className="stat-number-custom">95%</div>
+                  <div className="stat-label-custom">Satisfaction Rate</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        {/* About Us Section */}
+        <section className="about-section bg-dcs-dark-gray" style={{ padding: '6rem 2rem' }}>
+          <div className="about-container">
+            <h2 className="section-title-custom">
+              About <span className="purple-text">Our Platform</span>
+            </h2>
+            <p className="about-text">
+              Our strategic intent is to lead the market by ideating structured learning processes to stay ahead of the curve, in terms of educational innovation and technology solutions.<br/><br/>
+              Our focus and services are connected strongly to our core domains: <strong>Enterprise Learning, Cloud Infrastructure, and AI-Powered Education.</strong><br/><br/>
+              And as a result, <strong>"We build Learning Solutions For Life".</strong>
+            </p>
           </div>
         </section>
       </div>
@@ -120,7 +237,7 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div className="card animate-float mt-10 bg-gradient-to-r from-dcs-dark-purple to-dcs-electric-indigo text-white shadow-lg">
+          <div className="card">
             <h3 className="text-white mb-6 text-xl font-semibold">Quick Actions</h3>
             <ul className="list-none text-gray leading-8 space-y-2">
               <li>✓ View My Courses</li>
@@ -132,7 +249,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="max-w-[1400px] mx-auto" style={{ background: '#121212', padding: '5rem 2rem' }}>
+      <section className="max-w-[1400px] mx-auto bg-dcs-dark-gray" style={{ padding: '5rem 2rem' }}>
         <h2 className="section-title">
           Your <span className="purple-text">Learning Path</span>
         </h2>
@@ -173,6 +290,112 @@ export default function Home() {
               View Profile →
             </button>
           </div>
+        </div>
+      </section>
+      {/* Our Vision Section */}
+      <section className="vision-section bg-dcs-black" style={{ padding: '6rem 2rem' }}>
+        <div className="vision-container">
+          <h2 className="section-title-custom">
+            Our <span className="purple-text">Vision</span>
+          </h2>
+          <p className="vision-text">
+            <strong>Empower every learner to achieve excellence through innovative education.</strong><br/><br/>
+            In the process, we enable, equip and encourage learning beyond conventional limits.
+          </p>
+        </div>
+      </section>
+
+      {/* Our Core Domains Section */}
+      <section className="core-domains-section bg-dcs-dark-gray" style={{ padding: '6rem 2rem' }}>
+        <div className="domains-container">
+          <h2 className="section-title-custom">
+            Our <span className="purple-text">Core Domains</span>
+          </h2>
+          <div className="domains-grid">
+            <div className="domain-card">
+              <div className="domain-icon-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="2" y="3" width="20" height="14" rx="2"/>
+                  <path d="M8 21h8M12 17v4"/>
+                </svg>
+              </div>
+              <h3>Enterprise Technologies</h3>
+              <p>Comprehensive solutions designed for enterprise-scale operations with plug-and-play deployment and seamless integration.</p>
+            </div>
+            <div className="domain-card">
+              <div className="domain-icon-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="2" y="2" width="20" height="8" rx="2"/>
+                  <rect x="2" y="14" width="20" height="8" rx="2"/>
+                  <path d="M6 6h.01M6 18h.01"/>
+                </svg>
+              </div>
+              <h3>Cloud Services</h3>
+              <p>Scalable cloud infrastructure and migration services designed to build towards exponential business growth.</p>
+            </div>
+            <div className="domain-card">
+              <div className="domain-icon-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                  <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                  <line x1="12" y1="22.08" x2="12" y2="12"/>
+                </svg>
+              </div>
+              <h3>Gen AI Solutions</h3>
+              <p>Cutting-edge AI and machine learning products revolutionizing education. Advanced artificial intelligence capabilities tailored for modern learning.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Our Team Section */}
+      <section className="team-section" style={{ padding: '6rem 2rem', background: '#0A0A0A' }}>
+        <div className="team-container-custom">
+          <h2 className="section-title-custom">
+            Our <span className="purple-text">Team</span>
+          </h2>
+          
+          <div className="team-content-custom">
+            <div className="team-vision-custom">
+              <h3>Leadership Vision</h3>
+              <p>Our Leadership Team's core vision is to build solutions that empower learners to achieve their full potential and unlock unlimited opportunities.</p>
+              <p>We press for every action to be viewed through a leadership lens. We achieve this by the right level of investment to impart knowledge that nourishes minds to think relevant, new and ahead of time.</p>
+              <p>We are a strong team of experts working consistently to build cutting-edge educational products and learning solutions. Completely focused on the core objective, we aim to enable our global students towards their success.</p>
+              <p><strong>Our operations are currently spanned across multiple regions, with dedicated support available 24/7.</strong></p>
+            </div>
+            <div className="team-stats-custom">
+              <div className="stat-card-custom">
+                <div className="stat-number-custom">100+</div>
+                <div className="stat-label-custom">Courses Available</div>
+              </div>
+              <div className="stat-card-custom">
+                <div className="stat-number-custom">10,000+</div>
+                <div className="stat-label-custom">Active Learners</div>
+              </div>
+              <div className="stat-card-custom">
+                <div className="stat-number-custom">50+</div>
+                <div className="stat-label-custom">Expert Instructors</div>
+              </div>
+              <div className="stat-card-custom">
+                <div className="stat-number-custom">95%</div>
+                <div className="stat-label-custom">Satisfaction Rate</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      {/* About Us Section */}
+      <section className="about-section" style={{ padding: '6rem 2rem', background: '#121212' }}>
+        <div className="about-container">
+          <h2 className="section-title-custom">
+            About <span className="purple-text">Our Platform</span>
+          </h2>
+          <p className="about-text">
+            Our strategic intent is to lead the market by ideating structured learning processes to stay ahead of the curve, in terms of educational innovation and technology solutions.<br/><br/>
+            Our focus and services are connected strongly to our core domains: <strong>Enterprise Learning, Cloud Infrastructure, and AI-Powered Education.</strong><br/><br/>
+            And as a result, <strong>"We build Learning Solutions For Life".</strong>
+          </p>
         </div>
       </section>
     </div>

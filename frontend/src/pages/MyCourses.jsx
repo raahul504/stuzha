@@ -33,7 +33,7 @@ export default function MyCourses() {
       <Navbar />
       <div className="pt-32 pb-12 px-8">
         <div className="max-w-[1400px] mx-auto">
-          <h1 className="text-5xl text-center mb-4 bg-gradient-to-r from-white to-dcs-purple bg-clip-text text-transparent">
+          <h1 className="text-5xl text-center leading-normal mb-4 bg-gradient-to-r from-white to-dcs-purple bg-clip-text text-transparent">
             My Courses
           </h1>
           <p className="text-center text-dcs-text-gray text-lg">Continue your learning journey</p>
@@ -52,7 +52,7 @@ export default function MyCourses() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))' }}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))' }}>
             {courses.map((course) => (
               <div
                 key={course.id}
@@ -61,8 +61,8 @@ export default function MyCourses() {
                 style={{ boxShadow: '0 20px 40px rgba(157, 80, 187, 0.1)' }}
               >
                 <div className="h-[200px] bg-gradient-to-br from-dcs-dark-purple to-dcs-black flex items-center justify-center border-b-2 border-dcs-purple">
-                  <span className="text-white text-5xl font-bold">
-                    {course.title.charAt(0)}
+                  <span className="text-white text-2xl font-bold">
+                    {course.title}
                   </span>
                 </div>
 

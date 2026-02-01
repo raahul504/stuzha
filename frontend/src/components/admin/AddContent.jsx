@@ -88,7 +88,7 @@ export default function AddContent({ moduleId, onAdd }) {
               type="file" 
               accept="video/*" 
               onChange={handleVideoFileChange}
-              className="w-full" 
+              className="w-full px-2 py-1 border border-gray-600 rounded bg-gray"
               required 
             />
             {videoDuration && (
@@ -101,17 +101,17 @@ export default function AddContent({ moduleId, onAdd }) {
           <div>
             <input 
               type="file" 
-              accept=".pdf,.doc,.docx,.txt,.ppt,.pptx,.xls,.xlsx,.png,.jpg,.jpeg,.gif" 
+              accept=".pdf,.png,.jpg,.jpeg,.gif,.webp" 
               onChange={(e) => setArticleFile(e.target.files[0])} 
               className="w-full" 
               required 
             />
-            <p className="text-xs text-gray-500 mt-1">Supported: PDF, Word, PowerPoint, Excel, Images</p>
+            <p className="text-xs text-gray-500 mt-1">Supported: PDF, Images</p>
           </div>
         )}
 
         <button type="submit" disabled={loading} className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-3 rounded-lg hover:shadow-lg transition-all font-semibold">
-          {loading ? 'Adding...' : 'Add {type}'}
+          {loading ? 'Adding...' : `ADD ${type}`}
         </button>
       </form>
     </div>

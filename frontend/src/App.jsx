@@ -15,6 +15,7 @@ import InstructorDashboard from './pages/IntructorDashboard';
 import InstructorCreateCourse from './pages/InstructorCreateCourse';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import CourseSettings from './pages/CourseSettings';
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
@@ -47,6 +48,8 @@ function App() {
           <Route path="/instructor/course/:id" element={<ProtectedRoute><CourseEditor /></ProtectedRoute>} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/instructor/course/:id/settings" element={<ProtectedRoute><CourseSettings /></ProtectedRoute>} />
+          <Route path="/admin/course/:id/settings" element={<ProtectedRoute><CourseSettings /></ProtectedRoute>} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

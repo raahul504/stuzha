@@ -340,7 +340,8 @@ const enrollInCourse = async (userId, courseId) => {
  * Update course
  */
 const updateCourse = async (courseId, updateData, userId) => {
-  // Verify user created the course
+  
+  // Verify course exists
   const course = await prisma.course.findUnique({
     where: { id: courseId },
   });
@@ -349,16 +350,44 @@ const updateCourse = async (courseId, updateData, userId) => {
     throw new Error('Course not found');
   }
 
-  if (course.createdBy !== userId) {
+  // Get user to check role
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { role: true },
+  });
+
+  // Allow if user is the creator OR if user is an ADMIN
+  if (course.createdBy !== userId && user.role !== 'ADMIN') {
+    console.log('Authorization failed:', { createdBy: course.createdBy, userId, role: user.role });
     throw new Error('Unauthorized to update this course');
   }
 
-  const updatedCourse = await prisma.course.update({
-    where: { id: courseId },
-    data: updateData,
-  });
+  // Convert price to number if it exists in updateData
+  const dataToUpdate = { ...updateData };
+ 
+  if (dataToUpdate.price !== undefined && dataToUpdate.price !== null && dataToUpdate.price !== '') {
+    dataToUpdate.price = parseFloat(dataToUpdate.price);
+  }
+  
+  if (dataToUpdate.estimatedDurationHours !== undefined) {
+    if (dataToUpdate.estimatedDurationHours === '' || dataToUpdate.estimatedDurationHours === null) {
+      dataToUpdate.estimatedDurationHours = null;
+    } else {
+      dataToUpdate.estimatedDurationHours = parseInt(dataToUpdate.estimatedDurationHours);
+    }
+  }
 
-  return updatedCourse;
+  try {
+    const updatedCourse = await prisma.course.update({
+      where: { id: courseId },
+      data: dataToUpdate,
+    });
+
+    return updatedCourse;
+  } catch (error) {
+    console.error('Prisma update error:', error);
+    throw error;
+  }
 };
 
 /**

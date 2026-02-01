@@ -1,4 +1,5 @@
 const authService = require('../services/authService');
+const prisma = require('../config/database');
 const {
   validateRegistration,
   validateLogin,
@@ -198,10 +199,27 @@ const resetPassword = async (req, res, next) => {
  */
 const getCurrentUser = async (req, res, next) => {
   try {
-    // User is already attached by authenticateToken middleware
-    res.json({
-      user: req.user
+    // Fetch full user details from database instead of just using req.user
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.id },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+        emailVerified: true,
+        createdAt: true,
+      },
     });
+
+    if (!user) {
+      return res.status(404).json({
+        error: { message: 'User not found' }
+      });
+    }
+
+    res.json({ user });
   } catch (error) {
     next(error);
   }

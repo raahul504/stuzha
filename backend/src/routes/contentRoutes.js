@@ -12,7 +12,7 @@ router.put('/modules/:moduleId/content/reorder', authenticateToken, contentContr
 router.put('/content/:id', authenticateToken, contentController.updateContentItem);
 router.delete('/content/:id', authenticateToken, contentController.deleteContentItem);
 router.post('/articles/upload/:moduleId', authenticateToken, uploadArticle, contentController.uploadArticle);
-router.get('/articles/download/:filename', authenticateToken, contentController.downloadArticle);
+router.get('/articles/view/:filename', contentController.downloadArticle);
 
 // Assessment question routes
 router.post('/content/:contentId/questions', authenticateToken, assessmentController.addQuestion);
