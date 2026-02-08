@@ -4,13 +4,25 @@ const prisma = require('../config/database');
  * Create a new course
  */
 const createCourse = async (courseData, creatorId) => {
+  const { categoryIds, ...restData } = courseData;
+  
   const course = await prisma.course.create({
     data: {
-      ...courseData,
+      ...restData,
       createdBy: creatorId,
+      categories: categoryIds && categoryIds.length > 0 ? {
+        create: categoryIds.map(categoryId => ({
+          categoryId,
+        })),
+      } : undefined,
     },
     include: {
       modules: true,
+      categories: {
+        include: {
+          category: true,
+        },
+      },
     },
   });
 
@@ -23,6 +35,11 @@ const createCourse = async (courseData, creatorId) => {
 const getAllCourses = async (userId = null) => {
   const courses = await prisma.course.findMany({
     include: {
+      categories: {
+       include: {
+         category: true,
+       },
+     },
       modules: {
         include: {
           contentItems: {
@@ -72,6 +89,11 @@ const getCourseById = async (courseId, userId = null) => {
   const course = await prisma.course.findUnique({
     where: { id: courseId },
     include: {
+      categories: {
+       include: {
+         category: true,
+       },
+     },
       modules: {
         include: {
           contentItems: {
@@ -229,6 +251,11 @@ const getUserCourses = async (userId) => {
     include: {
       course: {
         include: {
+          categories: {
+            include: {
+              category: true,
+            },
+          },
           modules: {
             include: {
               contentItems: {
@@ -362,8 +389,8 @@ const updateCourse = async (courseId, updateData, userId) => {
     throw new Error('Unauthorized to update this course');
   }
 
-  // Convert price to number if it exists in updateData
-  const dataToUpdate = { ...updateData };
+  // Extract categoryIds from updateData
+  const { categoryIds, ...dataToUpdate } = updateData;
  
   if (dataToUpdate.price !== undefined && dataToUpdate.price !== null && dataToUpdate.price !== '') {
     dataToUpdate.price = parseFloat(dataToUpdate.price);
@@ -377,10 +404,70 @@ const updateCourse = async (courseId, updateData, userId) => {
     }
   }
 
+  // Handle courseIncludes - convert empty string to null
+  if (dataToUpdate.courseIncludes !== undefined) {
+    if (dataToUpdate.courseIncludes === '' || dataToUpdate.courseIncludes === null) {
+      dataToUpdate.courseIncludes = null;
+    }
+  }
+
+  // Handle requirements - convert empty string to null
+  if (dataToUpdate.requirements !== undefined) {
+    if (dataToUpdate.requirements === '' || dataToUpdate.requirements === null) {
+      dataToUpdate.requirements = null;
+    }
+  }
+
+  // Handle targetAudience - convert empty string to null
+  if (dataToUpdate.targetAudience !== undefined) {
+    if (dataToUpdate.targetAudience === '' || dataToUpdate.targetAudience === null) {
+      dataToUpdate.targetAudience = null;
+    }
+  }
+
   try {
-    const updatedCourse = await prisma.course.update({
+    // If categoryIds is provided, update the categories
+    if (categoryIds !== undefined) {
+      await prisma.$transaction(async (tx) => {
+        // Delete existing category associations
+        await tx.courseCategory.deleteMany({
+          where: { courseId },
+        });
+
+        // Create new category associations
+        if (categoryIds && categoryIds.length > 0) {
+          await tx.courseCategory.createMany({
+            data: categoryIds.map(categoryId => ({
+              courseId,
+              categoryId,
+            })),
+          });
+        }
+
+        // Update course data
+        await tx.course.update({
+          where: { id: courseId },
+          data: dataToUpdate,
+        });
+      });
+    } else {
+      // Just update course data without touching categories
+      await prisma.course.update({
+        where: { id: courseId },
+        data: dataToUpdate,
+      });
+    }
+
+    // Fetch and return updated course with categories
+    const updatedCourse = await prisma.course.findUnique({
       where: { id: courseId },
-      data: dataToUpdate,
+      include: {
+        categories: {
+          include: {
+            category: true,
+          },
+        },
+      },
     });
 
     return updatedCourse;

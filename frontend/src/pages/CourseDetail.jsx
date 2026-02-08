@@ -14,6 +14,7 @@ export default function CourseDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [enrolling, setEnrolling] = useState(false);
+  const [expandedModules, setExpandedModules] = useState(new Set());
 
   useEffect(() => {
     fetchCourse();
@@ -50,6 +51,18 @@ export default function CourseDetail() {
 
   const handleStartLearning = () => {
     navigate(`/learn/${id}`);
+  };
+
+  const toggleModule = (moduleId) => {
+    setExpandedModules(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(moduleId)) {
+        newSet.delete(moduleId);
+      } else {
+        newSet.add(moduleId);
+      }
+      return newSet;
+    });
   };
 
   if (loading) {
@@ -105,6 +118,21 @@ export default function CourseDetail() {
               <p className="text-dcs-text-gray whitespace-pre-wrap leading-relaxed">{course.description}</p>
             </div>
 
+            {/* This course includes */}
+            {course.courseIncludes && (
+              <div className="card mb-8">
+                <h2 className="text-dcs-purple mb-6 text-2xl font-bold">This course includes:</h2>
+                <ul className="space-y-3">
+                  {course.courseIncludes.split('\n').filter(line => line.trim()).map((item, index) => (
+                    <li key={index} className="flex items-start gap-3">
+                      <span className="text-dcs-purple mt-1">✓</span>
+                      <span className="text-dcs-text-gray">{item.trim()}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             {/* Course Content */}
             <div className="card">
               <h2 className="text-dcs-purple mb-6 text-2xl font-bold">Course Content</h2>
@@ -114,23 +142,48 @@ export default function CourseDetail() {
               </p>
 
               {course.modules.map((module, index) => (
-                <div key={module.id} className="mb-8 last:mb-0">
-                  <h3 className="text-white text-lg font-semibold mb-3">
-                    Module {index + 1}: {module.title}
-                  </h3>
-                  {module.description && (
-                    <p className="text-dcs-text-gray mb-4">{module.description}</p>
-                  )}
+                <div key={module.id} className="mb-4 last:mb-0 border border-dcs-purple/20 rounded-lg overflow-hidden">
+                  {/* Module Header - Clickable */}
+                  <div 
+                    onClick={() => toggleModule(module.id)}
+                    className="flex justify-between items-center p-4 bg-dcs-dark-gray hover:bg-dcs-light-gray cursor-pointer transition-colors"
+                  >
+                    <div className="flex-1">
+                      <h3 className="text-white text-lg font-semibold">
+                        Module {index + 1}: {module.title}
+                      </h3>
+                      {module.description && !expandedModules.has(module.id) && (
+                        <p className="text-dcs-text-gray text-sm mt-1 line-clamp-1">{module.description}</p>
+                      )}
+                    </div>
+                    
+                    {/* Expand/Collapse Icon */}
+                    <svg 
+                      className={`w-5 h-5 text-dcs-purple transition-transform ${expandedModules.has(module.id) ? 'rotate-180' : ''}`}
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
 
-                  <ul className="space-y-3 ml-4">
-                    {module.contentItems?.map((item) => (
-                      <li key={item.id} className="flex items-center text-dcs-text-gray">
-                        <span className="mr-3 text-lg">
-                          {item.contentType === 'VIDEO' && '🎥'}
-                          {item.contentType === 'ARTICLE' && '📄'}
-                          {item.contentType === 'ASSESSMENT' && '✏️'}
-                        </span>
-                        <span>{item.title}</span>
+                  {/* Module Content - Collapsible */}
+                  {expandedModules.has(module.id) && (
+                    <div className="p-4 bg-dcs-black border-t border-dcs-purple/20">
+                      {module.description && (
+                        <p className="text-dcs-text-gray mb-4">{module.description}</p>
+                      )}
+
+                      <ul className="space-y-3">
+                        {module.contentItems?.map((item) => (
+                          <li key={item.id} className="flex items-center text-dcs-text-gray">
+                            <span className="mr-3 text-lg">
+                              {item.contentType === 'VIDEO' && '🎥'}
+                              {item.contentType === 'ARTICLE' && '📄'}
+                              {item.contentType === 'ASSESSMENT' && '✏️'}
+                            </span>
+                            <span>{item.title}</span>
                         {/*{item.isPreview && (
                           <span className="ml-3 text-xs bg-dcs-purple/20 text-dcs-purple px-2 py-1 rounded">
                             Preview
@@ -140,8 +193,40 @@ export default function CourseDetail() {
                     ))}
                   </ul>
                 </div>
-              ))}
+              )}
             </div>
+          ))}
+            </div>
+
+            {/* Requirements */}
+            {course.requirements && (
+              <div className="card mt-8">
+                <h2 className="text-dcs-purple mb-6 text-2xl font-bold">Requirements</h2>
+                <ul className="space-y-3">
+                  {course.requirements.split('\n').filter(line => line.trim()).map((item, index) => (
+                    <li key={index} className="flex items-start gap-3">
+                      <span className="text-dcs-text-gray mt-1">•</span>
+                      <span className="text-dcs-text-gray">{item.trim()}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Who this course is for */}
+            {course.targetAudience && (
+              <div className="card mt-8">
+                <h2 className="text-dcs-purple mb-6 text-2xl font-bold">Who this course is for:</h2>
+                <ul className="space-y-3">
+                  {course.targetAudience.split('\n').filter(line => line.trim()).map((item, index) => (
+                    <li key={index} className="flex items-start gap-3">
+                      <span className="text-dcs-text-gray mt-1">•</span>
+                      <span className="text-dcs-text-gray">{item.trim()}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
 
           {/* Sidebar */}

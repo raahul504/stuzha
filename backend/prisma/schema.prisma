@@ -93,12 +93,16 @@ model Course {
   currency               String          @default("USD") @db.VarChar(3)
   difficultyLevel        DifficultyLevel? @map("difficulty_level")
   estimatedDurationHours Int?            @map("estimated_duration_hours")
+  courseIncludes         String?         @map("course_includes") @db.Text
+  requirements           String?         @db.Text
+  targetAudience         String?         @map("target_audience") @db.Text
   isPublished            Boolean         @default(false) @map("is_published")
   createdBy              String?         @map("created_by")
   createdAt              DateTime        @default(now()) @map("created_at")
   updatedAt              DateTime        @updatedAt @map("updated_at")
 
-  creator      User?         @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+  creator      User?            @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+  categories   CourseCategory[]
   modules      Module[]
   enrollments  Enrollment[]
   certificates Certificate[]
@@ -326,4 +330,74 @@ model EmailVerificationToken {
   @@index([userId])
   @@index([tokenHash])
   @@map("email_verification_tokens")
+}
+
+model Category {
+  id               String     @id @default(uuid())
+  name             String     @unique
+  parentCategoryId String?    @map("parent_category_id")
+  level            Int        @default(0) // 0 = main category, 1 = subcategory
+  orderIndex       Int        @default(0) @map("order_index")
+  createdAt        DateTime   @default(now()) @map("created_at")
+
+  parentCategory   Category?  @relation("CategoryTree", fields: [parentCategoryId], references: [id], onDelete: SetNull)
+  subCategories    Category[] @relation("CategoryTree")
+  courseCategories CourseCategory[]
+
+  @@index([parentCategoryId])
+  @@index([level])
+  @@map("categories")
+}
+
+model CourseCategory {
+  id         String   @id @default(uuid())
+  courseId   String   @map("course_id")
+  categoryId String   @map("category_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  course   Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([courseId, categoryId])
+  @@index([courseId])
+  @@index([categoryId])
+  @@map("course_categories")
+}
+
+model LearningPath {
+  id                String   @id @default(uuid())
+  name              String   // e.g., "Web Developer", "Cloud Engineer"
+  description       String   @db.Text
+  goalKeywords      String[] // Keywords for SLM to match: ["web developer", "full stack", "website"]
+  difficultyLevel   String   // BEGINNER, INTERMEDIATE, ADVANCED
+  estimatedMonths   Int?     @map("estimated_months")
+  
+  // Required categories/subcategories for this path
+  requiredCategoryIds String[] @map("required_category_ids")
+  
+  // Preferences to ask about
+  preferencesJson  Json?     @map("preferences_json") // {framework: ["React", "Vue"], cloud: ["AWS", "Azure"]}
+  
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  @@map("learning_paths")
+}
+
+model ConversationSession {
+  id               String   @id @default(uuid())
+  userId           String?  @map("user_id")
+  sessionToken     String   @unique @map("session_token") // For anonymous users
+  
+  messagesJson     Json[]   @map("messages_json") // Store conversation history
+  extractedGoal    String?  @map("extracted_goal")
+  extractedPreferences Json? @map("extracted_preferences")
+  recommendedPathId String? @map("recommended_path_id")
+  
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@index([sessionToken])
+  @@map("conversation_sessions")
 }

@@ -6,13 +6,25 @@ const createCourseSchema = Joi.object({
   title: Joi.string().min(3).max(255).required(),
   slug: Joi.string().min(3).max(255).required(),
   description: Joi.string().required(),
-  shortDescription: Joi.string().max(500).optional(),
-  thumbnailUrl: Joi.string().uri().optional(),
+  shortDescription: Joi.string().max(500).optional().allow('', null),
+  thumbnailUrl: Joi.string().uri().optional().allow('', null),
   price: Joi.number().min(0).required(),
   currency: Joi.string().length(3).default('USD'),
   difficultyLevel: Joi.string().valid('BEGINNER', 'INTERMEDIATE', 'ADVANCED').optional(),
-  estimatedDurationHours: Joi.number().integer().min(0).optional(),
+  estimatedDurationHours: Joi.alternatives().try(
+    Joi.number().integer().min(0),
+    Joi.string().allow('').custom((value, helpers) => {
+      if (value === '') return undefined;
+      const num = parseInt(value);
+      if (isNaN(num)) return helpers.error('any.invalid');
+      return num;
+    })
+  ).optional(),
+  courseIncludes: Joi.string().optional().allow('', null),
+  requirements: Joi.string().optional().allow('', null),
+  targetAudience: Joi.string().optional().allow('', null),
   isPublished: Joi.boolean().default(false),
+  categoryIds: Joi.array().items(Joi.string()).optional(),
 });
 
 /**
@@ -21,8 +33,10 @@ const createCourseSchema = Joi.object({
  */
 const createCourse = async (req, res, next) => {
   try {
-    const { error, value } = createCourseSchema.validate(req.body);
+    const { error, value } = createCourseSchema.validate(req.body, { stripUnknown: false });
     if (error) {
+      console.error('Validation error:', error.details[0].message);
+      console.error('Request body:', JSON.stringify(req.body, null, 2));
       return res.status(400).json({
         error: { message: error.details[0].message },
       });
@@ -35,6 +49,7 @@ const createCourse = async (req, res, next) => {
       course,
     });
   } catch (error) {
+    console.error('Course creation error:', error);
     next(error);
   }
 };

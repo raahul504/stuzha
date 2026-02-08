@@ -25,7 +25,7 @@ export default function Home() {
           <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-12 items-center">
             <div>
               <h1 className="text-5xl mt-10 mb-6" style={{ background: 'linear-gradient(135deg, #FFFFFF, #9D50BB)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                Welcome to <span className="text-dcs-purple">LMS Platform</span>
+                Welcome to <span className="text-dcs-purple">Data Center Skills</span>
               </h1>
               <p className="text-lg text-dcs-text-gray mb-10">
                 Transform your career with our comprehensive learning management system. 
@@ -54,7 +54,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div className="card" >
+            {/*<div className="card" >
               <h3 className="text-white mb-6 text-xl font-bold">Platform Highlights</h3>
               <ul className="list-none text-white leading-8 space-y-2 font-semibold">
                 <li>✓ Comprehensive Course Library</li>
@@ -63,7 +63,7 @@ export default function Home() {
                 <li>✓ Progress Tracking</li>
                 <li>✓ Certificates on Completion</li>
               </ul>
-            </div>
+            </div>*/}
           </div>
         </section>
 
@@ -237,7 +237,7 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div className="card">
+          {/*<div className="card">
             <h3 className="text-white mb-6 text-xl font-semibold">Quick Actions</h3>
             <ul className="list-none text-gray leading-8 space-y-2">
               <li>✓ View My Courses</li>
@@ -245,7 +245,7 @@ export default function Home() {
               <li>✓ Track Progress</li>
               <li>✓ Update Profile</li>
             </ul>
-          </div>
+          </div>*/}
         </div>
       </section>
 

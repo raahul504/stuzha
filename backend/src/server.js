@@ -12,6 +12,8 @@ const progressRoutes = require('./routes/progressRoutes');
 const videoRoutes = require('./routes/videoRoutes');
 const certificateRoutes = require('./routes/certificateRoutes');
 const userRoutes = require('./routes/userRoutes');
+const categoryRoutes = require('./routes/categoryRoutes');
+const conversationRoutes = require('./routes/conversationRoutes');
 
 const app = express();
 
@@ -45,6 +47,8 @@ app.use('/api', progressRoutes);
 app.use('/api', videoRoutes);
 app.use('/api', certificateRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/conversation', conversationRoutes);
 
 // ========== ERROR HANDLING ==========
 app.use((err, req, res, next) => {
