@@ -11,7 +11,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import CourseEditor from './pages/CourseEditor';
 import VerifyEmail from './pages/VerifyEmail';
 import Profile from './pages/Profile';
-import InstructorDashboard from './pages/IntructorDashboard';
+import InstructorDashboard from './pages/InstructorDashboard';
 import InstructorCreateCourse from './pages/InstructorCreateCourse';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
@@ -37,7 +37,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/courses" element={<Courses />} />
           <Route path="/courses/:id" element={<CourseDetail />} />
-          <Route path="/my-courses" element={ <ProtectedRoute> <MyCourses /> </ProtectedRoute> } />
+          <Route path="/my-courses" element={<ProtectedRoute> <MyCourses /> </ProtectedRoute>} />
           <Route path="/learn/:id" element={<ProtectedRoute><Learn /></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
           <Route path="/admin/course/:id" element={<ProtectedRoute><CourseEditor /></ProtectedRoute>} />

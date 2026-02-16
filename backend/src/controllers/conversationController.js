@@ -1,6 +1,7 @@
 const conversationService = require('../services/conversationService');
 const slmService = require('../services/slmService');
 const Joi = require('joi');
+const prisma = require('../config/database');
 
 const chatSchema = Joi.object({
   message: Joi.string().min(1).max(1000).required(),
@@ -61,21 +62,37 @@ const chat = async (req, res, next) => {
     // Get all learning paths for LLM context
     const learningPaths = await conversationService.getAllLearningPaths();
 
+    // Get all courses with content for LLM context
+    const courses = await conversationService.getCoursesWithContent();
+
     // Generate response using SLM
     const { message: assistantMessage, recommendation } = await slmService.generateResponse(
       history,
-      learningPaths
+      learningPaths,
+      courses
     );
 
     // Add assistant message to history
     await conversationService.addMessage(session.sessionToken, 'assistant', assistantMessage);
 
-    // If recommendation found, update session
+    // If recommendation found, add recommendation as a separate message and update session
     let recommendedPath = null;
     if (recommendation) {
-      console.log('Recommendation found:', recommendation); // ADD THIS
+      console.log('=== RECOMMENDATION DEBUG ===');
+      console.log('Recommendation object:', recommendation);
+      console.log('Session token:', session.sessionToken); // ADD THIS
+
       const preferences = slmService.extractPreferences(history);
       console.log('Extracted preferences:', preferences); // ADD THIS
+      console.log('Extracted goal:', recommendation.name);
+      
+      // Add recommendation as a special message
+      const recommendationMessage = {
+        type: 'recommendation',
+        recommendation: recommendation,
+        timestamp: new Date().toISOString(),
+      };
+      await conversationService.addMessage(session.sessionToken, 'assistant', JSON.stringify(recommendationMessage));
       
       await conversationService.updateExtractedInfo(
         session.sessionToken,
@@ -83,6 +100,17 @@ const chat = async (req, res, next) => {
         preferences,
         recommendation.id
       );
+      // VERIFY IT SAVED
+      const updated = await prisma.conversationSession.findUnique({
+        where: { sessionToken: session.sessionToken }
+      });
+      console.log('DB after update:', {
+        extractedGoal: updated.extractedGoal,
+        extractedPreferences: updated.extractedPreferences,
+        recommendedPathId: updated.recommendedPathId
+      });
+      console.log('=== END DEBUG ===');
+      
       recommendedPath = recommendation;
     }
 

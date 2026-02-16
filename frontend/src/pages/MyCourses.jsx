@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { courseService } from '../api/courseService';
 import Navbar from '../components/Navbar';
 import LoadingSpinner from '../components/LoadingSpinner';
+import CourseCard from '../components/CourseCard';
 
 export default function MyCourses() {
   const [courses, setCourses] = useState([]);
@@ -29,82 +30,52 @@ export default function MyCourses() {
   }
 
   return (
-    <div className="min-h-screen bg-dcs-black">
-      <Navbar />
-      <div className="pt-32 pb-12 px-8">
-        <div className="max-w-[1400px] mx-auto">
-          <h1 className="text-5xl text-center leading-normal mb-4 bg-gradient-to-r from-white to-dcs-purple bg-clip-text text-transparent">
-            My Courses
-          </h1>
-          <p className="text-center text-dcs-text-gray text-lg">Continue your learning journey</p>
-        </div>
+    <div className="min-h-screen bg-dcs-black relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-dcs-purple/10 blur-[120px] rounded-full"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-dcs-electric-indigo/10 blur-[120px] rounded-full"></div>
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-8 pb-20">
-        {courses.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-dcs-text-gray text-lg mb-6">You haven't enrolled in any courses yet.</p>
-            <button
-              onClick={() => navigate('/courses')}
-              className="btn-purple"
-            >
-              Browse Courses
-            </button>
+      <Navbar />
+
+      <div className="relative z-10 pt-32 pb-12 px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-12">
+            <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-white to-dcs-purple bg-clip-text text-transparent">
+              My Courses
+            </h1>
+            <p className="text-dcs-text-gray text-xl max-w-2xl">Continue your learning journey and sharpen your professional skills.</p>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))' }}>
-            {courses.map((course) => (
-              <div
-                key={course.id}
-                onClick={() => navigate(`/learn/${course.id}`)}
-                className="bg-dcs-dark-gray rounded-[20px] overflow-hidden border border-dcs-purple/10 transition-all duration-400 cursor-pointer flex flex-col hover:-translate-y-4 hover:border-dcs-purple hover:shadow-2xl"
-                style={{ boxShadow: '0 20px 40px rgba(157, 80, 187, 0.1)' }}
-              >
-                <div className="h-[200px] bg-gradient-to-br from-dcs-dark-purple to-dcs-black flex items-center justify-center border-b-2 border-dcs-purple">
-                  <span className="text-white text-2xl font-bold">
-                    {course.title}
-                  </span>
-                </div>
 
-                <div className="p-8 flex-grow flex flex-col">
-                  <h3 className="text-white text-xl font-bold mb-4">{course.title}</h3>
-
-                  {/* Progress Bar */}
-                  <div className="mb-6">
-                    <div className="flex justify-between text-sm mb-2">
-                      <span className="text-dcs-text-gray">Progress</span>
-                      <span className="text-white font-semibold">
-                        {parseFloat(course.progressPercentage).toFixed(0)}%
-                      </span>
-                    </div>
-                    <div className="w-full bg-dcs-black rounded-full h-2">
-                      <div
-                        className="bg-dcs-purple h-2 rounded-full transition-all"
-                        style={{ width: `${course.progressPercentage}%` }}
-                      />
-                    </div>
-                  </div>
-
-                  {course.completed && (
-                    <span className="inline-block bg-green-900/30 text-green-400 text-sm px-3 py-1.5 rounded mb-4 border border-green-500/30">
-                      ✓ Completed
-                    </span>
-                  )}
-
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/learn/${course.id}`);
-                    }}
-                    className="w-full py-3 bg-dcs-purple text-white rounded-full font-semibold hover:bg-dcs-dark-purple transition-all mt-auto"
-                  >
-                    Continue Learning →
-                  </button>
-                </div>
+          {courses.length === 0 ? (
+            <div className="text-center py-20 bg-dcs-dark-gray/30 backdrop-blur-md rounded-3xl border border-dcs-purple/20 shadow-2xl">
+              <div className="mb-6 opacity-20">
+                <svg className="w-24 h-24 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
               </div>
-            ))}
-          </div>
-        )}
+              <p className="text-dcs-text-gray text-xl mb-8">You haven't enrolled in any courses yet.</p>
+              <button
+                onClick={() => navigate('/courses')}
+                className="bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo text-white px-10 py-4 rounded-full font-bold shadow-lg transition-all hover:scale-105"
+              >
+                Browse Our Courses
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              {courses.map((course) => (
+                <CourseCard
+                  key={course.id}
+                  course={course}
+                  progress={course.progressPercentage}
+                  onClick={() => navigate(`/learn/${course.id}`)}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

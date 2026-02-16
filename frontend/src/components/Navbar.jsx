@@ -46,19 +46,19 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 w-full max-w-[100vw] bg-dcs-black/95 backdrop-blur-lg z-50 border-b border-dcs-purple/20 shadow-lg">
       <div className="max-w-[1400px] mx-auto px-8 py-4 flex justify-end items-center">
-        
+
         <ul className="flex gap-6 list-none items-center">
           <li>
-            <button 
-              onClick={() => navigate('/')} 
+            <button
+              onClick={() => navigate('/')}
               className="text-white no-underline font-medium text-sm transition-all duration-300 hover:text-dcs-purple"
             >
               Home
             </button>
           </li>
           <li>
-            <button 
-              onClick={() => navigate('/courses')} 
+            <button
+              onClick={() => navigate('/courses')}
               className="text-white no-underline font-medium text-sm transition-all duration-300 hover:text-dcs-purple"
             >
               Courses
@@ -67,8 +67,8 @@ export default function Navbar() {
           {isAuthenticated && (
             <>
               <li>
-                <button 
-                  onClick={() => navigate('/my-courses')} 
+                <button
+                  onClick={() => navigate('/my-courses')}
                   className="text-white no-underline font-medium text-sm transition-all duration-300 hover:text-dcs-purple"
                 >
                   My Courses
@@ -76,8 +76,8 @@ export default function Navbar() {
               </li>
               {(user?.role === 'ADMIN') && (
                 <li>
-                  <button 
-                    onClick={() => navigate('/admin')} 
+                  <button
+                    onClick={() => navigate('/admin')}
                     className="text-white no-underline font-medium text-sm transition-all duration-300 hover:text-dcs-purple"
                   >
                     Admin
@@ -86,8 +86,8 @@ export default function Navbar() {
               )}
               {(user?.role === 'INSTRUCTOR') && (
                 <li>
-                  <button 
-                    onClick={() => navigate('/instructor')} 
+                  <button
+                    onClick={() => navigate('/instructor')}
                     className="text-white no-underline font-medium text-sm transition-all duration-300 hover:text-dcs-purple"
                   >
                     Instructor
@@ -95,7 +95,7 @@ export default function Navbar() {
                 </li>
               )}
               <li className="relative" ref={dropdownRef}>
-                <div 
+                <div
                   className="flex items-center gap-2.5 cursor-pointer px-3 py-1.5 rounded-full bg-dcs-light-gray border border-dcs-purple/30 hover:border-dcs-purple/50 transition-all"
                   onClick={() => setShowDropdown(!showDropdown)}
                 >
@@ -134,16 +134,16 @@ export default function Navbar() {
           {!isAuthenticated && (
             <>
               <li>
-                <button 
-                  onClick={() => navigate('/login')} 
+                <button
+                  onClick={() => navigate('/login')}
                   className="text-white no-underline font-medium text-sm transition-all duration-300 hover:text-dcs-purple"
                 >
                   Login
                 </button>
               </li>
               <li>
-                <button 
-                  onClick={() => navigate('/register')} 
+                <button
+                  onClick={() => navigate('/register')}
                   className="bg-dcs-purple text-white px-6 py-2 rounded-full no-underline font-bold hover:bg-dcs-dark-purple transition-all"
                 >
                   Register

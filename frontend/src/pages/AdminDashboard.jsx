@@ -19,50 +19,57 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-dcs-dark-gray">
-      <Navbar />
-      <nav className="bg-dcs-black shadow-md">
-        <div className="container mx-auto px-4 py-4 flex justify-between">
-          <h1 className="text-xl font-bold">Admin Panel</h1>
-          {/*<div className="flex items-center space-x-4">
-            <button onClick={() => navigate('/')} className="text-gray-700 hover:text-blue-600">
-              Home
-            </button>
-            <button onClick={logout} className="bg-red-600 text-white px-4 py-2 rounded">
-              Logout
-            </button>
-          </div>*/}
-        </div>
-      </nav>
-      <div className="container mx-auto mt-10 px-4 py-4 flex justify-between">
-          <h1 className="text-xl font-bold">Admin Panel</h1>
+    <div className="min-h-screen bg-dcs-black relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-dcs-purple/10 blur-[120px] rounded-full"></div>
+        <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-dcs-electric-indigo/10 blur-[120px] rounded-full"></div>
       </div>
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex space-x-4 mb-6">
-          <button
-            onClick={() => setActiveTab('courses')}
-            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
-              activeTab === 'courses' 
-                ? 'bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo text-white shadow-lg' 
-                : 'bg-dcs-light-gray text-dcs-text-gray hover:text-white'
-            }`}
-          >
-            Manage Courses
-          </button>
-          <button
-            onClick={() => setActiveTab('create')}
-            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
-              activeTab === 'create' 
-                ? 'bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo text-white shadow-lg' 
-                : 'bg-dcs-light-gray text-dcs-text-gray hover:text-white'
-            }`}
-          >
-            Create Course
-          </button>
+
+      <Navbar />
+
+      <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24 pb-12">
+        <div className="mb-10">
+          <h1 className="text-4xl font-bold mb-3 text-white bg-gradient-to-r from-white to-dcs-purple bg-clip-text text-transparent">
+            Admin Dashboard
+          </h1>
+          <p className="text-dcs-text-gray text-lg">System Management & Control Center</p>
         </div>
 
-        {activeTab === 'courses' && <ManageCourses />}
-        {activeTab === 'create' && <CreateCourse />}
+        <div className="bg-dcs-dark-gray/40 backdrop-blur-md border border-dcs-purple/20 rounded-3xl p-8 shadow-2xl overflow-hidden relative">
+          {/* Header/Tabs */}
+          <div className="flex flex-wrap gap-4 mb-10 border-b border-white/5 pb-8">
+            <button
+              onClick={() => setActiveTab('courses')}
+              className={`flex items-center gap-2 px-8 py-4 rounded-full font-bold transition-all duration-300 ${activeTab === 'courses'
+                ? 'bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo text-white shadow-[0_0_20px_rgba(157,80,187,0.4)] scale-105'
+                : 'bg-dcs-light-gray/50 text-dcs-text-gray hover:text-white hover:bg-dcs-light-gray'
+                }`}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+              Manage Courses
+            </button>
+            <button
+              onClick={() => setActiveTab('create')}
+              className={`flex items-center gap-2 px-8 py-4 rounded-full font-bold transition-all duration-300 ${activeTab === 'create'
+                ? 'bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo text-white shadow-[0_0_20px_rgba(157,80,187,0.4)] scale-105'
+                : 'bg-dcs-light-gray/50 text-dcs-text-gray hover:text-white hover:bg-dcs-light-gray'
+                }`}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              Create New Course
+            </button>
+          </div>
+
+          <div className="relative animate-fadeInUp">
+            {activeTab === 'courses' && <ManageCourses />}
+            {activeTab === 'create' && <CreateCourse />}
+          </div>
+        </div>
       </div>
     </div>
   );

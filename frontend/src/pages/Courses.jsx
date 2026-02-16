@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { courseService } from '../api/courseService';
 import { categoryService } from '../api/categoryService';
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import CourseAdvisor from '../components/CourseAdvisor';
+import CourseCard from '../components/CourseCard';
 
 export default function Courses() {
   const [courses, setCourses] = useState([]);
@@ -13,6 +14,7 @@ export default function Courses() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
   const { isAuthenticated } = useAuth();
   const [showAdvisor, setShowAdvisor] = useState(false);
 
@@ -23,16 +25,32 @@ export default function Courses() {
   const [priceRange, setPriceRange] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
-  const [hoveredCategory, setHoveredCategory] = useState(null);
   const [activeCategory, setActiveCategory] = useState(null);
 
   const categoryDropdownRef = useRef(null);
   const filterDropdownRef = useRef(null);
+  const advisorRef = useRef(null);
 
   useEffect(() => {
     fetchCourses();
     fetchCategories();
+
+    // Check if we should open the advisor from navigation state
+    if (location.state?.openAdvisor) {
+      setShowAdvisor(true);
+      // Clear the state so it doesn't reopen on refresh
+      navigate(location.pathname, { replace: true, state: {} });
+    }
   }, []);
+
+  // Scroll to advisor when it opens
+  useEffect(() => {
+    if (showAdvisor && advisorRef.current) {
+      setTimeout(() => {
+        advisorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  }, [showAdvisor]);
 
   useEffect(() => {
     applyFilters();
@@ -153,16 +171,16 @@ export default function Courses() {
     <div className="min-h-screen bg-dcs-black">
       <Navbar />
 
-      {/* Header */}
+      {/* Header 
       <div className="pt-27 pb-5 px-8">
         <div className="max-w-[1400px] mx-auto">
           <h1 className="text-3xl leading-normal text-center mb-2 bg-gradient-to-r from-white to-dcs-purple bg-clip-text text-transparent">
             Explore Our Programs
           </h1>
         </div>
-      </div>
+      </div>*/}
 
-      <div className="max-w-[1400px] mx-auto" style={{ padding: '1rem 2rem' }}>
+      <div className="max-w-[1400px] mx-auto mt-20" style={{ padding: '1rem 2rem' }}>
         {/* Search & Filters Row */}
         <div className="mb-4">
           <div className="flex gap-4">
@@ -182,72 +200,70 @@ export default function Courses() {
               </button>
 
               {showCategoryDropdown && (
-              <div className="absolute left-0 top-full mt-2 bg-dcs-dark-gray border border-dcs-purple/30 rounded-2xl shadow-2xl z-50 flex">
+                <div className="absolute left-0 top-full mt-2 bg-dcs-dark-gray border border-dcs-purple/30 rounded-2xl shadow-2xl z-50 flex">
 
-                {/* Left side - Main Categories */}
-                <div className="w-64 p-6">
-                  <div className="space-y-1 max-h-[400px] overflow-y-auto scrollbar-hide">
-                    {categories
-                      .filter(cat => cat.level === 0)
-                      .sort((a, b) => a.orderIndex - b.orderIndex)
-                      .map((category) => (
-                        <div
-                          key={category.id}
-                          onMouseEnter={() => setActiveCategory(category.id)}
-                          className="relative"
-                        >
-                          <label className={`flex items-center justify-between px-4 py-2 rounded-lg transition-colors cursor-pointer ${
-                            activeCategory === category.id
-                              ? 'bg-dcs-light-gray text-white'
-                              : 'text-dcs-text-gray hover:bg-dcs-light-gray hover:text-white'
-                          }`}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleCategory(category.id, e);
-                          }}>                        
-                            <span className="text-sm">{category.name}</span>
-                            {category.subCategories?.length > 0 && (
-                              <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                              </svg>
-                            )}
-                          </label>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-
-                {/* Right side - Subcategories (shown when activeCategory is set) */}
-                {activeCategory && (
-                  <div 
-                    className="w-64 p-6 bg-dcs-black/50 border-l border-dcs-purple/30"
-                    onMouseEnter={() => setActiveCategory(activeCategory)}
-                  >
+                  {/* Left side - Main Categories */}
+                  <div className="w-72 p-6">
                     <div className="space-y-1 max-h-[400px] overflow-y-auto scrollbar-hide">
                       {categories
-                        .find(cat => cat.id === activeCategory)
-                        ?.subCategories?.sort((a, b) => a.orderIndex - b.orderIndex)
-                        .map((subcat) => (
-                          <label
-                            key={subcat.id}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleCategory(subcat.id, e);
-                            }}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors cursor-pointer ${
-                              selectedCategories.includes(subcat.id)
-                                ? 'bg-dcs-purple text-white'
-                                : 'text-dcs-text-gray hover:bg-dcs-light-gray hover:text-white'
-                            }`}
+                        .filter(cat => cat.level === 0)
+                        .sort((a, b) => a.orderIndex - b.orderIndex)
+                        .map((category) => (
+                          <div
+                            key={category.id}
+                            onMouseEnter={() => setActiveCategory(category.id)}
+                            className="relative"
                           >
-                            <span className="text-sm">{subcat.name}</span>
-                          </label>
+                            <label className={`flex items-center justify-between px-4 py-2 rounded-lg transition-colors cursor-pointer ${activeCategory === category.id
+                              ? 'bg-dcs-light-gray text-white'
+                              : 'text-dcs-text-gray hover:bg-dcs-light-gray hover:text-white'
+                              }`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleCategory(category.id, e);
+                              }}>
+                              <span className="text-sm">{category.name}</span>
+                              {category.subCategories?.length > 0 && (
+                                <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                </svg>
+                              )}
+                            </label>
+                          </div>
                         ))}
                     </div>
                   </div>
-                )}
-              </div>
-            )}
+
+                  {/* Right side - Subcategories (shown when activeCategory is set) */}
+                  {activeCategory && (
+                    <div
+                      className="w-72 p-6 bg-dcs-black/50 border-l border-dcs-purple/30"
+                      onMouseEnter={() => setActiveCategory(activeCategory)}
+                    >
+                      <div className="space-y-1 max-h-[400px] overflow-y-auto scrollbar-hide">
+                        {categories
+                          .find(cat => cat.id === activeCategory)
+                          ?.subCategories?.sort((a, b) => a.orderIndex - b.orderIndex)
+                          .map((subcat) => (
+                            <label
+                              key={subcat.id}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleCategory(subcat.id, e);
+                              }}
+                              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors cursor-pointer ${selectedCategories.includes(subcat.id)
+                                ? 'bg-dcs-purple text-white'
+                                : 'text-dcs-text-gray hover:bg-dcs-light-gray hover:text-white'
+                                }`}
+                            >
+                              <span className="text-sm">{subcat.name}</span>
+                            </label>
+                          ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Search Bar */}
@@ -256,24 +272,33 @@ export default function Courses() {
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search courses..."
-                className="w-full px-6 py-4 bg-dcs-dark-gray border border-dcs-purple/30 rounded-full text-white placeholder-dcs-text-gray focus:border-dcs-purple focus:outline-none transition-all"
+                placeholder="Explore courses..."
+                className="w-full px-6 py-4 bg-dcs-dark-gray border border-dcs-purple/30 rounded-full text-white placeholder-dcs-text-gray focus:border-dcs-purple focus:outline-none transition-all pr-28"
               />
-              <svg className="absolute right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-dcs-text-gray" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="absolute right-40 top-1/2 -translate-y-1/2 w-5 h-5 text-dcs-text-gray pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
+              <button
+                onClick={() => setShowAdvisor(!showAdvisor)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 px-4 py-2 bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo rounded-full text-white text-sm font-semibold hover:scale-105 transition-transform flex items-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                </svg>
+                Consultant
+              </button>
             </div>
 
             {/* Filter Button */}
             <div className="relative" ref={filterDropdownRef}>
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="px-8 py-4 bg-dcs-purple/20 border border-dcs-purple/50 rounded-full text-white font-semibold hover:bg-dcs-purple/30 transition-all flex items-center gap-2"
+                className="px-4 py-4 bg-dcs-purple/20 border border-dcs-purple/50 rounded-full text-white font-semibold hover:bg-dcs-purple/30 transition-all flex items-center gap-2"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                 </svg>
-                Filters
+
               </button>
 
               {showFilters && (
@@ -313,6 +338,13 @@ export default function Courses() {
           </div>
         </div>
 
+        {/* Course Advisor - Positioned under search bar */}
+        {showAdvisor && (
+          <div ref={advisorRef} className="mb-6 scroll-mt-30">
+            <CourseAdvisor onClose={() => setShowAdvisor(false)} />
+          </div>
+        )}
+
         {/* Selected Category Tags */}
         {selectedCategories.length > 0 && (
           <div className="flex flex-wrap items-center gap-2 mb-6">
@@ -351,68 +383,14 @@ export default function Courses() {
             )}
           </div>
         ) : (
-          <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '2.5rem' }}>
+          <div className="grid mt-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {filteredCourses.map((course) => (
-              <div
+              <CourseCard
                 key={course.id}
+                course={course}
+                categoryName={getCategoryName(course.categoryId)}
                 onClick={() => handleCourseClick(course.id)}
-                className="bg-dcs-dark-gray rounded-[20px] overflow-hidden border border-dcs-purple/10 transition-all duration-400 cursor-pointer flex flex-col"
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-15px)';
-                  e.currentTarget.style.borderColor = '#9D50BB';
-                  e.currentTarget.style.boxShadow = '0 20px 40px rgba(157, 80, 187, 0.2)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.borderColor = 'rgba(157, 80, 187, 0.1)';
-                  e.currentTarget.style.boxShadow = 'none';
-                }}
-              >
-                {/* Banner */}
-                <div className="h-[200px] flex items-center justify-center text-2xl font-bold text-white border-b-2 border-dcs-purple"
-                  style={{ background: 'linear-gradient(135deg, #6E48AA, #0A0A0A)' }}>
-                  {course.thumbnailUrl ? (
-                    <img src={course.thumbnailUrl} alt={course.title} className="w-full h-full object-cover" />
-                  ) : (
-                    <span>{course.title}</span>
-                  )}
-                </div>
-
-                {/* Content */}
-                <div className="p-8 flex-grow flex flex-col">
-                  {/* Tags row */}
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {course.categoryId && getCategoryName(course.categoryId) && (
-                      <span className="bg-dcs-purple/20 text-dcs-purple px-3 py-1.5 rounded text-xs font-bold uppercase">
-                        {getCategoryName(course.categoryId)}
-                      </span>
-                    )}
-                    {course.isPurchased && (
-                      <span className="bg-green-900/30 text-green-400 px-3 py-1.5 rounded text-xs font-bold uppercase border border-green-500/30">
-                        Enrolled
-                      </span>
-                    )}
-                    {course.difficultyLevel && (
-                      <span className="bg-dcs-light-gray text-dcs-text-gray px-3 py-1.5 rounded text-xs font-bold uppercase">
-                        {course.difficultyLevel}
-                      </span>
-                    )}
-                  </div>
-
-                  <h3 className="text-white text-xl mb-4 font-bold">{course.title}</h3>
-                  <p className="text-dcs-text-gray text-sm mb-6 line-clamp-2 flex-grow">
-                    {course.shortDescription || course.description}
-                  </p>
-
-                  {/* Footer */}
-                  <div className="pt-6 border-t border-white/5 flex justify-between items-center mt-auto">
-                    <span className="text-dcs-purple font-bold text-xl">
-                      ${parseFloat(course.price).toFixed(2)}
-                    </span>
-                    <span className="text-white text-sm">View Details →</span>
-                  </div>
-                </div>
-              </div>
+              />
             ))}
           </div>
         )}
@@ -424,20 +402,6 @@ export default function Courses() {
           <button onClick={() => navigate('/courses')} className="btn-purple">Enroll in a Course</button>
         </footer>
       </div>
-      
-      {/* Course Advisor Button - Floating */}
-      <button
-        onClick={() => setShowAdvisor(true)}
-        className="fixed bottom-8 right-8 w-16 h-16 bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform z-40"
-        style={{ boxShadow: '0 10px 40px rgba(157, 80, 187, 0.5)' }}
-      >
-        <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-        </svg>
-      </button>
-
-      {/* Course Advisor Modal */}
-      {showAdvisor && <CourseAdvisor onClose={() => setShowAdvisor(false)} />}
     </div>
   );
 }

@@ -97,6 +97,7 @@ const getConversationHistory = async (sessionToken) => {
   return session.messagesJson;
 };
 
+
 /**
  * Update extracted information from conversation
  */
@@ -157,14 +158,24 @@ const getCoursesForPath = async (pathId) => {
   // Get all courses in the required categories
   const courses = await prisma.course.findMany({
     where: {
-      categoryId: { in: path.requiredCategoryIds },
       isPublished: true,
+      categories: {
+        some: {
+          categoryId: {
+            in: path.requiredCategoryIds,
+          },
+        },
+      },
     },
     include: {
-      category: {
-        select: {
-          id: true,
-          name: true,
+      categories: {
+        include: {
+          category: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
         },
       },
     },
@@ -189,7 +200,13 @@ const getPathProgress = async (userId, pathId) => {
     where: {
       userId,
       course: {
-        categoryId: { in: path.requiredCategoryIds },
+        categories: {
+          some: {
+            categoryId: {
+              in: path.requiredCategoryIds,
+            },
+          },
+        },
       },
     },
     include: {
@@ -197,13 +214,39 @@ const getPathProgress = async (userId, pathId) => {
         select: {
           id: true,
           title: true,
-          categoryId: true,
+          categories: {
+            include: {
+              category: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
         },
       },
     },
   });
 
   return enrollments;
+};
+
+// In conversationService.js - add new function
+const getCoursesWithContent = async () => {
+  return await prisma.course.findMany({
+    where: { isPublished: true },
+    include: {
+      categories: { include: { category: true } },
+      modules: {
+        include: {
+          contentItems: {
+            select: { title: true, contentType: true }
+          }
+        }
+      }
+    }
+  });
 };
 
 module.exports = {
@@ -216,4 +259,5 @@ module.exports = {
   findMatchingPath,
   getCoursesForPath,
   getPathProgress,
+  getCoursesWithContent,
 };

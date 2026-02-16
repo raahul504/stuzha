@@ -31,14 +31,18 @@ export default function Home() {
                 Transform your career with our comprehensive learning management system. 
                 Access expert-led courses and advance your skills.
               </p>
-              <div className="mb-20">
-                <button
-                  onClick={() => navigate('/courses')}
-                  className="btn-purple"
-                >
-                  Start Learning Today
-                </button>
-              </div>
+              <p className="text-lg text-dcs-text-gray mb-5">
+                Need help finding your perfect course? Connect with our Free AI career consultant.
+              </p>
+              <button
+                onClick={() => navigate('/courses', { state: { openAdvisor: true } })}
+                className="px-8 py-4 bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo text-white rounded-full font-semibold hover:scale-105 transition-transform flex items-center gap-2 mb-10"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                </svg>
+                Get AI Career Advice
+              </button>
               <div className="flex gap-12">
                 <div>
                   <h2 className="text-3xl text-dcs-purple mb-2">100+</h2>
@@ -214,15 +218,26 @@ export default function Home() {
             <p className="text-lg text-dcs-text-gray mb-20">
               Continue your learning journey. Explore new courses and track your progress.
             </p>
-            <div className="mb-10">
-              <button
+              {/*<button
                 onClick={() => navigate('/courses')}
-                className="btn-purple"
+                className="btn-purple mb-10"
               >
                 Browse Courses
+              </button>*/}
+              <p className="text-lg text-dcs-text-gray mb-5">
+                Need help finding your perfect course? Connect with our Free AI career consultant.
+              </p>
+              <button
+                onClick={() => navigate('/courses', { state: { openAdvisor: true } })}
+                className="px-8 py-4 bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo text-white rounded-full font-semibold hover:scale-105 transition-transform flex items-center gap-2"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                </svg>
+                Get AI Career Advice
               </button>
-            </div>
-            <div className="flex gap-12">
+
+            <div className="flex gap-12 mt-20">
               <div>
                 <h2 className="text-3xl text-dcs-purple mb-2">100+</h2>
                 <p className="text-dcs-text-gray">Courses Available</p>

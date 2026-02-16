@@ -78,209 +78,332 @@ export default function CourseDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-dcs-black">
+    <div className="min-h-screen bg-dcs-black text-white font-sans selection:bg-dcs-purple selection:text-white pb-12">
       <Navbar />
-      
-      {/* Hero */}
-      <div className="pt-32 pb-16 px-8 bg-gradient-to-br from-[#0a1a2e] to-dcs-black text-center">
-        <div className="max-w-[1200px] mx-auto">
-          <button
-            onClick={() => navigate('/courses')}
-            className="mb-6 text-white hover:text-dcs-purple transition-colors"
-          >
-            ← Back to Courses
-          </button>
 
-          <h1 className="text-5xl font-bold mb-4 text-white">{course.title}</h1>
-          <p className="text-lg mb-6 text-dcs-text-gray">{course.shortDescription || course.description}</p>
+      {/* Hero Section - Modern & Spacious */}
+      <div className="relative pt-12 pb-16 overflow-hidden">
+        {/* Background Gradients */}
+        <div className="absolute inset-0 bg-dcs-dark-gray"></div>
+        <div className="absolute top-0 right-0 w-[800px] h-[600px] bg-dcs-purple/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 w-[600px] h-[400px] bg-dcs-electric-indigo/5 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/3 pointer-events-none"></div>
 
-          <div className="flex items-center justify-center gap-6 text-sm">
-            {course.difficultyLevel && (
-              <span className="bg-dcs-purple/20 text-dcs-purple px-4 py-2 rounded">
-                {course.difficultyLevel}
+        <div className="max-w-7xl mx-auto px-4 relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-12">
+          <div className="lg:col-span-2 space-y-8">
+            {/* Breadcrumb */}
+            <div className="flex items-center space-x-2 text-sm font-medium">
+              <span
+                onClick={() => navigate('/courses')}
+                className="text-dcs-purple hover:text-white cursor-pointer transition-colors duration-200"
+              >
+                Courses
               </span>
-            )}
-            {course.estimatedDurationHours && (
-              <span className="text-dcs-text-gray">{course.estimatedDurationHours} hours</span>
-            )}
+              <span className="text-dcs-text-gray/50">/</span>
+              <span className="text-dcs-text-gray truncate max-w-[300px]">{course.title}</span>
+            </div>
+
+            {/* Title & Description */}
+            <div className="space-y-6">
+              <h1 className="text-4xl md:text-6xl font-extrabold text-white tracking-tight leading-[1.1]">
+                {course.title}
+              </h1>
+              <p className="text-xl text-dcs-text-gray leading-relaxed max-w-3xl font-light">
+                {course.shortDescription || course.description?.substring(0, 150) + '...'}
+              </p>
+            </div>
+
+            {/* Metadata Badges */}
+            <div className="flex flex-wrap items-center gap-4 text-sm">
+              {course.difficultyLevel && (
+                <span className="bg-dcs-purple/10 text-dcs-purple px-4 py-1.5 rounded-full font-medium border border-dcs-purple/20 backdrop-blur-sm">
+                  {course.difficultyLevel}
+                </span>
+              )}
+
+              <div className="flex items-center gap-6 text-dcs-text-gray/80 font-medium">
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-dcs-purple" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>{course.estimatedDurationHours || '0'} hours</span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-dcs-purple" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span>Updated {new Date().toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}</span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-dcs-purple" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+                  </svg>
+                  <span>English</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="max-w-[1200px] mx-auto px-8 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-[2.5fr_1fr] gap-12">
-          {/* Main Content */}
-          <div>
-            {/* Description */}
-            <div className="card mb-8">
-              <h2 className="text-dcs-purple mb-6 text-2xl font-bold">What you'll learn</h2>
-              <p className="text-dcs-text-gray whitespace-pre-wrap leading-relaxed">{course.description}</p>
+      {/* Main Content Grid */}
+      <div className="max-w-7xl mx-auto px-4 -mt-8 relative z-20">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+
+          {/* Left Column: Course Details */}
+          <div className="lg:col-span-2 space-y-12 pt-8">
+
+            {/* What you'll learn */}
+            <div className="border border-dcs-purple/10 p-8 mt-8 rounded-2xl bg-dcs-light-gray/30 backdrop-blur-sm">
+              <h2 className="text-2xl font-bold text-white mb-8 flex items-center gap-3">
+                <span>What you'll learn</span>
+                <div className="h-px flex-1 bg-gradient-to-r from-dcs-purple/30 to-transparent"></div>
+              </h2>
+              <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                {course.courseIncludes?.split('\n').filter(line => line.trim()).map((item, index) => (
+                  <li key={index} className="flex items-start gap-3 group">
+                    <div className="mt-1 w-5 h-5 rounded-full bg-dcs-purple/10 flex items-center justify-center flex-shrink-0 group-hover:bg-dcs-purple/20 transition-colors">
+                      <svg className="w-3 h-3 text-dcs-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <span className="text-dcs-text-gray group-hover:text-white transition-colors duration-300 text-sm leading-relaxed">{item.trim()}</span>
+                  </li>
+                )) || <div className="text-dcs-text-gray italic">No specific learning outcomes listed.</div>}
+              </ul>
             </div>
 
-            {/* This course includes */}
-            {course.courseIncludes && (
-              <div className="card mb-8">
-                <h2 className="text-dcs-purple mb-6 text-2xl font-bold">This course includes:</h2>
-                <ul className="space-y-3">
-                  {course.courseIncludes.split('\n').filter(line => line.trim()).map((item, index) => (
-                    <li key={index} className="flex items-start gap-3">
-                      <span className="text-dcs-purple mt-1">✓</span>
-                      <span className="text-dcs-text-gray">{item.trim()}</span>
-                    </li>
-                  ))}
-                </ul>
+            {/* Course Content Accordion */}
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-6">Course Content</h2>
+              <div className="flex items-center justify-between text-sm text-dcs-text-gray mb-4 font-medium">
+                <span>
+                  {course.modules?.length || 0} sections • {course.modules?.reduce((acc, m) => acc + (m.contentItems?.length || 0), 0) || 0} lectures
+                </span>
+                <button
+                  onClick={() => {
+                    if (expandedModules.size === course.modules.length) {
+                      setExpandedModules(new Set());
+                    } else {
+                      setExpandedModules(new Set(course.modules.map(m => m.id)));
+                    }
+                  }}
+                  className="text-dcs-purple hover:text-dcs-electric-indigo transition-colors"
+                >
+                  {expandedModules.size === course.modules.length ? 'Collapse all' : 'Expand all'}
+                </button>
               </div>
-            )}
 
-            {/* Course Content */}
-            <div className="card">
-              <h2 className="text-dcs-purple mb-6 text-2xl font-bold">Course Content</h2>
-              <p className="text-dcs-text-gray mb-6">
-                {course.modules.reduce((acc, m) => acc + (m.contentItems?.length || 0), 0)} lectures • 
-                {course.estimatedDurationHours || 'N/A'} hours total content
-              </p>
-
-              {course.modules.map((module, index) => (
-                <div key={module.id} className="mb-4 last:mb-0 border border-dcs-purple/20 rounded-lg overflow-hidden">
-                  {/* Module Header - Clickable */}
-                  <div 
-                    onClick={() => toggleModule(module.id)}
-                    className="flex justify-between items-center p-4 bg-dcs-dark-gray hover:bg-dcs-light-gray cursor-pointer transition-colors"
-                  >
-                    <div className="flex-1">
-                      <h3 className="text-white text-lg font-semibold">
-                        Module {index + 1}: {module.title}
-                      </h3>
-                      {module.description && !expandedModules.has(module.id) && (
-                        <p className="text-dcs-text-gray text-sm mt-1 line-clamp-1">{module.description}</p>
-                      )}
-                    </div>
-                    
-                    {/* Expand/Collapse Icon */}
-                    <svg 
-                      className={`w-5 h-5 text-dcs-purple transition-transform ${expandedModules.has(module.id) ? 'rotate-180' : ''}`}
-                      fill="none" 
-                      stroke="currentColor" 
-                      viewBox="0 0 24 24"
+              <div className="border border-dcs-purple/10 rounded-xl overflow-hidden bg-dcs-dark-gray/50 backdrop-blur-sm">
+                {course.modules?.map((module, index) => (
+                  <div key={module.id} className="group border-b border-dcs-purple/5 last:border-0">
+                    {/* Module Header */}
+                    <button
+                      onClick={() => toggleModule(module.id)}
+                      className="w-full flex items-center justify-between p-5 hover:bg-dcs-light-gray/30 transition-all duration-200 text-left"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
+                      <div className="flex items-center gap-4">
+                        <span className={`flex items-center justify-center w-6 h-6 rounded-full bg-dcs-black/50 text-dcs-purple transition-all duration-300 ${expandedModules.has(module.id) ? 'rotate-180 bg-dcs-purple/10' : ''}`}>
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </span>
+                        <div>
+                          <h3 className="text-white font-semibold text-base group-hover:text-dcs-purple transition-colors">
+                            {module.title}
+                          </h3>
+                        </div>
+                      </div>
+                      <span className="text-xs text-dcs-text-gray/70">
+                        {module.contentItems?.length || 0} lectures
+                      </span>
+                    </button>
+
+                    {/* Module Content */}
+                    <div
+                      className={`overflow-hidden transition-all duration-300 ease-in-out ${expandedModules.has(module.id) ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}
+                    >
+                      <div className="bg-dcs-black/20 p-5 pt-2 border-t border-dcs-purple/5">
+                        {module.description && (
+                          <p className="text-sm text-dcs-text-gray mb-4 italic pl-10 border-l-2 border-dcs-purple/20">{module.description}</p>
+                        )}
+                        <ul className="space-y-1">
+                          {module.contentItems?.map((item) => (
+                            <li key={item.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-dcs-purple/5 transition-colors group/item cursor-default">
+                              <div className="flex items-center gap-4 text-dcs-text-gray group-hover/item:text-white transition-colors">
+                                <span className="text-dcs-purple/70 group-hover/item:text-dcs-purple">
+                                  {item.contentType === 'VIDEO' && (
+                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                                  )}
+                                  {item.contentType === 'ARTICLE' && (
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                  )}
+                                  {item.contentType === 'ASSESSMENT' && (
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+                                  )}
+                                </span>
+                                <span className="text-sm">{item.title}</span>
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
                   </div>
+                ))}
+              </div>
+            </div>
 
-                  {/* Module Content - Collapsible */}
-                  {expandedModules.has(module.id) && (
-                    <div className="p-4 bg-dcs-black border-t border-dcs-purple/20">
-                      {module.description && (
-                        <p className="text-dcs-text-gray mb-4">{module.description}</p>
-                      )}
+            {/* Description */}
+            <div className="prose prose-invert prose-lg max-w-none">
+              <h2 className="text-2xl font-bold text-white mb-6">Description</h2>
+              <div className="text-dcs-text-gray leading-loose text-base whitespace-pre-wrap">
+                {course.description}
+              </div>
+            </div>
 
-                      <ul className="space-y-3">
-                        {module.contentItems?.map((item) => (
-                          <li key={item.id} className="flex items-center text-dcs-text-gray">
-                            <span className="mr-3 text-lg">
-                              {item.contentType === 'VIDEO' && '🎥'}
-                              {item.contentType === 'ARTICLE' && '📄'}
-                              {item.contentType === 'ASSESSMENT' && '✏️'}
-                            </span>
-                            <span>{item.title}</span>
-                        {/*{item.isPreview && (
-                          <span className="ml-3 text-xs bg-dcs-purple/20 text-dcs-purple px-2 py-1 rounded">
-                            Preview
-                          </span>
-                        )}*/}
+            {/* Requirements & Target Audience Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Requirements */}
+              {course.requirements && (
+                <div>
+                  <h3 className="text-xl font-bold text-white mb-4">Requirements</h3>
+                  <ul className="space-y-2">
+                    {course.requirements.split('\n').filter(line => line.trim()).map((item, index) => (
+                      <li key={index} className="flex items-start gap-2 text-dcs-text-gray text-sm">
+                        <span className="text-dcs-purple mt-1">•</span>
+                        <span>{item.trim()}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Target Audience */}
+              {course.targetAudience && (
+                <div>
+                  <h3 className="text-xl font-bold text-white mb-4">Who this course is for</h3>
+                  <ul className="space-y-2">
+                    {course.targetAudience.split('\n').filter(line => line.trim()).map((item, index) => (
+                      <li key={index} className="flex items-start gap-2 text-dcs-text-gray text-sm">
+                        <span className="text-dcs-purple mt-1">•</span>
+                        <span>{item.trim()}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
               )}
             </div>
-          ))}
-            </div>
 
-            {/* Requirements */}
-            {course.requirements && (
-              <div className="card mt-8">
-                <h2 className="text-dcs-purple mb-6 text-2xl font-bold">Requirements</h2>
-                <ul className="space-y-3">
-                  {course.requirements.split('\n').filter(line => line.trim()).map((item, index) => (
-                    <li key={index} className="flex items-start gap-3">
-                      <span className="text-dcs-text-gray mt-1">•</span>
-                      <span className="text-dcs-text-gray">{item.trim()}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Who this course is for */}
-            {course.targetAudience && (
-              <div className="card mt-8">
-                <h2 className="text-dcs-purple mb-6 text-2xl font-bold">Who this course is for:</h2>
-                <ul className="space-y-3">
-                  {course.targetAudience.split('\n').filter(line => line.trim()).map((item, index) => (
-                    <li key={index} className="flex items-start gap-3">
-                      <span className="text-dcs-text-gray mt-1">•</span>
-                      <span className="text-dcs-text-gray">{item.trim()}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
           </div>
 
-          {/* Sidebar */}
-          <div>
-            <div className="card border-dcs-purple sticky top-24 text-center">
-              {course.isPurchased ? (
-                <div>
-                  <div className="bg-green-900/30 text-green-400 p-4 rounded mb-6 border border-green-500/30">
-                    ✓ You're enrolled in this course
-                  </div>
+          {/* Right Column: Sticky Sidebar - Floating Glass Effect */}
+          <div className="lg:col-span-1 relative">
+            <div className="sticky top-24">
+              <div className="bg-dcs-dark-gray/90 backdrop-blur-xl border border-dcs-purple/20 p-6 shadow-[0_8px_32px_rgba(0,0,0,0.5)] rounded-2xl z-5 transition-all duration-300 hover:shadow-[0_8px_40px_rgba(157,80,187,0.15)] hover:border-dcs-purple/30">
 
-                  {course.enrollment && (
-                    <div className="mb-6">
-                      <div className="flex justify-between text-sm mb-2 text-dcs-text-gray">
-                        <span>Progress</span>
-                        <span className="text-white">{parseFloat(course.enrollment.progressPercentage).toFixed(0)}%</span>
+                {/* Preview Image / Placeholder */}
+                <div className="aspect-video bg-dcs-black/50 rounded-xl mb-6 flex items-center justify-center border border-dcs-purple/10 overflow-hidden relative group cursor-pointer">
+                  <div className="absolute inset-0 bg-gradient-to-tr from-dcs-purple/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity"></div>
+                  <div className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-xl border border-white/10">
+                    <svg className="w-6 h-6 text-white ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                  </div>
+                </div>
+
+                {course.isPurchased ? (
+                  <div>
+                    <div className="flex items-center gap-3 text-green-400 font-bold mb-6 bg-green-500/10 p-4 rounded-xl border border-green-500/20">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                      <span>You are enrolled</span>
+                    </div>
+
+                    {course.enrollment?.progressPercentage !== undefined && (
+                      <div className="mb-6">
+                        <div className="flex justify-between text-sm mb-2 text-dcs-text-gray font-medium">
+                          <span>Course Progress</span>
+                          <span className="text-white">{parseFloat(course.enrollment.progressPercentage).toFixed(0)}%</span>
+                        </div>
+                        <div className="w-full bg-dcs-black/50 rounded-full h-2 overflow-hidden border border-white/5">
+                          <div
+                            className="bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo h-full rounded-full transition-all duration-500 ease-out shadow-[0_0_12px_rgba(157,80,187,0.6)]"
+                            style={{ width: `${course.enrollment.progressPercentage}%` }}
+                          />
+                        </div>
                       </div>
-                      <div className="w-full bg-dcs-black rounded-full h-2">
-                        <div
-                          className="bg-dcs-purple h-2 rounded-full transition-all"
-                          style={{ width: `${course.enrollment.progressPercentage}%` }}
-                        />
+                    )}
+
+                    <button
+                      onClick={handleStartLearning}
+                      className="w-full py-4 bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo text-white rounded-xl font-bold hover:shadow-[0_4px_20px_rgba(157,80,187,0.4)] transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+                    >
+                      Continue Learning
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    <div className="flex items-end gap-3 pb-4 border-b border-dcs-purple/10">
+                      <span className="text-5xl font-extrabold text-white tracking-tight">${parseFloat(course.price).toFixed(2)}</span>
+                      <div className="flex flex-col mb-1">
+                        <span className="text-base text-dcs-text-gray line-through decoration-dcs-purple/50 decoration-2">
+                          ${(parseFloat(course.price) * 1.5).toFixed(2)}
+                        </span>
+                        <span className="text-sm text-dcs-purple font-semibold">33% Discount</span>
                       </div>
                     </div>
-                  )}
 
-                  <button
-                    onClick={handleStartLearning}
-                    className="w-full py-4 bg-dcs-purple text-white rounded-full font-bold hover:bg-dcs-dark-purple transition-all"
-                  >
-                    Continue Learning →
-                  </button>
-                </div>
-              ) : (
-                <div>
-                  <div className="text-4xl font-bold mb-6 text-white">
-                    ${parseFloat(course.price).toFixed(2)}
+                    <button
+                      onClick={handleEnroll}
+                      disabled={enrolling}
+                      className="w-full py-4 bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo text-white rounded-xl font-bold text-lg hover:shadow-[0_0_25px_rgba(157,80,187,0.4)] transition-all transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
+                    >
+                      {enrolling ? (
+                        <span className="flex items-center justify-center gap-2">
+                          <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          Enrolling...
+                        </span>
+                      ) : (
+                        'Enroll Now'
+                      )}
+                    </button>
+
+                    <div className="flex items-center justify-center gap-2 text-xs text-dcs-text-gray">
+                      <svg className="w-4 h-4 text-dcs-purple" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                      </svg>
+                      30-Day Money-Back Guarantee
+                    </div>
+
+                    <div className="space-y-4 pt-2">
+                      <h4 className="text-white font-semibold text-sm">This course includes:</h4>
+                      <ul className="space-y-3 text-sm text-dcs-text-gray/90">
+                        <li className="flex items-center gap-3">
+                          <span className="flex items-center justify-center w-6 h-6 rounded-full bg-dcs-purple/10 text-dcs-purple">📺</span>
+                          <span>{course.estimatedDurationHours || '0'} hours on-demand video</span>
+                        </li>
+                        <li className="flex items-center gap-3">
+                          <span className="flex items-center justify-center w-6 h-6 rounded-full bg-dcs-purple/10 text-dcs-purple">📱</span>
+                          <span>Access on mobile and TV</span>
+                        </li>
+                        <li className="flex items-center gap-3">
+                          <span className="flex items-center justify-center w-6 h-6 rounded-full bg-dcs-purple/10 text-dcs-purple">♾️</span>
+                          <span>Full lifetime access</span>
+                        </li>
+                        <li className="flex items-center gap-3">
+                          <span className="flex items-center justify-center w-6 h-6 rounded-full bg-dcs-purple/10 text-dcs-purple">🏆</span>
+                          <span>Certificate of completion</span>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
-
-                  <button
-                    onClick={handleEnroll}
-                    disabled={enrolling}
-                    className="w-full py-4 bg-dcs-purple text-white rounded-full font-bold hover:bg-dcs-dark-purple transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {enrolling ? 'Enrolling...' : 'Enroll Now'}
-                  </button>
-
-                  <p className="text-xs text-dcs-text-gray text-center mt-4">
-                    {isAuthenticated ? 'Click to enroll' : 'Login required to enroll'}
-                  </p>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
+
         </div>
       </div>
     </div>
