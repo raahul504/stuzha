@@ -23,7 +23,6 @@ export default function InstructorCreateCourse() {
     courseIncludes: '',
     requirements: '',
     targetAudience: '',
-    isPublished: false,
   });
   const [loading, setLoading] = useState(false);
 
@@ -376,35 +375,18 @@ export default function InstructorCreateCourse() {
 
               {/* Status Section */}
               <div className="space-y-6 pt-6 border-t border-white/5">
-                <div className="flex items-center justify-between p-6 bg-dcs-purple/5 border border-dcs-purple/10 rounded-3xl">
-                  <div className="flex items-center gap-4">
-                    <div className={`p-3 rounded-2xl ${formData.isPublished ? 'bg-green-500/10 text-green-400' : 'bg-dcs-text-gray/10 text-dcs-text-gray'}`}>
-                      {formData.isPublished ? (
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
-                      ) : (
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.888 9.888L3 3m18 18l-6.888-6.888" />
-                        </svg>
-                      )}
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-white">Public Visibility</h4>
-                      <p className="text-xs text-dcs-text-gray font-medium">{formData.isPublished ? 'Your course will be live and accessible to learners.' : 'Your course will be created in draft mode.'}</p>
-                    </div>
+                <div className="flex items-center gap-4 p-6 bg-blue-500/5 border border-blue-500/20 rounded-3xl">
+                  <div className="p-3 rounded-2xl bg-blue-500/10 text-blue-400 flex-shrink-0">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      name="isPublished"
-                      checked={formData.isPublished}
-                      onChange={handleChange}
-                      className="sr-only peer"
-                    />
-                    <div className="w-14 h-7 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:start-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-dcs-purple shadow-lg"></div>
-                  </label>
+                  <div>
+                    <h4 className="font-bold text-white">Course will be saved as Draft</h4>
+                    <p className="text-xs text-dcs-text-gray font-medium mt-1">
+                      After creating your course and adding content, you can request admin approval to publish it from your dashboard.
+                    </p>
+                  </div>
                 </div>
               </div>
 

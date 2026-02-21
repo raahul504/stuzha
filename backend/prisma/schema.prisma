@@ -35,6 +35,11 @@ model User {
   certificates            Certificate[]
   createdCourses          Course[]
   emailVerificationTokens EmailVerificationToken[]
+  cart Cart?
+  sentMessages            Message[] @relation("SentMessages")
+  receivedMessages        Message[] @relation("ReceivedMessages")
+  notifications           Notification[]
+  approvalActions         CourseApprovalLog[] @relation("ApprovalActions")
 
   @@index([email])
   @@index([role])
@@ -100,12 +105,17 @@ model Course {
   createdBy              String?         @map("created_by")
   createdAt              DateTime        @default(now()) @map("created_at")
   updatedAt              DateTime        @updatedAt @map("updated_at")
+  approvalStatus         ApprovalStatus  @default(DRAFT) @map("approval_status")
+  approvalMessage        String?         @map("approval_message") @db.Text
 
   creator      User?            @relation(fields: [createdBy], references: [id], onDelete: SetNull)
   categories   CourseCategory[]
   modules      Module[]
   enrollments  Enrollment[]
   certificates Certificate[]
+  cartItems    CartItem[]
+  messages     Message[]
+  approvalLogs        CourseApprovalLog[]
 
   @@index([slug])
   @@index([isPublished])
@@ -118,6 +128,13 @@ enum DifficultyLevel {
   BEGINNER
   INTERMEDIATE
   ADVANCED
+}
+
+enum ApprovalStatus {
+  DRAFT
+  PENDING_PUBLISH
+  PUBLISHED
+  PENDING_UNPUBLISH
 }
 
 model Module {
@@ -400,4 +417,123 @@ model ConversationSession {
   @@index([userId])
   @@index([sessionToken])
   @@map("conversation_sessions")
+}
+
+// Cart Model
+model Cart {
+  id        String   @id @default(uuid())
+  userId    String   @unique @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     CartItem[]
+
+  @@map("carts")
+}
+
+model CartItem {
+  id         String   @id @default(uuid())
+  cartId     String   @map("cart_id")
+  courseId   String   @map("course_id")
+  addedAt    DateTime @default(now()) @map("created_at")
+  cart       Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([cartId, courseId])
+  @@index([cartId])
+  @@index([courseId])
+  @@map("cart_items")
+}
+
+// New Message model
+model Message {
+  id              String      @id @default(uuid())
+  courseId        String?     @map("course_id")
+  senderId        String      @map("sender_id")
+  recipientId     String      @map("recipient_id")
+  messageText     String      @map("message_text") @db.Text
+  messageType     MessageType @map("message_type")
+  parentMessageId String?     @map("parent_message_id")
+  isRead          Boolean     @default(false) @map("is_read")
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+
+  course          Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  sender          User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  recipient       User     @relation("ReceivedMessages", fields: [recipientId], references: [id], onDelete: Cascade)
+  parentMessage   Message? @relation("MessageThread", fields: [parentMessageId], references: [id], onDelete: Cascade)
+  replies         Message[] @relation("MessageThread")
+
+  @@index([courseId])
+  @@index([senderId])
+  @@index([recipientId])
+  @@index([parentMessageId])
+  @@index([isRead])
+  @@index([messageType])
+  @@map("messages")
+}
+
+enum MessageType {
+  USER_TO_INSTRUCTOR
+  INSTRUCTOR_TO_USER
+  ADMIN_TO_INSTRUCTOR
+  ADMIN_TO_USER
+}
+
+// New Notification model
+model Notification {
+  id             String           @id @default(uuid())
+  userId         String           @map("user_id")
+  notificationType NotificationType @map("notification_type")
+  title          String
+  message        String           @db.Text
+  relatedEntityId String?         @map("related_entity_id")
+  relatedEntityType String?       @map("related_entity_type")
+  isRead         Boolean          @default(false) @map("is_read")
+  createdAt      DateTime         @default(now()) @map("created_at")
+
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([notificationType])
+  @@map("notifications")
+}
+
+enum NotificationType {
+  COURSE_PUBLISH_APPROVED
+  COURSE_PUBLISH_DISAPPROVED
+  COURSE_UNPUBLISH_APPROVED
+  COURSE_UNPUBLISH_DISAPPROVED
+  NEW_USER_QUESTION
+  INSTRUCTOR_REPLY
+  ADMIN_MESSAGE
+}
+
+model CourseApprovalLog {
+  id              String         @id @default(uuid())
+  courseId        String         @map("course_id")
+  adminId         String         @map("admin_id")
+  action          ApprovalAction
+  previousStatus  ApprovalStatus @map("previous_status")
+  newStatus       ApprovalStatus @map("new_status")
+  reason          String?        @db.Text
+  createdAt       DateTime       @default(now()) @map("created_at")
+
+  course          Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  admin           User           @relation("ApprovalActions", fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([courseId])
+  @@index([adminId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("course_approval_logs")
+}
+
+enum ApprovalAction {
+  APPROVED_PUBLISH
+  DISAPPROVED_PUBLISH
+  APPROVED_UNPUBLISH
+  DISAPPROVED_UNPUBLISH
 }

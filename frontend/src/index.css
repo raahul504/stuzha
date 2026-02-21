@@ -14,13 +14,27 @@
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-20px);
+  }
 }
 
 @keyframes fadeInUp {
-  0% { opacity: 0; transform: translateY(30px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes scaleIn {
@@ -28,6 +42,7 @@
     opacity: 0;
     transform: scale(0.8);
   }
+
   100% {
     opacity: 1;
     transform: scale(1);
@@ -35,9 +50,12 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.05);
   }
@@ -68,7 +86,7 @@
     font-weight: 600;
     transition: all 0.3s;
   }
-  
+
   .btn-purple:hover {
     transform: translateY(-4px);
     box-shadow: 0 10px 30px rgba(157, 80, 187, 0.4);
@@ -179,9 +197,17 @@
     animation: fadeInUp 0.8s ease-out both;
   }
 
-  .domain-card:nth-child(1) { animation-delay: 0.2s; }
-  .domain-card:nth-child(2) { animation-delay: 0.4s; }
-  .domain-card:nth-child(3) { animation-delay: 0.6s; }
+  .domain-card:nth-child(1) {
+    animation-delay: 0.2s;
+  }
+
+  .domain-card:nth-child(2) {
+    animation-delay: 0.4s;
+  }
+
+  .domain-card:nth-child(3) {
+    animation-delay: 0.6s;
+  }
 
   .domain-card::before {
     content: '';
@@ -410,7 +436,7 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
-  
+
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;

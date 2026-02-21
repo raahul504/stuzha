@@ -6,6 +6,7 @@ import Navbar from '../components/Navbar';
 import { showSuccess, showError } from '../utils/toast';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ConfirmModal from '../components/ConfirmModal';
+import { approvalService } from '../api/approvalService';
 
 export default function InstructorDashboard() {
   const { user } = useAuth();
@@ -43,13 +44,96 @@ export default function InstructorDashboard() {
     }
   };
 
-  const handleTogglePublish = async (courseId, currentStatus) => {
+  const handleRequestPublish = async (courseId) => {
     try {
-      await adminService.updateCourse(courseId, { isPublished: !currentStatus });
-      showSuccess(`Course ${!currentStatus ? 'published' : 'unpublished'}`);
+      await approvalService.requestPublish(courseId);
+      showSuccess('Publish request submitted! Waiting for admin approval.');
       fetchCourses();
     } catch (err) {
-      showError('Failed to update course');
+      showError(err.response?.data?.error?.message || 'Failed to request publish');
+    }
+  };
+
+  const handleRequestUnpublish = async (courseId) => {
+    try {
+      await approvalService.requestUnpublish(courseId);
+      showSuccess('Unpublish request submitted! Waiting for admin approval.');
+      fetchCourses();
+    } catch (err) {
+      showError(err.response?.data?.error?.message || 'Failed to request unpublish');
+    }
+  };
+
+  const getStatusBadge = (course) => {
+    switch (course.approvalStatus) {
+      case 'PUBLISHED':
+        return (
+          <span className="px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-green-500/10 text-green-400 border border-green-500/20">
+            Published
+          </span>
+        );
+      case 'PENDING_PUBLISH':
+        return (
+          <span className="px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">
+            Pending Approval
+          </span>
+        );
+      case 'PENDING_UNPUBLISH':
+        return (
+          <span className="px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-orange-500/10 text-orange-400 border border-orange-500/20">
+            Unpublish Pending
+          </span>
+        );
+      case 'DRAFT':
+      default:
+        return (
+          <span className="px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-dcs-text-gray/10 text-dcs-text-gray border border-dcs-text-gray/20">
+            Draft
+          </span>
+        );
+    }
+  };
+
+  const getActionButton = (course) => {
+    switch (course.approvalStatus) {
+      case 'DRAFT':
+        return (
+          <button
+            onClick={() => handleRequestPublish(course.id)}
+            className="flex-1 lg:flex-none px-8 py-3 rounded-xl font-bold shadow-lg transition-all bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo text-white hover:shadow-dcs-purple/30"
+          >
+            Request Publish
+          </button>
+        );
+      case 'PENDING_PUBLISH':
+        return (
+          <button
+            disabled
+            className="flex-1 lg:flex-none px-8 py-3 rounded-xl font-bold bg-dcs-text-gray/20 text-dcs-text-gray cursor-not-allowed"
+          >
+            Awaiting Approval
+          </button>
+        );
+      case 'PUBLISHED':
+        return (
+          <button
+            onClick={() => handleRequestUnpublish(course.id)}
+            className="flex-1 lg:flex-none px-8 py-3 rounded-xl font-bold shadow-lg transition-all bg-gradient-to-r from-red-600/80 to-red-600 text-white hover:shadow-red-500/30"
+          >
+            Request Unpublish
+          </button>
+        );
+      case 'PENDING_UNPUBLISH':
+        return (
+          <button
+            disabled
+            className="flex-1 lg:flex-none px-8 py-3 rounded-xl font-bold bg-dcs-text-gray/20 text-dcs-text-gray cursor-not-allowed"
+          >
+            Unpublish Pending
+          </button>
+        );
+      default:
+        return null;
     }
   };
 
@@ -87,33 +171,47 @@ export default function InstructorDashboard() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-          <div className="bg-dcs-dark-gray/40 backdrop-blur-md border border-dcs-purple/20 p-8 rounded-3xl shadow-xl relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
-              <svg className="w-20 h-20 text-dcs-purple" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M9 4.804A7.993 7.993 0 002 12a7.993 7.993 0 007 7.196V4.804zM11 4.804V19.196A7.993 7.993 0 0018 12a7.993 7.993 0 00-7-7.196z" />
-              </svg>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+          <div className="bg-gradient-to-br from-dcs-dark-gray to-dcs-light-gray/50 border border-dcs-purple/20 rounded-3xl p-8 backdrop-blur-md">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-dcs-text-gray text-sm font-bold uppercase tracking-widest mb-2">Total Courses</p>
+                <p className="text-4xl font-bold text-white">{stats.total}</p>
+              </div>
+              <div className="w-16 h-16 bg-dcs-purple/10 rounded-2xl flex items-center justify-center">
+                <svg className="w-8 h-8 text-dcs-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+              </div>
             </div>
-            <p className="text-dcs-text-gray font-semibold mb-2">Total Courses</p>
-            <p className="text-5xl font-bold bg-gradient-to-r from-white to-dcs-purple bg-clip-text text-transparent">{stats.total}</p>
           </div>
-          <div className="bg-dcs-dark-gray/40 backdrop-blur-md border border-green-500/20 p-8 rounded-3xl shadow-xl relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
-              <svg className="w-20 h-20 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
+
+          <div className="bg-gradient-to-br from-dcs-dark-gray to-dcs-light-gray/50 border border-green-500/20 rounded-3xl p-8 backdrop-blur-md">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-dcs-text-gray text-sm font-bold uppercase tracking-widest mb-2">Published</p>
+                <p className="text-4xl font-bold text-green-400">{stats.published}</p>
+              </div>
+              <div className="w-16 h-16 bg-green-500/10 rounded-2xl flex items-center justify-center">
+                <svg className="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
             </div>
-            <p className="text-dcs-text-gray font-semibold mb-2">Published</p>
-            <p className="text-5xl font-bold text-green-400">{stats.published}</p>
           </div>
-          <div className="bg-dcs-dark-gray/40 backdrop-blur-md border border-dcs-text-gray/20 p-8 rounded-3xl shadow-xl relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
-              <svg className="w-20 h-20 text-dcs-text-gray" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-              </svg>
+
+          <div className="bg-gradient-to-br from-dcs-dark-gray to-dcs-light-gray/50 border border-dcs-text-gray/20 rounded-3xl p-8 backdrop-blur-md">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-dcs-text-gray text-sm font-bold uppercase tracking-widest mb-2">Drafts</p>
+                <p className="text-4xl font-bold text-dcs-text-gray">{stats.draft}</p>
+              </div>
+              <div className="w-16 h-16 bg-dcs-text-gray/10 rounded-2xl flex items-center justify-center">
+                <svg className="w-8 h-8 text-dcs-text-gray" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+              </div>
             </div>
-            <p className="text-dcs-text-gray font-semibold mb-2">Drafts</p>
-            <p className="text-5xl font-bold text-dcs-text-gray">{stats.draft}</p>
           </div>
         </div>
 
@@ -149,12 +247,7 @@ export default function InstructorDashboard() {
                   <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-8">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-3">
-                        <span className={`px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${course.isPublished
-                          ? 'bg-green-500/10 text-green-400 border border-green-500/20'
-                          : 'bg-dcs-text-gray/10 text-dcs-text-gray border border-dcs-text-gray/20'
-                          }`}>
-                          {course.isPublished ? 'Published' : 'Draft'}
-                        </span>
+                        {getStatusBadge(course)}
                         {course.difficultyLevel && (
                           <span className="px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-dcs-purple/10 text-dcs-purple border border-dcs-purple/20">
                             {course.difficultyLevel}
@@ -163,6 +256,14 @@ export default function InstructorDashboard() {
                       </div>
                       <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-dcs-purple transition-colors">{course.title}</h3>
                       <p className="text-dcs-text-gray max-w-2xl">{course.shortDescription}</p>
+
+                      {/* Show disapproval message if exists */}
+                      {course.approvalMessage && (
+                        <div className="mt-4 p-4 bg-red-500/10 border border-red-500/20 rounded-xl">
+                          <p className="text-sm font-bold text-red-400 mb-1">Admin Feedback:</p>
+                          <p className="text-sm text-red-300">{course.approvalMessage}</p>
+                        </div>
+                      )}
 
                       <div className="flex items-center gap-6 mt-6 text-sm font-medium">
                         <div className="flex items-center gap-2 text-white">
@@ -191,15 +292,7 @@ export default function InstructorDashboard() {
                       >
                         Settings
                       </button>
-                      <button
-                        onClick={() => handleTogglePublish(course.id, course.isPublished)}
-                        className={`flex-1 lg:flex-none px-8 py-3 rounded-xl font-bold shadow-lg transition-all ${course.isPublished
-                          ? 'bg-gradient-to-r from-red-600/80 to-red-600 text-white hover:shadow-red-500/30'
-                          : 'bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo text-white hover:shadow-dcs-purple/30'
-                          }`}
-                      >
-                        {course.isPublished ? 'Unpublish' : 'Publish'}
-                      </button>
+                      {getActionButton(course)}
                     </div>
                   </div>
                 </div>

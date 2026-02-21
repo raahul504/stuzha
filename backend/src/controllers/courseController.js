@@ -167,9 +167,12 @@ const deleteCourse = async (req, res, next) => {
   } catch (error) {
     if (
       error.message === 'Course not found' ||
-      error.message === 'Unauthorized to delete this course'
+      error.message === 'Unauthorized to delete this course' ||
+      error.message === 'Cannot delete a published course. Please unpublish it first.'
     ) {
-      return res.status(error.message === 'Course not found' ? 404 : 403).json({
+      const status = error.message === 'Course not found' ? 404 :
+        error.message === 'Unauthorized to delete this course' ? 403 : 400;
+      return res.status(status).json({
         error: { message: error.message },
       });
     }

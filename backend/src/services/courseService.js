@@ -5,7 +5,7 @@ const prisma = require('../config/database');
  */
 const createCourse = async (courseData, creatorId) => {
   const { categoryIds, ...restData } = courseData;
-  
+
   const course = await prisma.course.create({
     data: {
       ...restData,
@@ -36,10 +36,10 @@ const getAllCourses = async (userId = null) => {
   const courses = await prisma.course.findMany({
     include: {
       categories: {
-       include: {
-         category: true,
-       },
-     },
+        include: {
+          category: true,
+        },
+      },
       modules: {
         include: {
           contentItems: {
@@ -90,10 +90,10 @@ const getCourseById = async (courseId, userId = null) => {
     where: { id: courseId },
     include: {
       categories: {
-       include: {
-         category: true,
-       },
-     },
+        include: {
+          category: true,
+        },
+      },
       modules: {
         include: {
           contentItems: {
@@ -136,7 +136,7 @@ const getCourseById = async (courseId, userId = null) => {
   let enrollment = null;
   let videoProgressMap = {};
   let assessmentAttemptsMap = {};
-  
+
   if (userId) {
     enrollment = await prisma.enrollment.findUnique({
       where: {
@@ -152,7 +152,7 @@ const getCourseById = async (courseId, userId = null) => {
         },
       },
     });
-    
+
     // Create a map of contentItemId -> progress for easy lookup
     if (enrollment) {
       videoProgressMap = enrollment.videoProgress.reduce((acc, vp) => {
@@ -196,7 +196,7 @@ const getCourseById = async (courseId, userId = null) => {
           videoDurationSeconds: item.videoDurationSeconds,
           articleContent: null,
           articleFileUrl: null,
-          questions: item.contentType === 'ASSESSMENT' 
+          questions: item.contentType === 'ASSESSMENT'
             ? item.questions : [],
         })),
       })),
@@ -215,27 +215,27 @@ const getCourseById = async (courseId, userId = null) => {
       ...module,
       contentItems: module.contentItems.map((item) => {
         const baseItem = { ...item };
-        
+
         // Add video progress if it's a video
         if (item.contentType === 'VIDEO' && videoProgressMap[item.id]) {
           baseItem.lastPositionSeconds = videoProgressMap[item.id].lastPositionSeconds;
           baseItem.videoCompleted = videoProgressMap[item.id].completed;
         }
-        
+
         // Add assessment attempts if it's an assessment
         if (item.contentType === 'ASSESSMENT' && assessmentAttemptsMap[item.id]) {
           const attempts = assessmentAttemptsMap[item.id];
           const latestAttempt = attempts[0]; // Already sorted by createdAt desc
-          const bestAttempt = attempts.reduce((best, current) => 
+          const bestAttempt = attempts.reduce((best, current) =>
             current.score.toNumber() > best.score.toNumber() ? current : best
-          , attempts[0]);
-          
+            , attempts[0]);
+
           baseItem.latestScore = latestAttempt.score.toNumber();
           baseItem.bestScore = bestAttempt.score.toNumber();
           baseItem.attemptCount = attempts.length;
           baseItem.hasPassed = attempts.some(a => a.passed);
         }
-        
+
         return baseItem;
       }),
     })),
@@ -367,7 +367,7 @@ const enrollInCourse = async (userId, courseId) => {
  * Update course
  */
 const updateCourse = async (courseId, updateData, userId) => {
-  
+
   // Verify course exists
   const course = await prisma.course.findUnique({
     where: { id: courseId },
@@ -391,11 +391,11 @@ const updateCourse = async (courseId, updateData, userId) => {
 
   // Extract categoryIds from updateData
   const { categoryIds, ...dataToUpdate } = updateData;
- 
+
   if (dataToUpdate.price !== undefined && dataToUpdate.price !== null && dataToUpdate.price !== '') {
     dataToUpdate.price = parseFloat(dataToUpdate.price);
   }
-  
+
   if (dataToUpdate.estimatedDurationHours !== undefined) {
     if (dataToUpdate.estimatedDurationHours === '' || dataToUpdate.estimatedDurationHours === null) {
       dataToUpdate.estimatedDurationHours = null;
@@ -491,6 +491,10 @@ const deleteCourse = async (courseId, userId) => {
 
   if (course.createdBy !== userId) {
     throw new Error('Unauthorized to delete this course');
+  }
+
+  if (course.isPublished) {
+    throw new Error('Cannot delete a published course. Please unpublish it first.');
   }
 
   await prisma.course.delete({

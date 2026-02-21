@@ -6,9 +6,11 @@ import ConfirmModal from '../components/ConfirmModal';
 import { showSuccess, showError } from '../utils/toast';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { categoryService } from '../api/categoryService';
+import { useAuth } from '../context/AuthContext';
 
 export default function CourseSettings() {
   const { id } = useParams();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -139,12 +141,18 @@ export default function CourseSettings() {
     try {
       // Prepare data with proper type conversions
       const dataToSend = {
-        ...formData,
+        title: formData.title,
+        slug: formData.slug,
+        description: formData.description,
+        shortDescription: formData.shortDescription,
         price: parseFloat(formData.price),
+        difficultyLevel: formData.difficultyLevel,
         estimatedDurationHours: formData.estimatedDurationHours
           ? parseInt(formData.estimatedDurationHours)
           : null,
         categoryIds: selectedCategoryIds,
+        // Only include isPublished if admin
+        ...(user?.role === 'ADMIN' && { isPublished: formData.isPublished }),
       };
       await adminService.updateCourse(id, dataToSend);
       showSuccess('Course updated successfully');
@@ -463,36 +471,63 @@ export default function CourseSettings() {
 
               {/* Status Section */}
               <div className="space-y-6 pt-6 border-t border-white/5">
-                <div className="flex items-center justify-between p-6 bg-dcs-purple/5 border border-dcs-purple/10 rounded-3xl">
-                  <div className="flex items-center gap-4">
-                    <div className={`p-3 rounded-2xl ${formData.isPublished ? 'bg-green-500/10 text-green-400' : 'bg-dcs-text-gray/10 text-dcs-text-gray'}`}>
-                      {formData.isPublished ? (
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
-                      ) : (
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.888 9.888L3 3m18 18l-6.888-6.888" />
-                        </svg>
-                      )}
+                {user?.role === 'ADMIN' ? (
+                  // Admin keeps the toggle
+                  <div className="flex items-center justify-between p-6 bg-dcs-purple/5 border border-dcs-purple/10 rounded-3xl">
+                    <div className="flex items-center gap-4">
+                      <div className={`p-3 rounded-2xl ${formData.isPublished ? 'bg-green-500/10 text-green-400' : 'bg-dcs-text-gray/10 text-dcs-text-gray'}`}>
+                        {formData.isPublished ? (
+                          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          </svg>
+                        ) : (
+                          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.888 9.888L3 3m18 18l-6.888-6.888" />
+                          </svg>
+                        )}
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-white">Public Visibility</h4>
+                        <p className="text-xs text-dcs-text-gray font-medium">
+                          {formData.isPublished ? 'Course is live and accessible to learners.' : 'Course is currently in draft mode.'}
+                        </p>
+                      </div>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        name="isPublished"
+                        checked={formData.isPublished}
+                        onChange={handleChange}
+                        className="sr-only peer"
+                      />
+                      <div className="w-14 h-7 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:start-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-dcs-purple shadow-lg"></div>
+                    </label>
+                  </div>
+                ) : (
+                  // Instructor sees read-only status
+                  <div className="flex items-center gap-4 p-6 bg-dcs-purple/5 border border-dcs-purple/10 rounded-3xl">
+                    <div className={`p-3 rounded-2xl flex-shrink-0 ${course?.approvalStatus === 'PUBLISHED' ? 'bg-green-500/10 text-green-400' :
+                      course?.approvalStatus === 'PENDING_PUBLISH' ? 'bg-yellow-500/10 text-yellow-400' :
+                        course?.approvalStatus === 'PENDING_UNPUBLISH' ? 'bg-orange-500/10 text-orange-400' :
+                          'bg-dcs-text-gray/10 text-dcs-text-gray'
+                      }`}>
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
                     </div>
                     <div>
-                      <h4 className="font-bold text-white">Public Visibility</h4>
-                      <p className="text-xs text-dcs-text-gray font-medium">{formData.isPublished ? 'Your course is live and accessible to learners.' : 'Your course is currently in draft mode.'}</p>
+                      <h4 className="font-bold text-white">Publication Status</h4>
+                      <p className="text-xs font-medium mt-1 capitalize">
+                        {course?.approvalStatus === 'PUBLISHED' && <span className="text-green-400">Live — visible to all students</span>}
+                        {course?.approvalStatus === 'PENDING_PUBLISH' && <span className="text-yellow-400">Pending admin approval to publish</span>}
+                        {course?.approvalStatus === 'PENDING_UNPUBLISH' && <span className="text-orange-400">Pending admin approval to unpublish</span>}
+                        {course?.approvalStatus === 'DRAFT' && <span className="text-dcs-text-gray">Draft — go to your dashboard to request publishing</span>}
+                      </p>
                     </div>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      name="isPublished"
-                      checked={formData.isPublished}
-                      onChange={handleChange}
-                      className="sr-only peer"
-                    />
-                    <div className="w-14 h-7 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:start-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-dcs-purple shadow-lg"></div>
-                  </label>
-                </div>
+                )}
               </div>
 
               {/* Action Buttons */}
@@ -515,7 +550,12 @@ export default function CourseSettings() {
                 <button
                   type="button"
                   onClick={() => setConfirmDelete(true)}
-                  className="px-8 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white py-4 rounded-2xl transition-all font-bold border border-red-500/20 hover:border-red-500/50"
+                  disabled={formData.isPublished}
+                  className={`px-8 py-4 rounded-2xl transition-all font-bold border ${formData.isPublished
+                      ? 'bg-white/5 text-white/20 border-white/5 cursor-not-allowed'
+                      : 'bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white border-red-500/20 hover:border-red-500/50'
+                    }`}
+                  title={formData.isPublished ? "Unpublish course to delete" : "Delete Course"}
                 >
                   Delete Course
                 </button>

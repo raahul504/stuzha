@@ -6,6 +6,7 @@ import { certificateService } from '../api/certificateService';
 import { showSuccess, showError } from '../utils/toast';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Navbar from '../components/Navbar';
+import AskInstructorButton from '../components/AskInstructorButton';
 
 export default function Learn() {
   const { id } = useParams();
@@ -112,6 +113,11 @@ export default function Learn() {
                 style={{ width: `${course.enrollment?.progressPercentage || 0}%` }}
               />
             </div>
+            {/* Add Ask Instructor Button */}
+            <AskInstructorButton
+              courseId={course.id}
+              courseTitle={course.title}
+            />
           </div>
         </div>
 
@@ -424,10 +430,10 @@ function ArticleViewer({ content }) {
         )}
 
         {fileUrl && (
-          <div className="mt-6">
+          <div className="mt-6" onContextMenu={(e) => e.preventDefault()}>
             {fileType === 'pdf' ? (
               <iframe
-                src={fileUrl}
+                src={`${fileUrl}#toolbar=0&navpanes=0`}
                 className="w-full h-[800px] border border-dcs-purple/30 rounded-xl bg-white"
                 title="PDF Viewer"
               />

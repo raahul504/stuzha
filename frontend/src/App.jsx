@@ -16,6 +16,10 @@ import InstructorCreateCourse from './pages/InstructorCreateCourse';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import CourseSettings from './pages/CourseSettings';
+import AdminApprovalDashboard from './pages/AdminApprovalDashboard';
+import ChatInbox from './pages/ChatInbox';
+import AdminMessagesMonitor from './pages/AdminMessagesMonitor';
+import AdminActivityLog from './pages/AdminActivityLog';
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
@@ -40,6 +44,7 @@ function App() {
           <Route path="/my-courses" element={<ProtectedRoute> <MyCourses /> </ProtectedRoute>} />
           <Route path="/learn/:id" element={<ProtectedRoute><Learn /></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+          <Route path="/admin/approvals" element={<ProtectedRoute><AdminApprovalDashboard /></ProtectedRoute>} />
           <Route path="/admin/course/:id" element={<ProtectedRoute><CourseEditor /></ProtectedRoute>} />
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
@@ -50,6 +55,9 @@ function App() {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/instructor/course/:id/settings" element={<ProtectedRoute><CourseSettings /></ProtectedRoute>} />
           <Route path="/admin/course/:id/settings" element={<ProtectedRoute><CourseSettings /></ProtectedRoute>} />
+          <Route path="/messages" element={<ProtectedRoute><ChatInbox /></ProtectedRoute>} />
+          <Route path="/admin/messages-monitor" element={<ProtectedRoute><AdminMessagesMonitor /></ProtectedRoute>} />
+          <Route path="/admin/activity-log" element={<ProtectedRoute><AdminActivityLog /></ProtectedRoute>} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

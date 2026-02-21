@@ -14,6 +14,9 @@ const certificateRoutes = require('./routes/certificateRoutes');
 const userRoutes = require('./routes/userRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const conversationRoutes = require('./routes/conversationRoutes');
+const messageRoutes = require('./routes/messageRoutes');
+const approvalRoutes = require('./routes/approvalRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
 
 const app = express();
 
@@ -49,6 +52,9 @@ app.use('/api', certificateRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/conversation', conversationRoutes);
+app.use('/api/messages', messageRoutes);
+app.use('/api', approvalRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // ========== ERROR HANDLING ==========
 app.use((err, req, res, next) => {

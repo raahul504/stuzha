@@ -1,12 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { messageService } from '../api/messageService';
 
 export default function Navbar() {
   const { user, logout, isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -30,6 +32,24 @@ export default function Navbar() {
     const firstName = user.firstName || '';
     const lastName = user.lastName || '';
     return (firstName.charAt(0) + (lastName.charAt(0) || '')).toUpperCase() || 'U';
+  };
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchUnreadCount();
+      // Refresh every 30 seconds
+      const interval = setInterval(fetchUnreadCount, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [isAuthenticated]);
+
+  const fetchUnreadCount = async () => {
+    try {
+      const data = await messageService.getUnreadCount();
+      setUnreadCount(data.unreadCount);
+    } catch (error) {
+      console.error('Failed to fetch unread count:', error);
+    }
   };
 
   // Don't render user info while loading
@@ -94,6 +114,19 @@ export default function Navbar() {
                   </button>
                 </li>
               )}
+              <li>
+                <button
+                  onClick={() => navigate('/messages')}
+                  className="text-white no-underline font-medium text-sm transition-all duration-300 hover:text-dcs-purple relative"
+                >
+                  Messages
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                      {unreadCount}
+                    </span>
+                  )}
+                </button>
+              </li>
               <li className="relative" ref={dropdownRef}>
                 <div
                   className="flex items-center gap-2.5 cursor-pointer px-3 py-1.5 rounded-full bg-dcs-light-gray border border-dcs-purple/30 hover:border-dcs-purple/50 transition-all"
@@ -120,6 +153,17 @@ export default function Navbar() {
                     >
                       Profile
                     </button>
+                    {user?.role === 'ADMIN' && (
+                      <button
+                        onClick={() => {
+                          navigate('/admin/approvals');
+                          setShowDropdown(false);
+                        }}
+                        className="block w-full text-left text-white hover:text-dcs-purple transition-colors text-sm py-1"
+                      >
+                        Course Approvals
+                      </button>
+                    )}
                     <button
                       onClick={handleLogout}
                       className="block w-full text-center text-red-400 no-underline font-bold text-sm mt-2 hover:text-red-500 transition-colors"
