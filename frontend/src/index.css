@@ -432,6 +432,16 @@
   }
 }
 
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
 @layer utilities {
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
@@ -440,5 +450,9 @@
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  .animate-slideInRight {
+    animation: slideInRight 0.3s ease-out;
   }
 }

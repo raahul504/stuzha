@@ -15,6 +15,10 @@ export default function InstructorDashboard() {
   const [stats, setStats] = useState({ total: 0, published: 0, draft: 0 });
   const [loading, setLoading] = useState(true);
   const [confirmDelete, setConfirmDelete] = useState(null);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [selectedCourseForHistory, setSelectedCourseForHistory] = useState(null);
+  const [approvalHistory, setApprovalHistory] = useState([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
 
   useEffect(() => {
     if (user?.role !== 'INSTRUCTOR' && user?.role !== 'ADMIN') {
@@ -137,6 +141,45 @@ export default function InstructorDashboard() {
     }
   };
 
+  const fetchApprovalHistory = async (courseId) => {
+    try {
+      setLoadingHistory(true);
+      const data = await approvalService.getApprovalHistory(courseId);
+      setApprovalHistory(data.history);
+    } catch (error) {
+      showError('Failed to fetch approval history');
+    } finally {
+      setLoadingHistory(false);
+    }
+  };
+
+  const openHistoryModal = async (course) => {
+    setSelectedCourseForHistory(course);
+    setShowHistoryModal(true);
+    await fetchApprovalHistory(course.id);
+  };
+
+  const closeHistoryModal = () => {
+    setShowHistoryModal(false);
+    setSelectedCourseForHistory(null);
+    setApprovalHistory([]);
+  };
+
+  const getActionLabel = (action) => {
+    switch (action) {
+      case 'APPROVED_PUBLISH':
+        return { text: 'Approved Publish', color: 'text-green-400 bg-green-500/10 border-green-500/20' };
+      case 'DISAPPROVED_PUBLISH':
+        return { text: 'Disapproved Publish', color: 'text-red-400 bg-red-500/10 border-red-500/20' };
+      case 'APPROVED_UNPUBLISH':
+        return { text: 'Approved Unpublish', color: 'text-blue-400 bg-blue-500/10 border-blue-500/20' };
+      case 'DISAPPROVED_UNPUBLISH':
+        return { text: 'Disapproved Unpublish', color: 'text-orange-400 bg-orange-500/10 border-orange-500/20' };
+      default:
+        return { text: action, color: 'text-gray-400 bg-gray-500/10 border-gray-500/20' };
+    }
+  };
+
   if (loading) {
     return <LoadingSpinner message="Loading dashboard..." />;
   }
@@ -151,13 +194,13 @@ export default function InstructorDashboard() {
 
       <Navbar />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24 pb-12">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 pt-20 sm:pt-24 pb-6 sm:pb-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
           <div>
-            <h1 className="text-4xl font-bold mb-3 text-white bg-gradient-to-r from-white to-dcs-purple bg-clip-text text-transparent">
-              Instructor Dashboard
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3">
+              <span className="bg-gradient-to-r from-white to-dcs-purple bg-clip-text text-transparent">Instructor Dashboard</span>
             </h1>
-            <p className="text-dcs-text-gray text-lg leading-relaxed">Manage your educational content and student engagement</p>
+            <p className="text-dcs-text-gray text-base sm:text-lg leading-relaxed">Manage your educational content and student engagement</p>
           </div>
           <button
             onClick={() => navigate('/instructor/create-course')}
@@ -171,7 +214,7 @@ export default function InstructorDashboard() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-10">
           <div className="bg-gradient-to-br from-dcs-dark-gray to-dcs-light-gray/50 border border-dcs-purple/20 rounded-3xl p-8 backdrop-blur-md">
             <div className="flex items-center justify-between">
               <div>
@@ -243,7 +286,7 @@ export default function InstructorDashboard() {
           ) : (
             <div className="divide-y divide-white/5">
               {courses.map((course) => (
-                <div key={course.id} className="p-8 hover:bg-white/5 transition-colors group">
+                <div key={course.id} className="p-4 sm:p-8 hover:bg-white/5 transition-colors group">
                   <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-8">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-3">
@@ -292,6 +335,14 @@ export default function InstructorDashboard() {
                       >
                         Settings
                       </button>
+                      <button
+                        onClick={() => openHistoryModal(course)}
+                        className="px-4 py-2.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 text-sm font-semibold rounded-xl transition-all border border-blue-500/20"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </button>
                       {getActionButton(course)}
                     </div>
                   </div>
@@ -301,6 +352,72 @@ export default function InstructorDashboard() {
           )}
         </div>
       </div>
-    </div>
+      {/* Approval History Modal */}
+      {showHistoryModal && selectedCourseForHistory && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={closeHistoryModal}>
+          <div className="bg-dcs-dark-gray rounded-2xl border border-dcs-purple/30 max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
+            <div className="p-6 border-b border-white/10 flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-white">Approval History</h2>
+                <p className="text-sm text-dcs-text-gray mt-1">{selectedCourseForHistory.title}</p>
+              </div>
+              <button className="text-dcs-text-gray hover:text-white text-3xl leading-none transition-colors" onClick={closeHistoryModal}>&times;</button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-6">
+              {loadingHistory ? (
+                <div className="flex items-center justify-center h-32">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-dcs-purple"></div>
+                </div>
+              ) : approvalHistory.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-32 text-center">
+                  <div className="text-4xl mb-2">📜</div>
+                  <p className="text-dcs-text-gray">No approval history yet</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {approvalHistory.map((log) => {
+                    const actionLabel = getActionLabel(log.action);
+                    return (
+                      <div key={log.id} className="bg-dcs-black/30 rounded-xl p-4 border border-white/5">
+                        <div className="flex items-start justify-between mb-3">
+                          <span className={`px-3 py-1 rounded-full text-xs font-bold border ${actionLabel.color}`}>
+                            {actionLabel.text}
+                          </span>
+                          <span className="text-xs text-dcs-text-gray">
+                            {new Date(log.createdAt).toLocaleString()}
+                          </span>
+                        </div>
+
+                        <div className="space-y-2 text-sm">
+                          <p className="text-white">
+                            <span className="text-dcs-text-gray">Admin:</span> {log.admin.firstName} {log.admin.lastName}
+                          </p>
+                          <p className="text-white">
+                            <span className="text-dcs-text-gray">Status Change:</span> {log.previousStatus} → {log.newStatus}
+                          </p>
+                          {log.reason && (
+                            <div className="mt-3 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+                              <p className="text-xs font-bold text-red-400 mb-1">Reason:</p>
+                              <p className="text-sm text-red-300">{log.reason}</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            <div className="p-6 border-t border-white/10 flex justify-end">
+              <button className="px-6 py-2.5 bg-dcs-light-gray hover:bg-dcs-light-gray/80 text-white font-semibold rounded-xl transition-all border border-white/10" onClick={closeHistoryModal}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div >
   );
 }

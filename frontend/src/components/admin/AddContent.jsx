@@ -56,8 +56,8 @@ export default function AddContent({ moduleId, onAdd }) {
   };
 
   return (
-    <div className="bg-dcs-dark-gray/20 backdrop-blur-md p-8 rounded-2xl border border-white/5 mt-6 group">
-      <h4 className="font-bold mb-6 text-white text-lg flex items-center gap-2">
+    <div className="bg-dcs-dark-gray/20 backdrop-blur-md p-4 sm:p-6 lg:p-8 rounded-2xl border border-white/5 mt-6 group">
+      <h4 className="font-bold mb-4 sm:mb-6 text-white text-base sm:text-lg flex items-center gap-2">
         <span className="w-1.5 h-5 bg-dcs-purple/50 rounded-full"></span>
         Add New Content
       </h4>
@@ -65,7 +65,7 @@ export default function AddContent({ moduleId, onAdd }) {
         <select
           value={type}
           onChange={(e) => setType(e.target.value)}
-          className="w-full px-4 py-3 border border-white/10 rounded-xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all cursor-pointer"
+          className="w-full px-4 py-3 border border-white/10 rounded-xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all cursor-pointer text-sm sm:text-base"
         >
           <option value="VIDEO">Video Lesson</option>
           <option value="ARTICLE">Article / Resource</option>
@@ -78,7 +78,7 @@ export default function AddContent({ moduleId, onAdd }) {
           value={formData.title}
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           required
-          className="w-full px-4 py-3 border border-white/10 rounded-xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all placeholder:text-dcs-text-gray/30"
+          className="w-full px-4 py-3 border border-white/10 rounded-xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all placeholder:text-dcs-text-gray/30 text-sm sm:text-base"
         />
 
         <textarea
@@ -124,9 +124,9 @@ export default function AddContent({ moduleId, onAdd }) {
         <button
           type="submit"
           disabled={loading}
-          className={`w-full py-4 rounded-xl font-bold shadow-lg transition-all flex items-center justify-center gap-2 ${loading
-              ? 'bg-dcs-text-gray/20 text-dcs-text-gray cursor-not-allowed'
-              : 'bg-gradient-to-r from-green-600 to-green-500 text-white hover:shadow-green-500/20 hover:scale-[1.01]'
+          className={`w-full py-3 sm:py-4 rounded-xl font-bold shadow-lg transition-all flex items-center justify-center gap-2 text-sm sm:text-base ${loading
+            ? 'bg-dcs-text-gray/20 text-dcs-text-gray cursor-not-allowed'
+            : 'bg-gradient-to-r from-green-600 to-green-500 text-white hover:shadow-green-500/20 hover:scale-[1.01]'
             }`}
         >
           {loading ? (

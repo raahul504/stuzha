@@ -21,14 +21,14 @@ export default function Home() {
     return (
       <div className="min-h-screen bg-dcs-black">
         <Navbar />
-        <section className="pt-32 pb-24 px-8" style={{ background: 'linear-gradient(135deg, #0A0A0A 0%, #1a0a2e 100%)', height:"100vh" }}>
+        <section className="pt-24 sm:pt-32 pb-16 sm:pb-24 px-4 sm:px-8" style={{ background: 'linear-gradient(135deg, #0A0A0A 0%, #1a0a2e 100%)', minHeight: "100vh" }}>
           <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-12 items-center">
             <div>
-              <h1 className="text-5xl mt-10 mb-6" style={{ background: 'linear-gradient(135deg, #FFFFFF, #9D50BB)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl mt-10 mb-6" style={{ background: 'linear-gradient(135deg, #FFFFFF, #9D50BB)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                 Welcome to <span className="text-dcs-purple">Data Center Skills</span>
               </h1>
-              <p className="text-lg text-dcs-text-gray mb-10">
-                Transform your career with our comprehensive learning management system. 
+              <p className="text-base sm:text-lg text-dcs-text-gray mb-8 sm:mb-10">
+                Transform your career with our comprehensive learning management system.
                 Access expert-led courses and advance your skills.
               </p>
               <p className="text-lg text-dcs-text-gray mb-5">
@@ -36,24 +36,24 @@ export default function Home() {
               </p>
               <button
                 onClick={() => navigate('/courses', { state: { openAdvisor: true } })}
-                className="px-8 py-4 bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo text-white rounded-full font-semibold hover:scale-105 transition-transform flex items-center gap-2 mb-10"
+                className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo text-white rounded-full font-semibold hover:scale-105 transition-transform flex items-center gap-2 mb-8 sm:mb-10 text-sm sm:text-base"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                 </svg>
                 Get AI Career Advice
               </button>
-              <div className="flex gap-12">
+              <div className="flex flex-wrap gap-6 sm:gap-12">
                 <div>
-                  <h2 className="text-3xl text-dcs-purple mb-2">100+</h2>
+                  <h2 className="text-2xl sm:text-3xl text-dcs-purple mb-2">100+</h2>
                   <p className="text-dcs-text-gray">Courses Available</p>
                 </div>
                 <div>
-                  <h2 className="text-3xl text-dcs-purple mb-2">24/7</h2>
+                  <h2 className="text-2xl sm:text-3xl text-dcs-purple mb-2">24/7</h2>
                   <p className="text-dcs-text-gray">Access Anytime</p>
                 </div>
                 <div>
-                  <h2 className="text-3xl text-dcs-purple mb-2">Expert</h2>
+                  <h2 className="text-2xl sm:text-3xl text-dcs-purple mb-2">Expert</h2>
                   <p className="text-dcs-text-gray">Instructors</p>
                 </div>
               </div>
@@ -71,11 +71,11 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="max-w-[1400px] mx-auto bg-dcs-dark-gray" style={{ padding: '5rem 2rem' }}>
-          <h2 className="section-title">
+        <section className="max-w-[1400px] mx-auto bg-dcs-dark-gray" style={{ padding: '3rem 1rem' }}>
+          <h2 className="section-title text-xl sm:text-2xl lg:text-[2.5rem]">
             Why Choose <span className="purple-text">Our Platform?</span>
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-8">
             <div className="card">
               <h3 className="text-dcs-purple mb-4 text-xl">🎓 Expert Faculty</h3>
               <p className="text-dcs-text-gray">
@@ -103,7 +103,7 @@ export default function Home() {
               Our <span className="purple-text">Vision</span>
             </h2>
             <p className="vision-text">
-              <strong>Empower every learner to achieve excellence through innovative education.</strong><br/><br/>
+              <strong>Empower every learner to achieve excellence through innovative education.</strong><br /><br />
               In the process, we enable, equip and encourage learning beyond conventional limits.
             </p>
           </div>
@@ -119,8 +119,8 @@ export default function Home() {
               <div className="domain-card">
                 <div className="domain-icon-wrapper">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect x="2" y="3" width="20" height="14" rx="2"/>
-                    <path d="M8 21h8M12 17v4"/>
+                    <rect x="2" y="3" width="20" height="14" rx="2" />
+                    <path d="M8 21h8M12 17v4" />
                   </svg>
                 </div>
                 <h3>Enterprise Technologies</h3>
@@ -129,9 +129,9 @@ export default function Home() {
               <div className="domain-card">
                 <div className="domain-icon-wrapper">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect x="2" y="2" width="20" height="8" rx="2"/>
-                    <rect x="2" y="14" width="20" height="8" rx="2"/>
-                    <path d="M6 6h.01M6 18h.01"/>
+                    <rect x="2" y="2" width="20" height="8" rx="2" />
+                    <rect x="2" y="14" width="20" height="8" rx="2" />
+                    <path d="M6 6h.01M6 18h.01" />
                   </svg>
                 </div>
                 <h3>Cloud Services</h3>
@@ -140,9 +140,9 @@ export default function Home() {
               <div className="domain-card">
                 <div className="domain-icon-wrapper">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-                    <line x1="12" y1="22.08" x2="12" y2="12"/>
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                    <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                    <line x1="12" y1="22.08" x2="12" y2="12" />
                   </svg>
                 </div>
                 <h3>Gen AI Solutions</h3>
@@ -158,7 +158,7 @@ export default function Home() {
             <h2 className="section-title-custom">
               Our <span className="purple-text">Team</span>
             </h2>
-            
+
             <div className="team-content-custom">
               <div className="team-vision-custom">
                 <h3>Leadership Vision</h3>
@@ -188,7 +188,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-        
+
         {/* About Us Section */}
         <section className="about-section bg-dcs-dark-gray" style={{ padding: '6rem 2rem' }}>
           <div className="about-container">
@@ -196,8 +196,8 @@ export default function Home() {
               About <span className="purple-text">Our Platform</span>
             </h2>
             <p className="about-text">
-              Our strategic intent is to lead the market by ideating structured learning processes to stay ahead of the curve, in terms of educational innovation and technology solutions.<br/><br/>
-              Our focus and services are connected strongly to our core domains: <strong>Enterprise Learning, Cloud Infrastructure, and AI-Powered Education.</strong><br/><br/>
+              Our strategic intent is to lead the market by ideating structured learning processes to stay ahead of the curve, in terms of educational innovation and technology solutions.<br /><br />
+              Our focus and services are connected strongly to our core domains: <strong>Enterprise Learning, Cloud Infrastructure, and AI-Powered Education.</strong><br /><br />
               And as a result, <strong>"We build Learning Solutions For Life".</strong>
             </p>
           </div>
@@ -209,45 +209,45 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-dcs-black">
       <Navbar />
-      <section className="pt-32 pb-24 px-8" style={{ background: 'linear-gradient(135deg, #0A0A0A 0%, #1a0a2e 100%)', height:"100vh" }}>
+      <section className="pt-24 sm:pt-32 pb-16 sm:pb-24 px-4 sm:px-8" style={{ background: 'linear-gradient(135deg, #0A0A0A 0%, #1a0a2e 100%)', minHeight: "100vh" }}>
         <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-12 items-center">
           <div>
-            <h1 className="text-5xl mt-10 mb-6 leading-normal" style={{ background: 'linear-gradient(135deg, #FFFFFF, #9D50BB)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl mt-10 mb-6 leading-normal" style={{ background: 'linear-gradient(135deg, #FFFFFF, #9D50BB)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
               Welcome back, <span className="text-dcs-purple">{user?.firstName}</span>
             </h1>
             <p className="text-lg text-dcs-text-gray mb-20">
               Continue your learning journey. Explore new courses and track your progress.
             </p>
-              {/*<button
+            {/*<button
                 onClick={() => navigate('/courses')}
                 className="btn-purple mb-10"
               >
                 Browse Courses
               </button>*/}
-              <p className="text-lg text-dcs-text-gray mb-5">
-                Need help finding your perfect course? Connect with our Free AI career consultant.
-              </p>
-              <button
-                onClick={() => navigate('/courses', { state: { openAdvisor: true } })}
-                className="px-8 py-4 bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo text-white rounded-full font-semibold hover:scale-105 transition-transform flex items-center gap-2"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                </svg>
-                Get AI Career Advice
-              </button>
+            <p className="text-lg text-dcs-text-gray mb-5">
+              Need help finding your perfect course? Connect with our Free AI career consultant.
+            </p>
+            <button
+              onClick={() => navigate('/courses', { state: { openAdvisor: true } })}
+              className="px-8 py-4 bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo text-white rounded-full font-semibold hover:scale-105 transition-transform flex items-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+              </svg>
+              Get AI Career Advice
+            </button>
 
-            <div className="flex gap-12 mt-20">
+            <div className="flex flex-wrap gap-6 sm:gap-12 mt-12 sm:mt-20">
               <div>
-                <h2 className="text-3xl text-dcs-purple mb-2">100+</h2>
+                <h2 className="text-2xl sm:text-3xl text-dcs-purple mb-2">100+</h2>
                 <p className="text-dcs-text-gray">Courses Available</p>
               </div>
               <div>
-                <h2 className="text-3xl text-dcs-purple mb-2">24/7</h2>
+                <h2 className="text-2xl sm:text-3xl text-dcs-purple mb-2">24/7</h2>
                 <p className="text-dcs-text-gray">Access Anytime</p>
               </div>
               <div>
-                <h2 className="text-3xl text-dcs-purple mb-2">Expert</h2>
+                <h2 className="text-2xl sm:text-3xl text-dcs-purple mb-2">Expert</h2>
                 <p className="text-dcs-text-gray">Instructors</p>
               </div>
             </div>
@@ -264,11 +264,11 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="max-w-[1400px] mx-auto bg-dcs-dark-gray" style={{ padding: '5rem 2rem' }}>
-        <h2 className="section-title">
+      <section className="max-w-[1400px] mx-auto bg-dcs-dark-gray" style={{ padding: '3rem 1rem' }}>
+        <h2 className="section-title text-xl sm:text-2xl lg:text-[2.5rem]">
           Your <span className="purple-text">Learning Path</span>
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-8">
           <div className="card bg-dcs-black">
             <h3 className="text-dcs-purple mb-4 text-xl">📚 My Courses</h3>
             <p className="text-dcs-text-gray mb-4">
@@ -314,7 +314,7 @@ export default function Home() {
             Our <span className="purple-text">Vision</span>
           </h2>
           <p className="vision-text">
-            <strong>Empower every learner to achieve excellence through innovative education.</strong><br/><br/>
+            <strong>Empower every learner to achieve excellence through innovative education.</strong><br /><br />
             In the process, we enable, equip and encourage learning beyond conventional limits.
           </p>
         </div>
@@ -330,8 +330,8 @@ export default function Home() {
             <div className="domain-card">
               <div className="domain-icon-wrapper">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="2" y="3" width="20" height="14" rx="2"/>
-                  <path d="M8 21h8M12 17v4"/>
+                  <rect x="2" y="3" width="20" height="14" rx="2" />
+                  <path d="M8 21h8M12 17v4" />
                 </svg>
               </div>
               <h3>Enterprise Technologies</h3>
@@ -340,9 +340,9 @@ export default function Home() {
             <div className="domain-card">
               <div className="domain-icon-wrapper">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="2" y="2" width="20" height="8" rx="2"/>
-                  <rect x="2" y="14" width="20" height="8" rx="2"/>
-                  <path d="M6 6h.01M6 18h.01"/>
+                  <rect x="2" y="2" width="20" height="8" rx="2" />
+                  <rect x="2" y="14" width="20" height="8" rx="2" />
+                  <path d="M6 6h.01M6 18h.01" />
                 </svg>
               </div>
               <h3>Cloud Services</h3>
@@ -351,9 +351,9 @@ export default function Home() {
             <div className="domain-card">
               <div className="domain-icon-wrapper">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-                  <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-                  <line x1="12" y1="22.08" x2="12" y2="12"/>
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                  <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                  <line x1="12" y1="22.08" x2="12" y2="12" />
                 </svg>
               </div>
               <h3>Gen AI Solutions</h3>
@@ -369,7 +369,7 @@ export default function Home() {
           <h2 className="section-title-custom">
             Our <span className="purple-text">Team</span>
           </h2>
-          
+
           <div className="team-content-custom">
             <div className="team-vision-custom">
               <h3>Leadership Vision</h3>
@@ -399,7 +399,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-      
+
       {/* About Us Section */}
       <section className="about-section" style={{ padding: '6rem 2rem', background: '#121212' }}>
         <div className="about-container">
@@ -407,8 +407,8 @@ export default function Home() {
             About <span className="purple-text">Our Platform</span>
           </h2>
           <p className="about-text">
-            Our strategic intent is to lead the market by ideating structured learning processes to stay ahead of the curve, in terms of educational innovation and technology solutions.<br/><br/>
-            Our focus and services are connected strongly to our core domains: <strong>Enterprise Learning, Cloud Infrastructure, and AI-Powered Education.</strong><br/><br/>
+            Our strategic intent is to lead the market by ideating structured learning processes to stay ahead of the curve, in terms of educational innovation and technology solutions.<br /><br />
+            Our focus and services are connected strongly to our core domains: <strong>Enterprise Learning, Cloud Infrastructure, and AI-Powered Education.</strong><br /><br />
             And as a result, <strong>"We build Learning Solutions For Life".</strong>
           </p>
         </div>

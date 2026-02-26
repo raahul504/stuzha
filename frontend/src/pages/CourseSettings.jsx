@@ -207,7 +207,7 @@ export default function CourseSettings() {
             </div>
           </div>
 
-          <div className="bg-dcs-dark-gray/30 backdrop-blur-xl rounded-3xl p-10 border border-white/5 shadow-2xl">
+          <div className="bg-dcs-dark-gray/30 backdrop-blur-xl rounded-3xl p-5 sm:p-10 border border-white/5 shadow-2xl">
             <form onSubmit={handleSubmit} className="space-y-10">
               {/* Basic Information Section */}
               <div className="space-y-6">
@@ -226,7 +226,7 @@ export default function CourseSettings() {
                       onChange={handleChange}
                       required
                       placeholder="e.g. Master React.js from Scratch"
-                      className="w-full px-5 py-4 border border-white/10 rounded-2xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all placeholder:text-white/10"
+                      className="w-full px-4 sm:px-5 py-3 sm:py-4 border border-white/10 rounded-2xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all placeholder:text-white/10"
                     />
                   </div>
 
@@ -239,7 +239,7 @@ export default function CourseSettings() {
                       onChange={handleChange}
                       required
                       placeholder="react-masterclass"
-                      className="w-full px-5 py-4 border border-white/10 rounded-2xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all placeholder:text-white/10"
+                      className="w-full px-4 sm:px-5 py-3 sm:py-4 border border-white/10 rounded-2xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all placeholder:text-white/10"
                     />
                   </div>
                 </div>
@@ -253,7 +253,7 @@ export default function CourseSettings() {
                     onChange={handleChange}
                     maxLength={500}
                     placeholder="A brief overview for the course card..."
-                    className="w-full px-5 py-4 border border-white/10 rounded-2xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all placeholder:text-white/10"
+                    className="w-full px-4 sm:px-5 py-3 sm:py-4 border border-white/10 rounded-2xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all placeholder:text-white/10"
                   />
                 </div>
 
@@ -266,7 +266,7 @@ export default function CourseSettings() {
                     required
                     rows={6}
                     placeholder="Tell your students everything they need to know about the course..."
-                    className="w-full px-5 py-4 border border-white/10 rounded-2xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all placeholder:text-white/10"
+                    className="w-full px-4 sm:px-5 py-3 sm:py-4 border border-white/10 rounded-2xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all placeholder:text-white/10"
                   />
                 </div>
               </div>
@@ -302,7 +302,7 @@ export default function CourseSettings() {
                       name="difficultyLevel"
                       value={formData.difficultyLevel}
                       onChange={handleChange}
-                      className="w-full px-5 py-4 border border-white/10 rounded-2xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all cursor-pointer appearance-none"
+                      className="w-full px-4 sm:px-5 py-3 sm:py-4 border border-white/10 rounded-2xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all cursor-pointer appearance-none"
                     >
                       <option value="BEGINNER">🟢 Beginner</option>
                       <option value="INTERMEDIATE">🟡 Intermediate</option>
@@ -333,13 +333,13 @@ export default function CourseSettings() {
                 </h3>
 
                 <div className="space-y-4">
-                  <div className="w-full p-6 border border-white/10 rounded-3xl bg-dcs-black/40 backdrop-blur-sm">
+                  <div className="w-full p-4 sm:p-6 border border-white/10 rounded-3xl bg-dcs-black/40 backdrop-blur-sm">
                     <div className="flex flex-wrap gap-2 mb-6">
                       {selectedCategoryIds.length === 0 ? (
                         <p className="text-xs text-dcs-text-gray/50 italic py-2">No categories selected yet...</p>
                       ) : (
                         selectedCategoryIds.map(catId => (
-                          <span key={catId} className="flex items-center gap-2 bg-dcs-purple/10 border border-dcs-purple/20 text-dcs-purple px-4 py-2 rounded-full text-xs font-bold group/tag transition-all hover:bg-dcs-purple hover:text-white">
+                          <span key={catId} className="flex items-center gap-2 bg-dcs-purple/10 border border-dcs-purple/20 text-dcs-purple px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-xs font-bold group/tag transition-all hover:bg-dcs-purple hover:text-white">
                             {getCategoryName(catId)}
                             <button type="button" onClick={() => removeCategory(catId)} className="text-dcs-purple group-hover/tag:text-white transition-colors">
                               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -436,7 +436,7 @@ export default function CourseSettings() {
                       onChange={handleChange}
                       rows={5}
                       placeholder="e.g.:&#10;10 hours on-demand video&#10;5 downloadable resources&#10;Full lifetime access"
-                      className="w-full px-5 py-4 border border-white/10 rounded-2xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all placeholder:text-white/10"
+                      className="w-full px-4 sm:px-5 py-3 sm:py-4 border border-white/10 rounded-2xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all placeholder:text-white/10"
                     />
                     <p className="text-[10px] text-dcs-text-gray/40 uppercase tracking-widest font-bold px-1">Tip: Press Enter for each new advantage</p>
                   </div>
@@ -535,7 +535,7 @@ export default function CourseSettings() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="flex-1 bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo text-white py-4 rounded-2xl hover:shadow-[0_0_40px_rgba(157,80,187,0.3)] transition-all font-bold text-lg hover:scale-[1.01] active:scale-[0.98] disabled:opacity-50"
+                  className="flex-1 bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo text-white py-3 sm:py-4 rounded-2xl hover:shadow-[0_0_40px_rgba(157,80,187,0.3)] transition-all font-bold text-base sm:text-lg hover:scale-[1.01] active:scale-[0.98] disabled:opacity-50"
                 >
                   {saving ? (
                     <span className="flex items-center justify-center gap-2">
@@ -551,9 +551,9 @@ export default function CourseSettings() {
                   type="button"
                   onClick={() => setConfirmDelete(true)}
                   disabled={formData.isPublished}
-                  className={`px-8 py-4 rounded-2xl transition-all font-bold border ${formData.isPublished
-                      ? 'bg-white/5 text-white/20 border-white/5 cursor-not-allowed'
-                      : 'bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white border-red-500/20 hover:border-red-500/50'
+                  className={`px-6 sm:px-8 py-3 sm:py-4 rounded-2xl transition-all font-bold border ${formData.isPublished
+                    ? 'bg-white/5 text-white/20 border-white/5 cursor-not-allowed'
+                    : 'bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white border-red-500/20 hover:border-red-500/50'
                     }`}
                   title={formData.isPublished ? "Unpublish course to delete" : "Delete Course"}
                 >

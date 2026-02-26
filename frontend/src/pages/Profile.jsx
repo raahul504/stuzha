@@ -83,38 +83,36 @@ export default function Profile() {
   return (
     <div className="min-h-screen bg-dcs-black">
       <Navbar />
-      <div className="pt-32 pb-12 px-8">
+      <div className="pt-24 sm:pt-32 pb-12 px-4 sm:px-8">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-5xl text-center mb-12 bg-gradient-to-r from-white to-dcs-purple bg-clip-text text-transparent">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl text-center mb-8 sm:mb-12 bg-gradient-to-r from-white to-dcs-purple bg-clip-text text-transparent">
             My Profile
           </h1>
 
           {/* Tabs */}
-          <div className="card">
-            <div className="flex border-b border-dcs-purple/20">
+          <div className="card overflow-hidden">
+            <div className="flex border-b border-dcs-purple/20 overflow-x-auto scrollbar-hide">
               <button
                 onClick={() => setActiveTab('info')}
-                className={`px-6 py-3 font-semibold transition-colors ${
-                  activeTab === 'info'
+                className={`px-4 sm:px-6 py-3 font-semibold transition-colors whitespace-nowrap text-sm sm:text-base ${activeTab === 'info'
                     ? 'border-b-2 border-dcs-purple text-dcs-purple'
                     : 'text-dcs-text-gray hover:text-white'
-                }`}
+                  }`}
               >
                 Profile Information
               </button>
               <button
                 onClick={() => setActiveTab('password')}
-                className={`px-6 py-3 font-semibold transition-colors ${
-                  activeTab === 'password'
+                className={`px-4 sm:px-6 py-3 font-semibold transition-colors whitespace-nowrap text-sm sm:text-base ${activeTab === 'password'
                     ? 'border-b-2 border-dcs-purple text-dcs-purple'
                     : 'text-dcs-text-gray hover:text-white'
-                }`}
+                  }`}
               >
                 Change Password
               </button>
             </div>
 
-            <div className="p-8">
+            <div className="p-4 sm:p-8">
 
               {/* Profile Info Tab */}
               {activeTab === 'info' && (
@@ -171,7 +169,7 @@ export default function Profile() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full py-4 bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo text-white rounded-lg font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full py-3 sm:py-4 bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo text-white rounded-lg font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                     style={{ boxShadow: loading ? 'none' : '0 5px 15px rgba(157, 80, 187, 0.4)' }}
                   >
                     {loading ? 'Updating...' : 'Update Profile'}
@@ -226,7 +224,7 @@ export default function Profile() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full py-4 bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo text-white rounded-lg font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full py-3 sm:py-4 bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo text-white rounded-lg font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                     style={{ boxShadow: loading ? 'none' : '0 5px 15px rgba(157, 80, 187, 0.4)' }}
                   >
                     {loading ? 'Changing...' : 'Change Password'}

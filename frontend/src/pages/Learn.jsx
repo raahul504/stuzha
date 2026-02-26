@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { courseService } from '../api/courseService';
 import { progressService } from '../api/progressService';
 import { certificateService } from '../api/certificateService';
+import { getServerUrl } from '../api/axios';
 import { showSuccess, showError } from '../utils/toast';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Navbar from '../components/Navbar';
@@ -14,6 +15,7 @@ export default function Learn() {
   const [course, setCourse] = useState(null);
   const [selectedContent, setSelectedContent] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     fetchCourse();
@@ -42,6 +44,7 @@ export default function Learn() {
 
   const handleContentSelect = (content) => {
     setSelectedContent(content);
+    setSidebarOpen(false); // Close sidebar on mobile when content is selected
   };
 
   const handleVideoProgress = async (contentId, position, completed, totalWatchTime) => {
@@ -90,18 +93,48 @@ export default function Learn() {
   }
 
   return (
-    <div className="min-h-screen bg-dcs-black flex pt-20">
+    <div className="min-h-screen bg-dcs-black flex flex-col lg:flex-row pt-16 sm:pt-20">
       <Navbar />
+
+      {/* Mobile Sidebar Toggle Button */}
+      <button
+        onClick={() => setSidebarOpen(true)}
+        className="lg:hidden fixed bottom-6 left-6 z-40 w-14 h-14 bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo text-white rounded-full shadow-lg shadow-dcs-purple/40 flex items-center justify-center hover:scale-110 transition-transform"
+        aria-label="Open course menu"
+      >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
+        </svg>
+      </button>
+
+      {/* Sidebar Backdrop (mobile) */}
+      {sidebarOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar - Course Contents */}
-      <div className="w-80 bg-gradient-to-b from-dcs-dark-gray to-dcs-black border-r border-dcs-purple/30 overflow-y-auto shadow-2xl">
-        <div className="p-6 border-b border-dcs-purple/30 bg-dcs-dark-gray/50 backdrop-blur-sm">
-          <button onClick={() => navigate('/my-courses')} className="flex items-center gap-2 text-dcs-purple hover:text-dcs-electric-indigo mb-4 transition-all hover:gap-3 font-semibold">
+      <div className={`fixed lg:relative z-50 lg:z-auto top-0 left-0 h-full w-[300px] sm:w-80 bg-gradient-to-b from-dcs-dark-gray to-dcs-black border-r border-dcs-purple/30 overflow-y-auto shadow-2xl transition-transform duration-300 lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        {/* Mobile close button */}
+        <button
+          onClick={() => setSidebarOpen(false)}
+          className="lg:hidden absolute top-4 right-4 text-dcs-text-gray hover:text-white z-10 p-1"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        <div className="p-4 sm:p-6 border-b border-dcs-purple/30 bg-dcs-dark-gray/50 backdrop-blur-sm">
+          <button onClick={() => navigate('/my-courses')} className="flex items-center gap-2 text-dcs-purple hover:text-dcs-electric-indigo mb-4 transition-all hover:gap-3 font-semibold text-sm">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
             My Courses
           </button>
-          <h2 className="text-xl font-bold text-white mb-4 leading-tight">{course.title}</h2>
+          <h2 className="text-lg sm:text-xl font-bold text-white mb-4 leading-tight">{course.title}</h2>
           <div className="mt-4">
             <div className="flex items-center justify-between mb-2">
               <div className="text-sm font-semibold text-white">Progress</div>
@@ -122,7 +155,7 @@ export default function Learn() {
         </div>
 
         {course.enrollment?.completed && (
-          <div className="m-4 p-5 bg-gradient-to-br from-green-900/40 to-green-800/20 rounded-xl border border-green-500/40 shadow-lg">
+          <div className="m-3 sm:m-4 p-4 sm:p-5 bg-gradient-to-br from-green-900/40 to-green-800/20 rounded-xl border border-green-500/40 shadow-lg">
             <div className="flex items-center gap-2 mb-3">
               <span className="text-2xl">🎉</span>
               <p className="text-sm text-green-300 font-bold">Course Completed!</p>
@@ -132,14 +165,13 @@ export default function Learn() {
                 try {
                   const res = await certificateService.generateCertificate(id);
                   window.open(
-                    `http://localhost:5000${res.certificate.fileUrl}`,
+                    getServerUrl(res.certificate.fileUrl),
                     '_blank'
                   );
                 } catch (err) {
                   showError('Certificate generation failed');
                 }
               }}
-
               className="w-full bg-gradient-to-r from-green-600 to-green-500 text-white py-2.5 rounded-lg text-sm font-semibold hover:from-green-500 hover:to-green-400 transition-all shadow-lg hover:shadow-green-500/30 hover:scale-105"
             >
               Download Certificate
@@ -148,10 +180,10 @@ export default function Learn() {
         )}
 
         {/* Modules & Content */}
-        <div className="p-4">
+        <div className="p-3 sm:p-4">
           {course.modules.map((module, idx) => (
             <div key={module.id} className="mb-6">
-              <h3 className="font-bold mb-3 text-white px-2 py-1 text-base">
+              <h3 className="font-bold mb-3 text-white px-2 py-1 text-sm sm:text-base">
                 {idx + 1}. {module.title}
               </h3>
               <ul className="space-y-1.5">
@@ -200,7 +232,7 @@ export default function Learn() {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 p-8 overflow-y-auto bg-gradient-to-br from-dcs-black via-dcs-black to-dcs-dark-gray/30">
+      <div className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto bg-gradient-to-br from-dcs-black via-dcs-black to-dcs-dark-gray/30 min-h-[calc(100vh-4rem)] sm:min-h-[calc(100vh-5rem)]">
         {selectedContent ? (
           <ContentViewer
             key={selectedContent.id}
@@ -211,8 +243,14 @@ export default function Learn() {
         ) : (
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
-              <div className="text-6xl mb-4">📚</div>
-              <p className="text-dcs-text-gray text-lg">Select a lesson to start learning</p>
+              <div className="text-5xl sm:text-6xl mb-4">📚</div>
+              <p className="text-dcs-text-gray text-base sm:text-lg">Select a lesson to start learning</p>
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="lg:hidden mt-4 px-6 py-3 bg-dcs-purple/20 border border-dcs-purple/40 rounded-xl text-dcs-purple font-semibold text-sm hover:bg-dcs-purple/30 transition-all"
+              >
+                Open Course Menu
+              </button>
             </div>
           </div>
         )}
@@ -248,7 +286,7 @@ function VideoPlayer({ content, onProgress }) {
       setError(true);
       return;
     }
-    fetch(`http://localhost:5000${content.videoUrl}`, { credentials: 'include' })
+    fetch(getServerUrl(content.videoUrl), { credentials: 'include' })
       .then(res => res.blob())
       .then(blob => setVideoUrl(URL.createObjectURL(blob)))
       .catch(() => setError(true));
@@ -334,9 +372,9 @@ function VideoPlayer({ content, onProgress }) {
 
   return (
     <div className="max-w-5xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-4xl font-bold mb-3 text-white bg-gradient-to-r from-white to-dcs-purple bg-clip-text text-transparent">{content.title}</h1>
-        {content.description && <p className="text-dcs-text-gray text-lg leading-relaxed">{content.description}</p>}
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 sm:mb-3 text-white bg-gradient-to-r from-white to-dcs-purple bg-clip-text text-transparent">{content.title}</h1>
+        {content.description && <p className="text-dcs-text-gray text-base sm:text-lg leading-relaxed">{content.description}</p>}
       </div>
 
       {videoUrl ? (
@@ -381,7 +419,7 @@ function ArticleViewer({ content }) {
       const url = content.articleFileUrl.replace('/download/', '/view/');
 
       // Fetch and create blob URL
-      fetch(`http://localhost:5000${url}`, {
+      fetch(getServerUrl(url), {
         credentials: 'include'
       })
         .then(res => {
@@ -418,15 +456,15 @@ function ArticleViewer({ content }) {
 
   return (
     <div className="max-w-5xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-4xl font-bold mb-3 text-white bg-gradient-to-r from-white to-dcs-purple bg-clip-text text-transparent">{content.title}</h1>
-        {content.description && <p className="text-dcs-text-gray text-lg leading-relaxed">{content.description}</p>}
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 sm:mb-3 text-white bg-gradient-to-r from-white to-dcs-purple bg-clip-text text-transparent">{content.title}</h1>
+        {content.description && <p className="text-dcs-text-gray text-base sm:text-lg leading-relaxed">{content.description}</p>}
       </div>
 
-      <div className="bg-dcs-dark-gray/50 backdrop-blur-sm border border-dcs-purple/20 rounded-2xl p-8 shadow-2xl">
+      <div className="bg-dcs-dark-gray/50 backdrop-blur-sm border border-dcs-purple/20 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-2xl">
         {content.articleContent && (
           <div className="prose prose-invert prose-lg max-w-none mb-6 text-dcs-text-gray"
-            dangerouslySetInnerHTML={{ __html: content.articleContent }} />
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content.articleContent) }} />
         )}
 
         {fileUrl && (
@@ -434,7 +472,7 @@ function ArticleViewer({ content }) {
             {fileType === 'pdf' ? (
               <iframe
                 src={`${fileUrl}#toolbar=0&navpanes=0`}
-                className="w-full h-[800px] border border-dcs-purple/30 rounded-xl bg-white"
+                className="w-full h-[50vh] sm:h-[65vh] lg:h-[800px] border border-dcs-purple/30 rounded-xl bg-white"
                 title="PDF Viewer"
               />
             ) : (
@@ -478,16 +516,16 @@ function AssessmentViewer({ content, onSubmit }) {
 
   return (
     <div className="max-w-5xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-4xl font-bold mb-3 text-white bg-gradient-to-r from-white to-dcs-purple bg-clip-text text-transparent">{content.title}</h1>
-        {content.description && <p className="text-dcs-text-gray text-lg leading-relaxed">{content.description}</p>}
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 sm:mb-3 text-white bg-gradient-to-r from-white to-dcs-purple bg-clip-text text-transparent">{content.title}</h1>
+        {content.description && <p className="text-dcs-text-gray text-base sm:text-lg leading-relaxed">{content.description}</p>}
       </div>
 
       {content.attemptCount > 0 && !showQuestions && (
-        <div className="bg-dcs-dark-gray/50 backdrop-blur-sm border border-dcs-purple/20 rounded-2xl p-8 shadow-2xl mb-6">
-          <h2 className="text-2xl font-bold mb-6 text-white">Assessment Summary</h2>
+        <div className="bg-dcs-dark-gray/50 backdrop-blur-sm border border-dcs-purple/20 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-2xl mb-6">
+          <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-white">Assessment Summary</h2>
 
-          <div className="grid grid-cols-2 gap-6 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6">
             <div className="bg-gradient-to-br from-dcs-purple/30 to-dcs-purple/10 p-6 rounded-xl border border-dcs-purple/40 shadow-lg">
               <p className="text-sm text-dcs-text-gray mb-2 font-semibold">Latest Score</p>
               <p className="text-4xl font-bold bg-gradient-to-r from-dcs-purple to-dcs-electric-indigo bg-clip-text text-transparent">{content.latestScore.toFixed(0)}%</p>
@@ -518,7 +556,7 @@ function AssessmentViewer({ content, onSubmit }) {
 
       {/* Show questions */}
       {showQuestions && (
-        <div className="bg-dcs-dark-gray/50 backdrop-blur-sm border border-dcs-purple/20 rounded-2xl p-8 shadow-2xl">
+        <div className="bg-dcs-dark-gray/50 backdrop-blur-sm border border-dcs-purple/20 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-2xl">
           {content.questions?.map((q, idx) => (
             <div key={q.id} className="mb-8 pb-8 border-b border-white/5 last:border-0">
               <p className="font-bold mb-4 text-white text-lg">

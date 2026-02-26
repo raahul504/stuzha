@@ -28,17 +28,17 @@ export default function AdminDashboard() {
 
       <Navbar />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24 pb-12">
-        <div className="mb-10">
-          <h1 className="text-4xl font-bold mb-3 text-white bg-gradient-to-r from-white to-dcs-purple bg-clip-text text-transparent">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-20 sm:pt-24 pb-6 sm:pb-12">
+        <div className="mb-8 sm:mb-10">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 sm:mb-3 text-white bg-gradient-to-r from-white to-dcs-purple bg-clip-text text-transparent">
             Admin Dashboard
           </h1>
-          <p className="text-dcs-text-gray text-lg">System Management & Control Center</p>
+          <p className="text-dcs-text-gray text-base sm:text-lg">System Management & Control Center</p>
         </div>
 
-        <div className="bg-dcs-dark-gray/40 backdrop-blur-md border border-dcs-purple/20 rounded-3xl p-8 shadow-2xl overflow-hidden relative">
+        <div className="bg-dcs-dark-gray/40 backdrop-blur-md border border-dcs-purple/20 rounded-3xl p-4 sm:p-8 shadow-2xl overflow-hidden relative">
           {/* Header/Tabs */}
-          <div className="flex flex-wrap gap-4 mb-10 border-b border-white/5 pb-8">
+          <div className="flex flex-nowrap sm:flex-wrap gap-3 sm:gap-4 mb-6 sm:mb-10 border-b border-white/5 pb-6 pt-1 pl-2 sm:pb-8 overflow-x-auto scrollbar-hide">
             <button
               onClick={() => setActiveTab('courses')}
               className={`flex items-center gap-2 px-8 py-4 rounded-full font-bold transition-all duration-300 ${activeTab === 'courses'
@@ -87,7 +87,7 @@ export default function AdminDashboard() {
             )}
             <button
               onClick={() => navigate('/admin/activity-log')}
-              className="flex items-center gap-2 px-8 py-4 rounded-full font-bold transition-all duration-300 bg-dcs-light-gray/50 text-dcs-text-gray hover:text-white hover:bg-dcs-light-gray"
+              className="flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold transition-all duration-300 bg-dcs-light-gray/50 text-dcs-text-gray hover:text-white hover:bg-dcs-light-gray whitespace-nowrap text-sm sm:text-base"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />

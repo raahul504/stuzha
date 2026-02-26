@@ -43,11 +43,11 @@ const AskInstructorButton = ({ courseId, courseTitle }) => {
             {/* Modal */}
             {showModal && (
                 <div
-                    className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 mt-75"
+                    className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4"
                     onClick={() => setShowModal(false)}
                 >
                     <div
-                        className="bg-dcs-dark-gray rounded-2xl border border-dcs-purple/30 max-w-2xl w-full"
+                        className="bg-dcs-dark-gray rounded-t-2xl sm:rounded-2xl border border-dcs-purple/30 w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Modal Header */}

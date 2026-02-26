@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { approvalService } from '../api/approvalService';
+import { getServerUrl } from '../api/axios';
 import { showSuccess, showError } from '../utils/toast';
 import Navbar from '../components/Navbar';
+import DOMPurify from 'dompurify';
 
 const AdminApprovalDashboard = () => {
     const navigate = useNavigate();
@@ -17,11 +19,6 @@ const AdminApprovalDashboard = () => {
     const [showModal, setShowModal] = useState(false);
     const [modalAction, setModalAction] = useState(null);
     const [disapprovalReason, setDisapprovalReason] = useState('');
-
-    // Approval history states
-    const [showHistoryModal, setShowHistoryModal] = useState(false);
-    const [approvalHistory, setApprovalHistory] = useState([]);
-    const [loadingHistory, setLoadingHistory] = useState(false);
 
     useEffect(() => {
         if (user?.role !== 'ADMIN') {
@@ -48,19 +45,6 @@ const AdminApprovalDashboard = () => {
         }
     };
 
-    const fetchApprovalHistory = async (courseId) => {
-        try {
-            setLoadingHistory(true);
-            const data = await approvalService.getApprovalHistory(courseId);
-            setApprovalHistory(data.history);
-        } catch (error) {
-            showError('Failed to fetch approval history');
-            console.error(error);
-        } finally {
-            setLoadingHistory(false);
-        }
-    };
-
     const openModal = (course, action) => {
         setSelectedCourse(course);
         setModalAction(action);
@@ -74,18 +58,6 @@ const AdminApprovalDashboard = () => {
         setSelectedContent(null);
         setModalAction(null);
         setDisapprovalReason('');
-    };
-
-    const openHistoryModal = async (course) => {
-        setSelectedCourse(course);
-        setShowHistoryModal(true);
-        await fetchApprovalHistory(course.id);
-    };
-
-    const closeHistoryModal = () => {
-        setShowHistoryModal(false);
-        setSelectedCourse(null);
-        setApprovalHistory([]);
     };
 
     const handleApprove = async () => {
@@ -222,14 +194,6 @@ const AdminApprovalDashboard = () => {
                         Review Course
                     </button>
                     <button
-                        onClick={() => openHistoryModal(course)}
-                        className="px-4 py-2.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 text-sm font-semibold rounded-xl transition-all border border-blue-500/20"
-                    >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </button>
-                    <button
                         onClick={() => openModal(course, 'approve')}
                         className="px-6 py-2.5 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white text-sm font-semibold rounded-xl transition-all shadow-lg shadow-green-500/20"
                     >
@@ -251,7 +215,7 @@ const AdminApprovalDashboard = () => {
     return (
         <div className="min-h-screen bg-gradient-to-br from-dcs-black via-dcs-black to-dcs-dark-gray/30">
             <Navbar />
-            <div className="max-w-7xl mx-auto p-8 pt-28">
+            <div className="max-w-7xl mx-auto p-4 sm:p-8 pt-20 sm:pt-28">
                 <button
                     onClick={() => navigate('/admin')}
                     className="flex items-center gap-2 text-dcs-text-gray hover:text-white transition-colors mb-4 group"
@@ -263,7 +227,7 @@ const AdminApprovalDashboard = () => {
                 </button>
                 {/* Header */}
                 <div className="mb-8">
-                    <h1 className="text-4xl font-bold mb-6 bg-gradient-to-r from-white to-dcs-purple bg-clip-text text-transparent">
+                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-white to-dcs-purple bg-clip-text text-transparent">
                         Course Approval Dashboard
                     </h1>
 
@@ -310,16 +274,16 @@ const AdminApprovalDashboard = () => {
             {/* Modal */}
             {showModal && selectedCourse && (
                 <div
-                    className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+                    className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4"
                     onClick={closeModal}
                 >
                     <div
-                        className="bg-dcs-dark-gray rounded-2xl border border-dcs-purple/30 max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
+                        className="bg-dcs-dark-gray rounded-t-2xl sm:rounded-2xl border border-dcs-purple/30 w-full sm:max-w-4xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Modal Header */}
-                        <div className="p-6 border-b border-white/10 flex items-center justify-between">
-                            <h2 className="text-2xl font-bold text-white">
+                        <div className="p-4 sm:p-6 border-b border-white/10 flex items-center justify-between">
+                            <h2 className="text-lg sm:text-2xl font-bold text-white">
                                 {modalAction === 'review'
                                     ? 'Review Course'
                                     : modalAction === 'approve'
@@ -335,7 +299,7 @@ const AdminApprovalDashboard = () => {
                         </div>
 
                         {/* Modal Body */}
-                        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
                             <h3 className="text-xl font-bold text-white">{selectedCourse.title}</h3>
 
                             {modalAction === 'review' && (
@@ -514,73 +478,6 @@ const AdminApprovalDashboard = () => {
                     </div>
                 </div>
             )}
-
-            {/* Approval History Modal */}
-            {showHistoryModal && selectedCourse && (
-                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={closeHistoryModal}>
-                    <div className="bg-dcs-dark-gray rounded-2xl border border-dcs-purple/30 max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
-                        <div className="p-6 border-b border-white/10 flex items-center justify-between">
-                            <div>
-                                <h2 className="text-2xl font-bold text-white">Approval History</h2>
-                                <p className="text-sm text-dcs-text-gray mt-1">{selectedCourse.title}</p>
-                            </div>
-                            <button className="text-dcs-text-gray hover:text-white text-3xl leading-none transition-colors" onClick={closeHistoryModal}>&times;</button>
-                        </div>
-
-                        <div className="flex-1 overflow-y-auto p-6">
-                            {loadingHistory ? (
-                                <div className="flex items-center justify-center h-32">
-                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-dcs-purple"></div>
-                                </div>
-                            ) : approvalHistory.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center h-32 text-center">
-                                    <div className="text-4xl mb-2">📜</div>
-                                    <p className="text-dcs-text-gray">No approval history yet</p>
-                                </div>
-                            ) : (
-                                <div className="space-y-4">
-                                    {approvalHistory.map((log) => {
-                                        const actionLabel = getActionLabel(log.action);
-                                        return (
-                                            <div key={log.id} className="bg-dcs-black/30 rounded-xl p-4 border border-white/5">
-                                                <div className="flex items-start justify-between mb-3">
-                                                    <span className={`px-3 py-1 rounded-full text-xs font-bold border ${actionLabel.color}`}>
-                                                        {actionLabel.text}
-                                                    </span>
-                                                    <span className="text-xs text-dcs-text-gray">
-                                                        {new Date(log.createdAt).toLocaleString()}
-                                                    </span>
-                                                </div>
-
-                                                <div className="space-y-2 text-sm">
-                                                    <p className="text-white">
-                                                        <span className="text-dcs-text-gray">Admin:</span> {log.admin.firstName} {log.admin.lastName}
-                                                    </p>
-                                                    <p className="text-white">
-                                                        <span className="text-dcs-text-gray">Status Change:</span> {log.previousStatus} → {log.newStatus}
-                                                    </p>
-                                                    {log.reason && (
-                                                        <div className="mt-3 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
-                                                            <p className="text-xs font-bold text-red-400 mb-1">Reason:</p>
-                                                            <p className="text-sm text-red-300">{log.reason}</p>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            )}
-                        </div>
-
-                        <div className="p-6 border-t border-white/10 flex justify-end">
-                            <button className="px-6 py-2.5 bg-dcs-light-gray hover:bg-dcs-light-gray/80 text-white font-semibold rounded-xl transition-all border border-white/10" onClick={closeHistoryModal}>
-                                Close
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };
@@ -611,7 +508,7 @@ const AdminVideoPlayer = ({ content }) => {
             return;
         }
 
-        fetch(`http://localhost:5000${content.videoUrl}`, { credentials: 'include' })
+        fetch(getServerUrl(content.videoUrl), { credentials: 'include' })
             .then(res => {
                 if (!res.ok) throw new Error('Video not accessible');
                 return res.blob();
@@ -632,8 +529,8 @@ const AdminVideoPlayer = ({ content }) => {
 
     return (
         <div className="space-y-4">
-            <h5 className="text-xl font-bold text-white">{content.title}</h5>
-            {content.description && <p className="text-dcs-text-gray">{content.description}</p>}
+            <h5 className="text-lg sm:text-xl font-bold text-white">{content.title}</h5>
+            {content.description && <p className="text-dcs-text-gray text-sm sm:text-base">{content.description}</p>}
 
             {loading ? (
                 <div className="aspect-video bg-dcs-black rounded-xl flex items-center justify-center border border-white/5">
@@ -664,7 +561,7 @@ const AdminArticleViewer = ({ content }) => {
 
             const url = content.articleFileUrl.replace('/download/', '/view/');
 
-            fetch(`http://localhost:5000${url}`, { credentials: 'include' })
+            fetch(getServerUrl(url), { credentials: 'include' })
                 .then(res => {
                     if (!res.ok) throw new Error('File not accessible');
                     return res.blob();
@@ -688,14 +585,14 @@ const AdminArticleViewer = ({ content }) => {
 
     return (
         <div className="space-y-4">
-            <h5 className="text-xl font-bold text-white">{content.title}</h5>
-            {content.description && <p className="text-dcs-text-gray">{content.description}</p>}
+            <h5 className="text-lg sm:text-xl font-bold text-white">{content.title}</h5>
+            {content.description && <p className="text-dcs-text-gray text-sm sm:text-base">{content.description}</p>}
 
-            <div className="bg-dcs-black/50 border border-white/5 rounded-2xl p-6">
+            <div className="bg-dcs-black/50 border border-white/5 rounded-2xl p-4 sm:p-6">
                 {content.articleContent && (
                     <div
                         className="prose prose-invert max-w-none text-dcs-text-gray mb-6"
-                        dangerouslySetInnerHTML={{ __html: content.articleContent }}
+                        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content.articleContent) }}
                     />
                 )}
 
@@ -708,7 +605,7 @@ const AdminArticleViewer = ({ content }) => {
                         {fileType === 'pdf' ? (
                             <iframe
                                 src={fileUrl}
-                                className="w-full h-[600px] border border-white/10 rounded-xl bg-white"
+                                className="w-full h-[50vh] sm:h-[600px] border border-white/10 rounded-xl bg-white"
                                 title="File Preview"
                             />
                         ) : (
@@ -724,16 +621,16 @@ const AdminArticleViewer = ({ content }) => {
 const AdminAssessmentViewer = ({ content }) => {
     return (
         <div className="space-y-4">
-            <div className="flex justify-between items-start">
+            <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
                 <div>
-                    <h5 className="text-xl font-bold text-white">{content.title}</h5>
-                    {content.description && <p className="text-dcs-text-gray mt-1">{content.description}</p>}
+                    <h5 className="text-lg sm:text-xl font-bold text-white">{content.title}</h5>
+                    {content.description && <p className="text-dcs-text-gray mt-1 text-sm sm:text-base">{content.description}</p>}
                 </div>
-                <div className="flex flex-col items-end gap-2">
-                    <span className="px-3 py-1 bg-dcs-purple/20 text-dcs-purple rounded-full text-xs font-bold border border-dcs-purple/30">
+                <div className="flex flex-row sm:flex-col items-center sm:items-end gap-2 shrink-0">
+                    <span className="px-3 py-1 bg-dcs-purple/20 text-dcs-purple rounded-full text-xs font-bold border border-dcs-purple/30 whitespace-nowrap">
                         {content.questions?.length || 0} Questions
                     </span>
-                    <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-bold border border-blue-500/30">
+                    <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-bold border border-blue-500/30 whitespace-nowrap">
                         Pass: {content.assessmentPassPercentage}%
                     </span>
                 </div>

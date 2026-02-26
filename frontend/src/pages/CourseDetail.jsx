@@ -88,7 +88,7 @@ export default function CourseDetail() {
         <div className="absolute top-0 right-0 w-[800px] h-[600px] bg-dcs-purple/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
         <div className="absolute bottom-0 left-0 w-[600px] h-[400px] bg-dcs-electric-indigo/5 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/3 pointer-events-none"></div>
 
-        <div className="max-w-7xl mx-auto px-4 relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-12">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-12">
           <div className="lg:col-span-2 space-y-8">
             {/* Breadcrumb */}
             <div className="flex items-center space-x-2 text-sm font-medium">
@@ -148,7 +148,7 @@ export default function CourseDetail() {
       </div>
 
       {/* Main Content Grid */}
-      <div className="max-w-7xl mx-auto px-4 -mt-8 relative z-20">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 -mt-8 relative z-20">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
 
           {/* Left Column: Course Details */}

@@ -1,5 +1,6 @@
 const approvalService = require('../services/approvalService');
 const Joi = require('joi');
+const prisma = require('../config/database');
 
 // Validation schemas
 const disapprovalSchema = Joi.object({
@@ -286,14 +287,28 @@ const disapproveUnpublish = async (req, res, next) => {
  */
 const getApprovalHistory = async (req, res, next) => {
     try {
+        const { courseId } = req.params;
         // Verify admin
-        if (req.user.role !== 'ADMIN') {
+        if (req.user.role !== 'ADMIN' && req.user.role !== 'INSTRUCTOR') {
             return res.status(403).json({
-                error: { message: 'Admin access required' }
+                error: { message: 'Access denied' }
             });
         }
 
-        const { courseId } = req.params;
+        // If instructor, verify they own the course
+        if (req.user.role === 'INSTRUCTOR') {
+            const course = await prisma.course.findUnique({
+                where: { id: courseId },
+                select: { createdBy: true }
+            });
+
+            if (!course || course.createdBy !== req.user.id) {
+                return res.status(403).json({
+                    error: { message: 'You can only view history for your own courses' }
+                });
+            }
+        }
+
         const history = await approvalService.getApprovalHistory(courseId);
 
         res.json({

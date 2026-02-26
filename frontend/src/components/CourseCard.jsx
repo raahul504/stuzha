@@ -21,7 +21,7 @@ const CourseCard = ({ course, categoryName, onClick, progress, buttonText }) => 
             className="group relative bg-dcs-dark-gray rounded-2xl overflow-hidden border border-dcs-purple/10 cursor-pointer flex flex-col h-full transition-all duration-300 hover:-translate-y-2 hover:border-dcs-purple/50 hover:shadow-[0_20px_40px_rgba(157,80,187,0.2)]"
         >
             {/* Image / Banner */}
-            <div className="h-48 w-full relative overflow-hidden">
+            <div className="h-40 sm:h-48 w-full relative overflow-hidden">
                 {thumbnailUrl ? (
                     <img
                         src={thumbnailUrl}
@@ -61,7 +61,7 @@ const CourseCard = ({ course, categoryName, onClick, progress, buttonText }) => 
             </div>
 
             {/* Content */}
-            <div className="p-6 flex flex-col flex-grow">
+            <div className="p-4 sm:p-6 flex flex-col flex-grow">
                 <div className="flex items-center justify-between mb-3 text-xs font-medium text-dcs-text-gray">
                     <div className="flex items-center gap-2">
                         {difficultyLevel && (
@@ -75,7 +75,7 @@ const CourseCard = ({ course, categoryName, onClick, progress, buttonText }) => 
                     </div>
                 </div>
 
-                <h3 className="text-xl font-bold text-white mb-2 leading-tight group-hover:text-dcs-purple transition-colors">
+                <h3 className="text-lg sm:text-xl font-bold text-white mb-2 leading-tight group-hover:text-dcs-purple transition-colors line-clamp-2">
                     {title}
                 </h3>
 
@@ -99,11 +99,11 @@ const CourseCard = ({ course, categoryName, onClick, progress, buttonText }) => 
                             </div>
                         </div>
                     ) : (
-                        <div className="pt-4 border-t border-white/5 flex items-center justify-between">
-                            <span className="text-xl font-bold text-white group-hover:text-dcs-electric-indigo transition-colors uppercase">
+                        <div className="pt-4 border-t border-white/5 flex items-center justify-between gap-2">
+                            <span className="text-lg sm:text-xl font-bold text-white group-hover:text-dcs-electric-indigo transition-colors uppercase">
                                 {displayPrice}
                             </span>
-                            <button className="px-4 py-2 text-sm font-semibold text-white bg-white/5 border border-white/10 rounded-lg group-hover:bg-dcs-purple group-hover:border-dcs-purple transition-all">
+                            <button className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-white bg-white/5 border border-white/10 rounded-lg group-hover:bg-dcs-purple group-hover:border-dcs-purple transition-all whitespace-nowrap">
                                 {buttonText || 'View Details'}
                             </button>
                         </div>

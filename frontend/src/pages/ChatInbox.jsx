@@ -11,6 +11,7 @@ const ChatInbox = () => {
     const navigate = useNavigate();
     const [messages, setMessages] = useState([]);
     const [selectedMessage, setSelectedMessage] = useState(null);
+    const [mobileView, setMobileView] = useState('list'); // 'list' or 'conversation'
     const [loading, setLoading] = useState(true);
     const [replyText, setReplyText] = useState('');
     const [sending, setSending] = useState(false);
@@ -63,6 +64,7 @@ const ChatInbox = () => {
     const handleSelectMessage = async (message) => {
         setSelectedMessage(message);
         setReplyText('');
+        setMobileView('conversation'); // Switch to conversation on mobile
 
         // Check if there are any unread messages in this thread for the current user
         const hasUnread = !message.isRead && message.recipientId === user.id;
@@ -131,17 +133,17 @@ const ChatInbox = () => {
         <div className="min-h-screen bg-gradient-to-br from-dcs-black via-dcs-black to-dcs-dark-gray/30">
             <Navbar />
 
-            <div className="max-w-7xl mx-auto px-6 pt-24 pb-12">
-                <div className="mb-8">
-                    <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-white to-dcs-purple bg-clip-text text-transparent">
-                        Messages
+            <div className="max-w-7xl mx-auto px-3 sm:px-6 pt-20 sm:pt-24 pb-6 sm:pb-8">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8 gap-3">
+                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">
+                        <span className="bg-gradient-to-r from-white to-dcs-purple bg-clip-text text-transparent">Messages</span>
                     </h1>
-                    <p className="text-dcs-text-gray">Your conversations and notifications</p>
+                    <p className="text-dcs-text-gray text-sm sm:text-base">Your conversations and notifications</p>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-300px)]">
-                    {/* Messages List */}
-                    <div className="lg:col-span-1 bg-dcs-dark-gray rounded-2xl border border-dcs-purple/20 overflow-hidden flex flex-col">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 h-[calc(100vh-200px)] sm:h-[calc(100vh-300px)]">
+                    {/* Message List - hidden on mobile when viewing conversation */}
+                    <div className={`bg-dcs-dark-gray/50 rounded-2xl border border-dcs-purple/10 overflow-hidden flex flex-col ${mobileView === 'conversation' ? 'hidden lg:flex' : 'flex'}`}>
                         {/* Header with Filters */}
                         <div className="p-4 border-b border-white/10 space-y-3">
                             {/* Search */}
@@ -276,13 +278,22 @@ const ChatInbox = () => {
                     </div>
 
                     {/* Conversation View - Keep the same as before */}
-                    <div className="lg:col-span-2 bg-dcs-dark-gray rounded-2xl border border-dcs-purple/20 overflow-hidden flex flex-col">
+                    <div className={`lg:col-span-1 bg-dcs-dark-gray rounded-2xl border border-dcs-purple/20 overflow-hidden flex flex-col ${mobileView === 'list' ? 'hidden lg:flex' : 'flex'}`}>
                         {selectedMessage ? (
                             <>
-                                <div className="p-6 border-b border-white/10">
-                                    <div className="flex items-start justify-between">
+                                <div className="p-4 sm:p-6 border-b border-dcs-purple/10 flex items-center gap-3">
+                                    {/* Mobile back button */}
+                                    <button
+                                        onClick={() => setMobileView('list')}
+                                        className="lg:hidden text-dcs-purple hover:text-white transition-colors p-1"
+                                    >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                        </svg>
+                                    </button>
+                                    <div className="flex-1 min-w-0">
                                         <div>
-                                            <h2 className="text-xl font-bold text-white mb-1">
+                                            <h2 className="text-lg sm:text-xl font-bold text-white truncate">
                                                 {selectedMessage.sender.firstName} {selectedMessage.sender.lastName}
                                             </h2>
                                             <p className="text-sm text-dcs-text-gray">

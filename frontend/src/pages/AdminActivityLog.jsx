@@ -141,9 +141,9 @@ export default function AdminActivityLog() {
                         Back to Dashboard
                     </button>
 
-                    <div className="flex items-end justify-between">
+                    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                         <div>
-                            <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-white to-dcs-purple bg-clip-text text-transparent">
+                            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 bg-gradient-to-r from-white to-dcs-purple bg-clip-text text-transparent">
                                 Approval Activity Log
                             </h1>
                             <p className="text-dcs-text-gray">Complete history of all course approval decisions</p>
@@ -163,31 +163,31 @@ export default function AdminActivityLog() {
                 </div>
 
                 {/* Stats */}
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-                    <div className="bg-dcs-dark-gray/40 border border-dcs-purple/20 rounded-2xl p-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4 mb-6 sm:mb-8">
+                    <div className="bg-dcs-dark-gray/40 border border-dcs-purple/20 rounded-2xl p-3 sm:p-4">
                         <p className="text-dcs-text-gray text-xs font-bold uppercase tracking-wider mb-1">Total Actions</p>
                         <p className="text-2xl font-bold text-white">{stats.total}</p>
                     </div>
-                    <div className="bg-dcs-dark-gray/40 border border-green-500/20 rounded-2xl p-4">
+                    <div className="bg-dcs-dark-gray/40 border border-green-500/20 rounded-2xl p-3 sm:p-4">
                         <p className="text-dcs-text-gray text-xs font-bold uppercase tracking-wider mb-1">Approved Publish</p>
                         <p className="text-2xl font-bold text-green-400">{stats.approvedPublish}</p>
                     </div>
-                    <div className="bg-dcs-dark-gray/40 border border-red-500/20 rounded-2xl p-4">
+                    <div className="bg-dcs-dark-gray/40 border border-red-500/20 rounded-2xl p-3 sm:p-4">
                         <p className="text-dcs-text-gray text-xs font-bold uppercase tracking-wider mb-1">Declined Publish</p>
                         <p className="text-2xl font-bold text-red-400">{stats.disapprovedPublish}</p>
                     </div>
-                    <div className="bg-dcs-dark-gray/40 border border-blue-500/20 rounded-2xl p-4">
+                    <div className="bg-dcs-dark-gray/40 border border-blue-500/20 rounded-2xl p-3 sm:p-4">
                         <p className="text-dcs-text-gray text-xs font-bold uppercase tracking-wider mb-1">Approved Unpublish</p>
                         <p className="text-2xl font-bold text-blue-400">{stats.approvedUnpublish}</p>
                     </div>
-                    <div className="bg-dcs-dark-gray/40 border border-orange-500/20 rounded-2xl p-4">
+                    <div className="bg-dcs-dark-gray/40 border border-orange-500/20 rounded-2xl p-3 sm:p-4">
                         <p className="text-dcs-text-gray text-xs font-bold uppercase tracking-wider mb-1">Declined Unpublish</p>
                         <p className="text-2xl font-bold text-orange-400">{stats.disapprovedUnpublish}</p>
                     </div>
                 </div>
 
                 {/* Filters */}
-                <div className="bg-dcs-dark-gray/40 border border-dcs-purple/20 rounded-2xl p-6 mb-6">
+                <div className="bg-dcs-dark-gray/40 border border-dcs-purple/20 rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6">
                     <div className="space-y-4">
                         {/* Search */}
                         <div className="relative">
@@ -283,27 +283,27 @@ export default function AdminActivityLog() {
                         {logs.map((log) => {
                             const actionLabel = getActionLabel(log.action);
                             return (
-                                <div key={log.id} className="bg-dcs-dark-gray/40 border border-dcs-purple/20 rounded-xl p-5 hover:border-dcs-purple/40 transition-all">
+                                <div key={log.id} className="bg-dcs-dark-gray/40 border border-dcs-purple/20 rounded-xl p-4 sm:p-5 hover:border-dcs-purple/40 transition-all">
                                     <div className="flex items-start gap-4">
                                         {/* Course Thumbnail */}
                                         {log.course.thumbnailUrl && (
                                             <img
                                                 src={log.course.thumbnailUrl}
                                                 alt={log.course.title}
-                                                className="w-16 h-16 object-cover rounded-lg border border-white/10 flex-shrink-0"
+                                                className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-lg border border-white/10 flex-shrink-0"
                                             />
                                         )}
 
                                         {/* Content */}
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-start justify-between gap-4 mb-3">
-                                                <div className="flex-1">
-                                                    <h3 className="font-bold text-white text-lg mb-1">{log.course.title}</h3>
+                                                <div className="flex-1 min-w-0">
+                                                    <h3 className="font-bold text-white text-base sm:text-lg mb-1 truncate" title={log.course.title}>{log.course.title}</h3>
                                                     <p className="text-sm text-dcs-text-gray">
                                                         Instructor: <span className="text-dcs-purple">{log.course.creator.firstName} {log.course.creator.lastName}</span>
                                                     </p>
                                                 </div>
-                                                <span className={`px-3 py-1 rounded-full text-xs font-bold border whitespace-nowrap flex-shrink-0 ${actionLabel.color}`}>
+                                                <span className={`px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold border whitespace-nowrap flex-shrink-0 ${actionLabel.color}`}>
                                                     {actionLabel.icon} {actionLabel.text}
                                                 </span>
                                             </div>

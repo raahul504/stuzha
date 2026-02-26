@@ -1,4 +1,22 @@
 const prisma = require('../config/database');
+const xss = require('xss');
+
+// XSS sanitization options for rich text article content
+const xssOptions = {
+  whiteList: {
+    ...xss.whiteList,
+    p: [], br: [], strong: [], em: [], u: [], h1: [], h2: [], h3: [],
+    h4: [], h5: [], h6: [], ul: [], ol: [], li: [], blockquote: [],
+    a: ['href', 'title', 'target', 'style', 'class'], img: ['src', 'alt', 'width', 'height', 'style', 'class'],
+    table: [], thead: [], tbody: [], tr: [], th: [], td: [], pre: [], code: [],
+    span: ['style', 'class'],
+    div: ['style', 'class'],
+    iframe: ['src', 'frameborder', 'allowfullscreen', 'width', 'height', 'allow'],
+  },
+  stripIgnoreTag: true,
+  stripIgnoreTagBody: ['script'],
+};
+
 
 /**
  * Create content item in a module
@@ -56,7 +74,7 @@ const createContentItem = async (moduleId, contentData, userId) => {
   } else if (contentType === 'ARTICLE') {
     contentItemData = {
       ...contentItemData,
-      articleContent: rest.articleContent,
+      articleContent: rest.articleContent ? xss(rest.articleContent, xssOptions) : undefined,
       articleFileUrl: rest.articleFileUrl,
     };
   } else if (contentType === 'ASSESSMENT') {
@@ -117,8 +135,12 @@ const updateContentItem = async (contentId, updateData, userId) => {
 
   const updated = await prisma.contentItem.update({
     where: { id: contentId },
-    data: updateData,
+    data: {
+      ...updateData,
+      articleContent: updateData.articleContent ? xss(updateData.articleContent, xssOptions) : undefined,
+    },
   });
+
 
   return updated;
 };

@@ -121,7 +121,7 @@ export default function CreateCourse() {
   };
 
   return (
-    <div className="bg-dcs-dark-gray/30 backdrop-blur-xl rounded-3xl p-10 border border-white/5 shadow-2xl w-full max-w-4xl mx-auto font-geist">
+    <div className="bg-dcs-dark-gray/30 backdrop-blur-xl rounded-3xl p-5 sm:p-10 border border-white/5 shadow-2xl w-full max-w-4xl mx-auto font-geist">
       <div className="mb-10">
         <h2 className="text-3xl font-bold bg-gradient-to-r from-white to-dcs-purple bg-clip-text text-transparent italic">
           Create New Course
@@ -142,13 +142,13 @@ export default function CreateCourse() {
               <label className="block text-dcs-text-gray text-xs font-bold uppercase tracking-wider ml-1">Title *</label>
               <input type="text" name="title" value={formData.title} onChange={handleChange} required
                 placeholder="e.g. Master React.js from Scratch"
-                className="w-full px-5 py-4 border border-white/10 rounded-2xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all placeholder:text-white/10" />
+                className="w-full px-4 sm:px-5 py-3 sm:py-4 border border-white/10 rounded-2xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all placeholder:text-white/10" />
             </div>
 
             <div className="space-y-2">
               <label className="block text-dcs-text-gray text-xs font-bold uppercase tracking-wider ml-1">Slug *</label>
               <input type="text" name="slug" value={formData.slug} onChange={handleChange} required placeholder="intro-to-react"
-                className="w-full px-5 py-4 border border-white/10 rounded-2xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all placeholder:text-white/10" />
+                className="w-full px-4 sm:px-5 py-3 sm:py-4 border border-white/10 rounded-2xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all placeholder:text-white/10" />
             </div>
           </div>
 
@@ -156,14 +156,14 @@ export default function CreateCourse() {
             <label className="block text-dcs-text-gray text-xs font-bold uppercase tracking-wider ml-1">Short Description</label>
             <input type="text" name="shortDescription" value={formData.shortDescription} onChange={handleChange} maxLength={500}
               placeholder="A brief overview for the course card..."
-              className="w-full px-5 py-4 border border-white/10 rounded-2xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all placeholder:text-white/10" />
+              className="w-full px-4 sm:px-5 py-3 sm:py-4 border border-white/10 rounded-2xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all placeholder:text-white/10" />
           </div>
 
           <div className="space-y-2">
             <label className="block text-dcs-text-gray text-xs font-bold uppercase tracking-wider ml-1">Description *</label>
             <textarea name="description" value={formData.description} onChange={handleChange} required rows={5}
               placeholder="Tell your students everything they need to know about the course..."
-              className="w-full px-5 py-4 border border-white/10 rounded-2xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all placeholder:text-white/10" />
+              className="w-full px-4 sm:px-5 py-3 sm:py-4 border border-white/10 rounded-2xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all placeholder:text-white/10" />
           </div>
         </div>
 
@@ -180,14 +180,14 @@ export default function CreateCourse() {
               <div className="relative">
                 <span className="absolute left-5 top-1/2 -translate-y-1/2 text-dcs-purple font-bold">$</span>
                 <input type="number" name="price" value={formData.price} onChange={handleChange} required step="0.01" min="0"
-                  className="w-full pl-10 pr-5 py-4 border border-white/10 rounded-2xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all" />
+                  className="w-full pl-10 pr-4 sm:pr-5 py-3 sm:py-4 border border-white/10 rounded-2xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all" />
               </div>
             </div>
 
             <div className="space-y-2">
               <label className="block text-dcs-text-gray text-xs font-bold uppercase tracking-wider ml-1">Difficulty</label>
               <select name="difficultyLevel" value={formData.difficultyLevel} onChange={handleChange}
-                className="w-full px-5 py-4 border border-white/10 rounded-2xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all cursor-pointer appearance-none">
+                className="w-full px-4 sm:px-5 py-3 sm:py-4 border border-white/10 rounded-2xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all cursor-pointer appearance-none">
                 <option value="BEGINNER">🟢 Beginner</option>
                 <option value="INTERMEDIATE">🟡 Intermediate</option>
                 <option value="ADVANCED">🔴 Advanced</option>
@@ -198,7 +198,7 @@ export default function CreateCourse() {
               <label className="block text-dcs-text-gray text-xs font-bold uppercase tracking-wider ml-1">Duration (Hours)</label>
               <input type="number" name="estimatedDurationHours" value={formData.estimatedDurationHours} onChange={handleChange} min="1"
                 placeholder="e.g. 20"
-                className="w-full px-5 py-4 border border-white/10 rounded-2xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all placeholder:text-white/10" />
+                className="w-full px-4 sm:px-5 py-3 sm:py-4 border border-white/10 rounded-2xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all placeholder:text-white/10" />
             </div>
           </div>
         </div>
@@ -211,13 +211,13 @@ export default function CreateCourse() {
           </h3>
 
           <div className="space-y-4">
-            <div className="w-full p-6 border border-white/10 rounded-3xl bg-dcs-black/40 backdrop-blur-sm">
+            <div className="w-full p-4 sm:p-6 border border-white/10 rounded-3xl bg-dcs-black/40 backdrop-blur-sm">
               <div className="flex flex-wrap gap-2 mb-6">
                 {selectedCategoryIds.length === 0 ? (
                   <p className="text-xs text-dcs-text-gray/50 italic py-2">No categories selected yet...</p>
                 ) : (
                   selectedCategoryIds.map(catId => (
-                    <span key={catId} className="flex items-center gap-2 bg-dcs-purple/10 border border-dcs-purple/20 text-dcs-purple px-4 py-2 rounded-full text-xs font-bold group/tag transition-all hover:bg-dcs-purple hover:text-white">
+                    <span key={catId} className="flex items-center gap-2 bg-dcs-purple/10 border border-dcs-purple/20 text-dcs-purple px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-xs font-bold group/tag transition-all hover:bg-dcs-purple hover:text-white">
                       {getCategoryName(catId)}
                       <button type="button" onClick={() => removeCategory(catId)} className="text-dcs-purple group-hover/tag:text-white transition-colors">
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -301,7 +301,7 @@ export default function CreateCourse() {
               <label className="block text-dcs-text-gray text-xs font-bold uppercase tracking-wider ml-1">What This Course Includes</label>
               <textarea name="courseIncludes" value={formData.courseIncludes} onChange={handleChange} rows={5}
                 placeholder="e.g.:&#10;10 hours on-demand video&#10;5 downloadable resources&#10;Full lifetime access"
-                className="w-full px-5 py-4 border border-white/10 rounded-2xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all placeholder:text-white/10" />
+                className="w-full px-4 sm:px-5 py-3 sm:py-4 border border-white/10 rounded-2xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all placeholder:text-white/10" />
               <p className="text-[10px] text-dcs-text-gray/40 uppercase tracking-widest font-bold px-1">Tip: Press Enter for each new advantage</p>
             </div>
 
@@ -310,14 +310,14 @@ export default function CreateCourse() {
                 <label className="block text-dcs-text-gray text-xs font-bold uppercase tracking-wider ml-1">Requirements</label>
                 <textarea name="requirements" value={formData.requirements} onChange={handleChange} rows={4}
                   placeholder="e.g.:&#10;Basic Javascript knowledge&#10;VS Code installed"
-                  className="w-full px-5 py-4 border border-white/10 rounded-2xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all placeholder:text-white/10 text-sm" />
+                  className="w-full px-4 sm:px-5 py-3 sm:py-4 border border-white/10 rounded-2xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all placeholder:text-white/10 text-sm" />
               </div>
 
               <div className="space-y-2">
                 <label className="block text-dcs-text-gray text-xs font-bold uppercase tracking-wider ml-1">Ideal Student Profile</label>
                 <textarea name="targetAudience" value={formData.targetAudience} onChange={handleChange} rows={4}
                   placeholder="e.g.:&#10;Frontend developers wanting to learn React&#10;Students building their first portfolio"
-                  className="w-full px-5 py-4 border border-white/10 rounded-2xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all placeholder:text-white/10 text-sm" />
+                  className="w-full px-4 sm:px-5 py-3 sm:py-4 border border-white/10 rounded-2xl bg-dcs-black/50 text-white focus:border-dcs-purple focus:ring-1 focus:ring-dcs-purple focus:outline-none transition-all placeholder:text-white/10 text-sm" />
               </div>
             </div>
           </div>

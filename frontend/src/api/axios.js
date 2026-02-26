@@ -1,8 +1,26 @@
 import axios from 'axios';
 import { showError } from '../utils/toast';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+// Helper to get the base server URL (without /api)
+export const getServerUrl = (path = '') => {
+  // Remove trailing slashes and normalize
+  const normalizedApiUrl = API_URL.replace(/\/+$/, '');
+  const base = normalizedApiUrl.endsWith('/api') ? normalizedApiUrl.slice(0, -4) : normalizedApiUrl;
+  if (!path) return base;
+  return `${base}${path.startsWith('/') ? path : `/${path}`}`;
+};
+
+// Helper to get the API URL
+export const getApiUrl = (path = '') => {
+  if (!path) return API_URL;
+  const normalizedApiUrl = API_URL.replace(/\/+$/, '');
+  return `${normalizedApiUrl}${path.startsWith('/') ? path : `/${path}`}`;
+};
+
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseURL: API_URL,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
@@ -20,7 +38,7 @@ const processQueue = (error, token = null) => {
       prom.resolve(token);
     }
   });
-  
+
   failedQueue = [];
 };
 
@@ -37,12 +55,12 @@ apiClient.interceptors.response.use(
     const originalRequest = error.config;
 
     // Don't intercept auth endpoints (except /me)
-    const isAuthEndpoint = originalRequest.url?.includes('/auth/') && 
-                          !originalRequest.url?.includes('/auth/me');
-    
+    const isAuthEndpoint = originalRequest.url?.includes('/auth/') &&
+      !originalRequest.url?.includes('/auth/me');
+
     // If 401 and not an auth endpoint and haven't retried yet
     if (error.response?.status === 401 && !isAuthEndpoint && !originalRequest._retry) {
-      
+
       if (isRefreshing) {
         // If already refreshing, queue this request
         return new Promise((resolve, reject) => {
@@ -64,32 +82,32 @@ apiClient.interceptors.response.use(
           {},
           { withCredentials: true }
         );
-        
+
         processQueue(null);
         isRefreshing = false;
-        
+
         // Retry the original request
         return apiClient(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError);
         isRefreshing = false;
-        
+
         // Only redirect if we're not already on login/register pages
         const currentPath = window.location.pathname;
         if (!['/login', '/register', '/forgot-password', '/reset-password', '/verify-email'].includes(currentPath)) {
           // Clear any stale cookies/state
-          document.cookie.split(";").forEach(function(c) { 
-            document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+          document.cookie.split(";").forEach(function (c) {
+            document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
           });
-          
+
           showError('Session expired. Please login again.');
-          
+
           // Redirect to login after a short delay
           setTimeout(() => {
             window.location.href = '/login';
           }, 1000);
         }
-        
+
         return Promise.reject(refreshError);
       }
     }

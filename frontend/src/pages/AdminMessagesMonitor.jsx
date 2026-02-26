@@ -164,7 +164,7 @@ export default function AdminMessagesMonitor() {
         <div className="min-h-screen bg-gradient-to-br from-dcs-black via-dcs-black to-dcs-dark-gray/30">
             <Navbar />
 
-            <div className="max-w-7xl mx-auto px-6 pt-24 pb-12">
+            <div className="max-w-7xl mx-auto px-3 sm:px-6 pt-20 sm:pt-24 pb-6 sm:pb-12">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
                     <div>
@@ -177,14 +177,14 @@ export default function AdminMessagesMonitor() {
                             </svg>
                             Back to Dashboard
                         </button>
-                        <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-white to-dcs-purple bg-clip-text text-transparent">
+                        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 bg-gradient-to-r from-white to-dcs-purple bg-clip-text text-transparent">
                             Unanswered Questions
                         </h1>
                         <p className="text-dcs-text-gray">Monitor student questions that haven't received instructor replies</p>
                     </div>
 
                     {/* Filter */}
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                         {[
                             { label: 'All', value: 'all' },
                             { label: '24h+', value: '24' },
@@ -206,7 +206,7 @@ export default function AdminMessagesMonitor() {
                 </div>
 
                 {/* Stats Bar */}
-                <div className="grid grid-cols-3 gap-4 mb-8">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
                     <div className="bg-dcs-dark-gray/40 border border-dcs-purple/20 rounded-2xl p-5">
                         <p className="text-dcs-text-gray text-xs font-bold uppercase tracking-wider mb-1">Total Unanswered</p>
                         <p className="text-3xl font-bold text-white">{questions.length}</p>
@@ -227,7 +227,7 @@ export default function AdminMessagesMonitor() {
 
                 {/* Bulk Actions Bar */}
                 {Object.keys(groupedByInstructor).length > 0 && (
-                    <div className="mb-6 p-4 bg-dcs-dark-gray/40 border border-dcs-purple/20 rounded-2xl flex items-center justify-between">
+                    <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-dcs-dark-gray/40 border border-dcs-purple/20 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                         <div className="flex items-center gap-4">
                             <span className="text-sm text-dcs-text-gray">
                                 {selectedInstructors.size} instructor(s) selected
@@ -275,7 +275,7 @@ export default function AdminMessagesMonitor() {
                         {Object.values(groupedByInstructor).map(({ instructor, questions: instructorQuestions }) => (
                             <div key={instructor.id} className="bg-dcs-dark-gray/40 border border-dcs-purple/20 rounded-2xl overflow-hidden">
                                 {/* Instructor Header */}
-                                <div className="p-5 border-b border-white/10 flex items-center justify-between">
+                                <div className="p-3 sm:p-5 border-b border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                     <div className="flex items-center gap-4">
                                         {/* Checkbox */}
                                         <input
